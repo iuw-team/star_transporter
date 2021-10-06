@@ -20,8 +20,6 @@ sonarqube {
     dependencies {
     }
 }
-plugins {
-
 allprojects {
     apply plugin: "eclipse"
 
