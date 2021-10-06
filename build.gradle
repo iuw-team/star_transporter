@@ -14,6 +14,13 @@ buildscript {
     }
 }
 apply plugin: "org.sonarqube"
+    sonarqube {
+  properties {
+    property "sonar.projectKey", "iuw-team_star_transporter"
+    property "sonar.organization", "iuw-team"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
+}
 allprojects {
     apply plugin: "eclipse"
 
@@ -65,11 +72,4 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         
     }
-    sonarqube {
-  properties {
-    property "sonar.projectKey", "iuw-team_star_transporter"
-    property "sonar.organization", "iuw-team"
-    property "sonar.host.url", "https://sonarcloud.io"
-  }
-}
 }
