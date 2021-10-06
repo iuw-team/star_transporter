@@ -1,15 +1,58 @@
+Skip to content
+Search or jump to…
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@Paval-from-Belarus 
+iuw-team
+/
+star_transporter
+Public
+0
+0
+0
+Code
+Issues
+1
+Pull requests
+Actions
+Projects
+Wiki
+Security
+Insights
+Settings
+star_transporter/build.gradle
+@Paval-from-Belarus
+Paval-from-Belarus Update build.gradle
+Latest commit 8a5eb7b 41 minutes ago
+ History
+ 1 contributor
+75 lines (64 sloc)  2.11 KB
+   
 buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
         maven { 
-        url "https://oss.sonatype.org/content/repositories/snapshots/"}
+        url "https://oss.sonatype.org/content/repositories/snapshots/" 
+        url "https://plugins.gradle.org/m2/" }
         google()
     }
     dependencies {
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3"
 
     }
+}
+apply plugin: "org.sonarqube"
+    sonarqube {
+  properties {
+    property "sonar.projectKey", "iuw-team_star_transporter"
+    property "sonar.organization", "iuw-team"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
 }
 allprojects {
     apply plugin: "eclipse"
@@ -63,3 +106,4 @@ project(":core") {
         
     }
 }
+Loading complete
