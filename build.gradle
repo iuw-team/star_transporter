@@ -1,29 +1,19 @@
-plugins {
-  id "org.sonarqube" version "3.3"
-}
-
-sonarqube {
-  properties {
-    property "sonar.projectKey", "iuw-team_star_transporter"
-    property "sonar.organization", "iuw-team"
-    property "sonar.host.url", "https://sonarcloud.io"
-  }
-}
-
 buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { 
+        url "https://oss.sonatype.org/content/repositories/snapshots/" 
+        url "https://plugins.gradle.org/m2/" }
         google()
     }
     dependencies {
-        
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3"
 
     }
 }
-
+apply plugin: "org.sonarqube"
 allprojects {
     apply plugin: "eclipse"
 
@@ -75,4 +65,11 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         
     }
+    sonarqube {
+  properties {
+    property "sonar.projectKey", "iuw-team_star_transporter"
+    property "sonar.organization", "iuw-team"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
+}
 }
