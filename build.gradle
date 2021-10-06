@@ -1,15 +1,15 @@
 buildscript {
-    plugins {
-      id "org.sonarqube" version "3.3"
-    }
+plugins {
+  id "org.sonarqube" version "3.3"
+}
 
-    sonarqube {
-      properties {
-        property "sonar.projectKey", "iuw-team_star_transporter"
-        property "sonar.organization", "iuw-team"
-        property "sonar.host.url", "https://sonarcloud.io"
-      }
-    }
+sonarqube {
+  properties {
+    property "sonar.projectKey", "iuw-team_star_transporter"
+    property "sonar.organization", "iuw-team"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
+}
 
     repositories {
         mavenLocal()
