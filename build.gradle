@@ -1,7 +1,14 @@
-plugins {
+buildscript {
   id "org.sonarqube" version "3.3"
 }
-buildscript {
+apply plugin: "org.sonarqube"
+sonarqube {
+  properties {
+    property "sonar.projectKey", "iuw-team_star_transporter"
+    property "sonar.organization", "iuw-team"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
+}
     repositories {
         mavenLocal()
         mavenCentral()
@@ -12,14 +19,8 @@ buildscript {
     dependencies {
     }
 }
-apply plugin: "org.sonarqube"
-sonarqube {
-  properties {
-    property "sonar.projectKey", "iuw-team_star_transporter"
-    property "sonar.organization", "iuw-team"
-    property "sonar.host.url", "https://sonarcloud.io"
-  }
-}
+plugins {
+
 allprojects {
     apply plugin: "eclipse"
 
