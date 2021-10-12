@@ -48,7 +48,7 @@ public class Process extends Game {
 	static public Skin gameSkin;
 	@Override
 	public void create () {
-		gameSkin = new Skin(Gdx.files.internal("textures/buttons_pack.json"));
+		gameSkin = new Skin(Gdx.files.internal("temp_textures/buttons_pack.json"));
 		this.setScreen(new MainMenuScreen(this));
 		batch = new SpriteBatch(); // thing for drawing image
 		font = new BitmapFont();
