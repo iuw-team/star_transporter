@@ -29,7 +29,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
-
 public class Process extends Game {
 	public SpriteBatch batch;
 	Texture but;
@@ -48,12 +47,11 @@ public class Process extends Game {
 	static public Skin gameSkin;
 	@Override
 	public void create () {
+
 		gameSkin = new Skin(Gdx.files.internal("textures/buttons_pack.json"));
 		this.setScreen(new MainMenuScreen(this));
 		batch = new SpriteBatch(); // thing for drawing image
 		font = new BitmapFont();
-
-
 
 		but = new Texture("button_ready.png"); //size 300x70
 		ship = new Texture("ship.png"); // 150x150

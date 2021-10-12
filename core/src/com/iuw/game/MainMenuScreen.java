@@ -8,6 +8,7 @@ package com.iuw.game;
         import com.badlogic.gdx.scenes.scene2d.InputListener;
         import com.badlogic.gdx.scenes.scene2d.Stage;
         import com.badlogic.gdx.scenes.scene2d.ui.Button;
+        import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
         import com.badlogic.gdx.scenes.scene2d.ui.Skin;
         import com.badlogic.gdx.utils.ScreenUtils;
         import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -24,7 +25,6 @@ public class MainMenuScreen implements Screen {
         camera.setToOrtho(false, 600, 800);
 
         img = new Texture("main_theme.jpg");
-
         stage = new Stage(new ScreenViewport());
         Button play_but = new Button(Process.gameSkin), set_but = new Button(Process.gameSkin), exit_but = new Button(Process.gameSkin); // 300x70 sizes
         play_but.setPosition(50,600);
@@ -33,7 +33,7 @@ public class MainMenuScreen implements Screen {
         play_but.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                game.setScreen(new ConfigScreen(game));
+               // game.setScreen(new ConfigScreen(game));
             }
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -44,7 +44,7 @@ public class MainMenuScreen implements Screen {
 
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                //game.setScreen(new ConfigScreen(game));
+                game.setScreen(new SetScreen(game));
             }
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
