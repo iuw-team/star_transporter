@@ -11,8 +11,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 
-import java.awt.*;
+
+
 
 public class SetScreen implements Screen {
     final Process game;
@@ -27,38 +29,34 @@ public class SetScreen implements Screen {
 
         img = new Texture("main_theme.jpg");
         stage = new Stage(new ScreenViewport());
-         Button play_but = new Button(Process.gameSkin), set_but = new Button(Process.gameSkin), exit_but = new Button(Process.gameSkin); Slider maxim_slider = new Slider(0f, 100f, 1f, false, Process.gameSkin);
-        SelectBox maxim_box = new SelectBox<String>(Process.gameSkin); Slider maxim_slider2 = new Slider(0f, 100f, 1f, false, Process.gameSkin);
-        Slider maxim_slider3 = new Slider(0f, 100f, 1f, false, Process.gameSkin);
-        maxim_box.setItems(maxarray);
+        Slider maxim_slider = new Slider(0f, 100f, 1f, false, Process.gameSkin);
+        SelectBox maxim_box = new SelectBox<String>(Process.gameSkin);
+        Slider maxim_slider2 = new Slider(0f, 100f, 1f, false, Process.gameSkin);
+        SelectBox maxim_box2 = new SelectBox<String>(Process.gameSkin);
+        Label max_label = new Label("label", Process.gameSkin);
+
 
         maxim_slider.setSize(200, 150);
         maxim_box.setSize(300, 150);
         maxim_slider2.setSize(200, 150);
-        maxim_slider3.setSize(200, 150);
+        max_label.setSize(200, 120);
+        maxim_box2.setSize(300, 150);
 
-        play_but.setPosition(50,600);
-        set_but.setPosition(50,500);
-        exit_but.setPosition(50,400);
-        maxim_slider.setPosition(370, 300);
-        maxim_slider2.setPosition(370, 600);
-        maxim_slider3.setPosition(40, 600);
-        maxim_box.setPosition(20, 300);
-        play_but.addListener(new InputListener(){
-            @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-               System.out.println("settings");
-            }
-            @Override
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-        });
+
+
+        maxim_slider.setPosition(370, 200);
+        maxim_slider2.setPosition(370, 500);
+        maxim_box.setPosition(20, 200);
+        maxim_box2.setPosition(20, 200);
+        max_label.setPosition(23, 323);
+
 
         stage.addActor(maxim_slider);
         stage.addActor(maxim_box);
         stage.addActor(maxim_slider2);
-        stage.addActor(maxim_slider3);
+        stage.addActor(max_label);
+        stage.addActor(maxim_box2);
+
     }
 
     @Override
@@ -74,11 +72,16 @@ public class SetScreen implements Screen {
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
 
+        //game.batch.begin();
+        //game.batch.draw(img, 0, 0);
+        //game.batch.end();
+        //stage.act();
+        //stage.draw();
         game.batch.begin();
-        game.batch.draw(img, 0, 0);
         game.batch.end();
         stage.act();
         stage.draw();
+
     }
 
     @Override
