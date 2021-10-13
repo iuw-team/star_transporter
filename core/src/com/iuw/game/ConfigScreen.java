@@ -6,12 +6,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class ConfigScreen implements Screen {
@@ -54,17 +52,18 @@ public class ConfigScreen implements Screen {
                  chosen_planet_num = (Integer)planet_numbs.getSelected();
                 }
             });
-        load_numbs.addListener(new ChangeListener() { // ChangeListener uses especially for select box
-            @Override
+        load_numbs.addListener(new ChangeListener() {
+            @Override()
             public void changed(ChangeEvent event, Actor actor) {
                 chosen_load_num = (Integer)load_numbs.getSelected();
             }
         });
-        play_but.addListener(new ClickListener(){
+        play_but.addListener(new ClickListener(){ // InputListener is uses for low-level input
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println(chosen_load_num);
                 System.out.println(chosen_planet_num);
+                game.setScreen(new MainPlayScreen(game));
             }
 
         });

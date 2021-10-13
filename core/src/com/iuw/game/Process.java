@@ -35,7 +35,7 @@ public class Process extends Game {
 	Texture but;
 	Texture ship;
 	private Sound dropSound;
-	private Sound ship_sound_1, ship_sound_2, ship_sound_3;
+	public Sound ship_sound_1, ship_sound_2, ship_sound_3;
 	private Music SpaceMusic;
 	private OrthographicCamera camera;
 	private Rectangle bucket;
@@ -52,7 +52,6 @@ public class Process extends Game {
 		this.setScreen(new MainMenuScreen(this));
 		batch = new SpriteBatch(); // thing for drawing image
 		font = new BitmapFont();
-
 
 
 		but = new Texture("button_ready.png"); //size 300x70
