@@ -52,8 +52,6 @@ public class Process extends Game {
 		this.setScreen(new MainMenuScreen(this));
 		batch = new SpriteBatch(); // thing for drawing image
 		font = new BitmapFont();
-
-
 		but = new Texture("button_ready.png"); //size 300x70
 		ship = new Texture("ship.png"); // 150x150
 		ship_sound_1= Gdx.audio.newSound(Gdx.files.internal("fly_1.wav"));

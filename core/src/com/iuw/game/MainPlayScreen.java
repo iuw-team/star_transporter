@@ -3,31 +3,40 @@ package com.iuw.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
-
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class MainPlayScreen implements Screen {
     final  Process game;
     private Stage stage;
+    private OrthographicCamera camera;
     Texture ship;
     private Rectangle ship_box;
     private long ship_sound_time;
-
-    public MainPlayScreen(final Process game){
+    final Integer ship_size = 50;
+    private Integer ship_speed;
+    private float angle;
+private TextureRegion temp_t_region;
+    public MainPlayScreen(final Process game, Integer ship_speed){
         this.game = game;
+        this.ship_speed = ship_speed;
+
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 600, 800);
+        angle = 0f;
         ship_box = new Rectangle();
-        ship_box.x =  300 - 75;
-        ship_box.y = 600;
-        ship_box.width = 150;
-        ship_box.height = 150;
-        ship = new Texture("ship.png"); // 150x150
-
-
-
+        ship_box.x =  300;
+        ship_box.y = 400;
+        ship_box.width = ship_size;
+        ship_box.height = ship_size;
+        ship = new Texture("ship_50.png"); // 150x150
+        temp_t_region = new TextureRegion(ship);
     }
 
 
@@ -39,7 +48,12 @@ public class MainPlayScreen implements Screen {
 
     @Override
     public void render(float delta) {
+
+        ScreenUtils.clear(0, 0, 0.2f, 1);
 //
+        Vector3 origin = new Vector3();
+        angle+=1; if(angle > 360f) angle = 0f;
+        camera.unproject(origin);
 //        if(Gdx.input.isTouched()){
 //			Vector3 touchpos = new Vector3();
 //			float posX = Gdx.input.getX();
@@ -50,7 +64,8 @@ public class MainPlayScreen implements Screen {
 //			bucket.y = touchpos.y - 150 / 2;
 //		}
         game.batch.begin();
-        game.batch.draw(ship, ship_box.x, ship_box.y);
+     //   game.batch.draw(ship, ship_box.x, ship_box.y);
+        game.batch.draw(temp_t_region, ship_box.x, ship_box.y, ship_size/2, ship_size/2, 50, 50,1 , 1, angle);
         game.batch.end();
 
 		if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)||
@@ -69,14 +84,14 @@ public class MainPlayScreen implements Screen {
 				}
 				ship_sound_time = TimeUtils.nanoTime();
 			}
-			if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) ship_box.x -= 200 * Gdx.graphics.getDeltaTime();
-			if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) ship_box.x += 200 * Gdx.graphics.getDeltaTime();
-			if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) ship_box.y -= 200 * Gdx.graphics.getDeltaTime();
-			if (Gdx.input.isKeyPressed(Input.Keys.UP)) ship_box.y += 200 * Gdx.graphics.getDeltaTime();
+			if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) ship_box.x -= ship_speed * Gdx.graphics.getDeltaTime();
+			if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) ship_box.x += ship_speed * Gdx.graphics.getDeltaTime();
+			if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) ship_box.y -= ship_speed * Gdx.graphics.getDeltaTime();
+			if (Gdx.input.isKeyPressed(Input.Keys.UP)) ship_box.y += ship_speed * Gdx.graphics.getDeltaTime();
 		}
 		if(ship_box.x < 0) ship_box.x = 0;
-		if(ship_box.x > 600 - 150) ship_box.x = 600 - 150;
-		if(ship_box.y > 800 - 150) ship_box.y = 800 - 150;
+		if(ship_box.x > 600 - ship_size) ship_box.x = 600 - ship_size; //600 ширина экрана, 150 - ширина корабля
+		if(ship_box.y > 800 - ship_size) ship_box.y = 800 - ship_size;
 		if(ship_box.y < 0) ship_box.y = 0;
     }
 

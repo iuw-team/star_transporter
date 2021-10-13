@@ -1,3 +1,14 @@
+//plugins {
+//    id 'jacoco'
+//
+//}
+//jacocoTestReport {
+//    reports {
+//        xml.enabled true
+//    }
+//}
+//test.finalizedBy jacocoTestReport
+
 buildscript {
 repositories {
         mavenLocal()
@@ -19,6 +30,12 @@ apply plugin: "org.sonarqube"
     property "sonar.projectKey", "iuw-team_star_transporter"
     property "sonar.organization", "iuw-team"
     property "sonar.host.url", "https://sonarcloud.io"
+      property "sonar.reportPath", "${project.buildDir}/sonarqube/test.exec"
+      property "sonar.projectBaseDir", "$rootDir"
+      property "sonar.sources", "."
+      property "sonar.tests", ""
+      property "sonar.coverage.exclusions", "**/src/androidTest/**, **/src/test/**"
+      property "sonar.coverage.jacoco.xmlReportPaths", fileTree(include: ['*/*/jacoco*.xml'], dir: "$rootDir/app/build/reports/jacoco").collect()
   }
 }
 allprojects {
