@@ -34,6 +34,8 @@ public class MainMenuScreen implements Screen {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                // game.setScreen(new ConfigScreen(game));
+                dispose();
+
             }
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -45,6 +47,7 @@ public class MainMenuScreen implements Screen {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 game.setScreen(new SetScreen(game));
+                dispose();
             }
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -56,6 +59,8 @@ public class MainMenuScreen implements Screen {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 //game.setScreen(new ConfigScreen(game));
+                dispose();
+
             }
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
