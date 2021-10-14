@@ -67,7 +67,7 @@ public class Process extends Game {
 //		SpaceMusic.play();
 		//
 		bucket = new Rectangle();
-		bucket.x = 600/2 - 150/2;
+		bucket.x = 600.0/2 - 150.0/2;
 		bucket.y = 600;
 		bucket.width = 150;
 		bucket.height = 150;
