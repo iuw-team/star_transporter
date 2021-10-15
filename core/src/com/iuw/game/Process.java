@@ -29,7 +29,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
-
 public class Process extends Game {
 	public SpriteBatch batch;
 	Texture but;
@@ -48,10 +47,12 @@ public class Process extends Game {
 	static public Skin gameSkin;
 	@Override
 	public void create () {
+
 		gameSkin = new Skin(Gdx.files.internal("temp_textures/buttons_pack.json"));
 		this.setScreen(new MainMenuScreen(this));
 		batch = new SpriteBatch(); // thing for drawing image
 		font = new BitmapFont();
+
 		but = new Texture("button_ready.png"); //size 300x70
 		ship = new Texture("ship.png"); // 150x150
 		ship_sound_1= Gdx.audio.newSound(Gdx.files.internal("fly_1.wav"));
@@ -62,7 +63,6 @@ public class Process extends Game {
 //		SpaceMusic = Gdx.audio.newMusic(Gdx.files.internal("Space.mp3"));
 //		SpaceMusic.setLooping(true);
 //		SpaceMusic.play();
-		//
 		bucket = new Rectangle();
 		bucket.x = 600/2 - 150/2;
 		bucket.y = 600;
@@ -98,7 +98,6 @@ public class Process extends Game {
 
 		//batch.draw(but, 50, 600);
 		//batch.draw(ship, bucket.x, bucket.y);
-
 		super.render();
 //		stage.act();
 //		stage.draw();

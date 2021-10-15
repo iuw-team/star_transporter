@@ -20,16 +20,24 @@ public class MainPlayScreen implements Screen {
     private Rectangle ship_box;
     private long ship_sound_time;
     final Integer ship_size = 50;
-    private Integer ship_speed;
+    private Integer ship_speed, current_speed;
     private float angle;
-private TextureRegion temp_t_region;
+    private long mass;
+    private float g;
+    private TextureRegion temp_t_region;
+
+    private void PlaySoundMove(){
+
+    }
     public MainPlayScreen(final Process game, Integer ship_speed){
         this.game = game;
         this.ship_speed = ship_speed;
-
+        mass = 10;
+        g= (float) (mass/Math.pow(100,2));
+        current_speed = 0;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 600, 800);
-        angle = 0f;
+        angle = 0;
         ship_box = new Rectangle();
         ship_box.x =  300;
         ship_box.y = 400;
@@ -52,7 +60,8 @@ private TextureRegion temp_t_region;
         ScreenUtils.clear(0, 0, 0.2f, 1);
 //
         Vector3 origin = new Vector3();
-        angle+=1; if(angle > 360f) angle = 0f;
+        if(angle > 6.28 || angle < - 6.28) angle=0;
+       // angle+=1; if(angle > 360f) angle = 0f;
         camera.unproject(origin);
 //        if(Gdx.input.isTouched()){
 //			Vector3 touchpos = new Vector3();
@@ -65,12 +74,13 @@ private TextureRegion temp_t_region;
 //		}
         game.batch.begin();
      //   game.batch.draw(ship, ship_box.x, ship_box.y);
-        game.batch.draw(temp_t_region, ship_box.x, ship_box.y, ship_size/2, ship_size/2, 50, 50,1 , 1, angle);
+        game.batch.draw(temp_t_region, ship_box.x, ship_box.y, ship_size/2, ship_size/2, 50, 50,1 , 1, angle*180/3.14f);
         game.batch.end();
-
-		if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)||
-				Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
-			if(TimeUtils.nanoTime() - ship_sound_time > 5e9) {
+        angle-=0.001;
+        ship_box.x-= mass*Math.sin(angle)*Gdx.graphics.getDeltaTime();
+        ship_box.y+= mass*Math.cos(angle)*Gdx.graphics.getDeltaTime();
+		if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)|| Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
+			if(TimeUtils.nanoTime() - ship_sound_time > 7e9) {
 				switch (MathUtils.random(1, 3)) {
 					case 1:
 						game.ship_sound_1.play();
@@ -84,10 +94,26 @@ private TextureRegion temp_t_region;
 				}
 				ship_sound_time = TimeUtils.nanoTime();
 			}
-			if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) ship_box.x -= ship_speed * Gdx.graphics.getDeltaTime();
-			if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) ship_box.x += ship_speed * Gdx.graphics.getDeltaTime();
-			if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) ship_box.y -= ship_speed * Gdx.graphics.getDeltaTime();
-			if (Gdx.input.isKeyPressed(Input.Keys.UP)) ship_box.y += ship_speed * Gdx.graphics.getDeltaTime();
+			if (Gdx.input.isKeyPressed(Input.Keys.LEFT)){
+             // ship_box.x -= ship_speed * Math.sin(angle)* Gdx.graphics.getDeltaTime();
+                angle+=0.01;
+
+            }
+			if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                //ship_box.x += ship_speed * Math.sin(angle)*Gdx.graphics.getDeltaTime();
+                angle-=0.01;
+            }
+			if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+                ship_box.y -= ship_speed *Math.cos(angle)* Gdx.graphics.getDeltaTime();
+                ship_box.x += ship_speed * Math.sin(angle)* Gdx.graphics.getDeltaTime();
+            }
+			if (Gdx.input.isKeyPressed(Input.Keys.UP)){
+                ship_box.y += ship_speed *Math.cos(angle)* Gdx.graphics.getDeltaTime();
+                ship_box.x -= ship_speed * Math.sin(angle)* Gdx.graphics.getDeltaTime();
+                //System.out.println(Math.sin(angle));
+               // System.out.println(Math.cos(angle));
+                System.out.println(angle);
+            }
 		}
 		if(ship_box.x < 0) ship_box.x = 0;
 		if(ship_box.x > 600 - ship_size) ship_box.x = 600 - ship_size; //600 ширина экрана, 150 - ширина корабля

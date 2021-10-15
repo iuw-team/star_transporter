@@ -20,10 +20,10 @@ public class ConfigScreen implements Screen {
     private Stage stage;
     private Texture img;
     private OrthographicCamera camera;
-    private Integer[] list_1 = {4, 5, 6, 7}; //list for planet number
-    private Integer[] list_2= {1, 2, 3, 4}; //number of loads for delivery
-    private String[] list_3 = {"Slow", "Medium", "Fast"}; //velocity of ship
-    private String[] list_4 = { "Ia", "Ib", "II", "III", "IV","V"}; //types of sun
+    final private Integer[] list_1 = {4, 5, 6, 7}; //list for planet number
+    final private Integer[] list_2= {1, 2, 3, 4}; //number of loads for delivery
+    final private String[] list_3 = {"Slow", "Medium", "Fast"}; //velocity of ship
+    final private String[] list_4 = { "Ia", "Ib", "II", "III", "IV","V"}; //types of sun
     private Map<String, Integer> speed_map = new HashMap<String, Integer>();
     private Map<String, Integer> mass_map = new HashMap<String, Integer>();
     private Integer chosen_planet_num;
@@ -93,7 +93,7 @@ public class ConfigScreen implements Screen {
                 chosen_speed = speed_map.get(ship_speeds.getSelected());
             }
         });
-        ship_speeds.addListener(new ChangeListener() {
+        star_types.addListener(new ChangeListener() {
             @Override()
             public void changed(ChangeEvent event, Actor actor) {
                 chosen_star = mass_map.get(star_types.getSelected());
