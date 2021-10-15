@@ -28,8 +28,6 @@ public class SetScreen implements Screen {
         Slider slider_1 = new Slider(0, 100, 1, false, Process.gameSkin);
         Slider slider_2 = new Slider(0, 100, 1, false, Process.gameSkin);
 
-        Button button_1 = new Button(Process.gameSkin);
-
         SelectBox selectbox_1 = new SelectBox<String>(Process.gameSkin);
         SelectBox selectbox_2 = new SelectBox<String>(Process.gameSkin);
 
@@ -42,6 +40,9 @@ public class SetScreen implements Screen {
         Label label_2 = new Label("Sound", Process.gameSkin);
         Label label_3 = new Label("Something", Process.gameSkin);
         Label label_4 = new Label("Chto-to", Process.gameSkin);
+
+        TextButton t_but_exit = new TextButton("MainMenu", Process.gameSkin);
+
         label_1.setFontScale(2,2);
         label_2.setFontScale(2,2);
         label_3.setFontScale(2,2);
@@ -50,12 +51,25 @@ public class SetScreen implements Screen {
         slider_1.setSize(210, 100);
         slider_2.setSize(210, 100);
 
-        button_1.setSize(250, 100);
+        t_but_exit.setSize(250, 100);
 
         selectbox_1.setSize(210, 100);
         selectbox_2.setSize(210, 100);
 
-        button_1.setPosition(170, 100);
+        t_but_exit.addListener(new InputListener(){
+
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                game.setScreen(new SetScreen(game));
+                dispose();
+            }
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
+
+        t_but_exit.setPosition(170, 100);
 
         slider_1.setPosition(60, 300);
         slider_2.setPosition(330, 300);
@@ -79,7 +93,7 @@ public class SetScreen implements Screen {
         stage.addActor(selectbox_1);
         stage.addActor(selectbox_2);
 
-        stage.addActor(button_1);
+        stage.addActor(t_but_exit);
 
 
     }

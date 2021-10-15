@@ -10,6 +10,7 @@ package com.iuw.game;
         import com.badlogic.gdx.scenes.scene2d.ui.Button;
         import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
         import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+        import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
         import com.badlogic.gdx.utils.ScreenUtils;
         import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -26,11 +27,20 @@ public class MainMenuScreen implements Screen {
 
         img = new Texture("main_theme.jpg");
         stage = new Stage(new ScreenViewport());
-        Button play_but = new Button(Process.gameSkin), set_but = new Button(Process.gameSkin), exit_but = new Button(Process.gameSkin); // 300x70 sizes
-        play_but.setPosition(50,600);
-        set_but.setPosition(50,500);
-        exit_but.setPosition(50,400);
-        play_but.addListener(new InputListener(){
+
+        TextButton t_but_1 = new TextButton("EXIT", Process.gameSkin);
+        TextButton t_but_2 = new TextButton("SETTINGS", Process.gameSkin);
+        TextButton t_but_3 = new TextButton("PLAY", Process.gameSkin);
+
+        t_but_1.setPosition(150, 150);
+        t_but_2.setPosition(150, 300);
+        t_but_3.setPosition(150, 450);
+
+        t_but_1.setSize(300, 120);
+        t_but_2.setSize(300, 120);
+        t_but_3.setSize(300, 120);
+
+        t_but_1.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                // game.setScreen(new ConfigScreen(game));
@@ -42,7 +52,7 @@ public class MainMenuScreen implements Screen {
                 return true;
             }
         });
-        set_but.addListener(new InputListener(){
+        t_but_2.addListener(new InputListener(){
 
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
@@ -54,7 +64,7 @@ public class MainMenuScreen implements Screen {
                 return true;
             }
         });
-        exit_but.addListener(new InputListener(){
+        t_but_3.addListener(new InputListener(){
 
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
@@ -67,7 +77,10 @@ public class MainMenuScreen implements Screen {
                 return true;
             }
         });
-        stage.addActor(play_but); stage.addActor(set_but); stage.addActor(exit_but);
+
+        stage.addActor(t_but_1);
+        stage.addActor(t_but_2);
+        stage.addActor(t_but_3);
 
 
     }
