@@ -28,13 +28,13 @@ public class MainMenuScreen implements Screen {
         img = new Texture("main_theme.jpg");
         stage = new Stage(new ScreenViewport());
 
-        TextButton t_but_1 = new TextButton("EXIT", Process.gameSkin);
+        TextButton t_but_1 = new TextButton("PLAY", Process.gameSkin);
         TextButton t_but_2 = new TextButton("SETTINGS", Process.gameSkin);
-        TextButton t_but_3 = new TextButton("PLAY", Process.gameSkin);
+        TextButton t_but_3 = new TextButton("EXIT", Process.gameSkin);
 
-        t_but_1.setPosition(150, 150);
+        t_but_1.setPosition(150, 450);
         t_but_2.setPosition(150, 300);
-        t_but_3.setPosition(150, 450);
+        t_but_3.setPosition(150, 150);
 
         t_but_1.setSize(300, 120);
         t_but_2.setSize(300, 120);
@@ -69,7 +69,7 @@ public class MainMenuScreen implements Screen {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 //game.setScreen(new ConfigScreen(game));
-                dispose();
+                System.exit(0);
 
             }
             @Override
