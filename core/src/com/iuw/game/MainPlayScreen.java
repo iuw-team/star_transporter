@@ -3,6 +3,7 @@ package com.iuw.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
@@ -16,6 +17,7 @@ public class MainPlayScreen implements Screen {
     final  Process game;
     private Stage stage;
     private OrthographicCamera camera;
+    private Sound ship_sound_1, ship_sound_2, ship_sound_3;
     Texture ship;
     private Rectangle ship_box;
     private long ship_sound_time;
@@ -45,6 +47,10 @@ public class MainPlayScreen implements Screen {
         ship_box.height = ship_size;
         ship = new Texture("ship_50.png"); // 150x150
         temp_t_region = new TextureRegion(ship);
+
+        ship_sound_1= Gdx.audio.newSound(Gdx.files.internal("fly_1.wav"));
+        ship_sound_2= Gdx.audio.newSound(Gdx.files.internal("fly_2.wav"));
+        ship_sound_3= Gdx.audio.newSound(Gdx.files.internal("fly_3.wav"));
     }
 
 
@@ -57,7 +63,7 @@ public class MainPlayScreen implements Screen {
     @Override
     public void render(float delta) {
 
-        ScreenUtils.clear(0, 0, 0.2f, 1);
+        ScreenUtils.clear(1, 1, 1f, 1);
 //
         Vector3 origin = new Vector3();
         if(angle > 6.28 || angle < - 6.28) angle=0;
@@ -83,24 +89,22 @@ public class MainPlayScreen implements Screen {
 			if(TimeUtils.nanoTime() - ship_sound_time > 7e9) {
 				switch (MathUtils.random(1, 3)) {
 					case 1:
-						game.ship_sound_1.play();
+						ship_sound_1.play();
 						break;
 					case 2:
-						game.ship_sound_2.play();
+						ship_sound_2.play();
 						break;
 					case 3:
-						game.ship_sound_3.play();
+						ship_sound_3.play();
 						break;
 				}
 				ship_sound_time = TimeUtils.nanoTime();
 			}
 			if (Gdx.input.isKeyPressed(Input.Keys.LEFT)){
-             // ship_box.x -= ship_speed * Math.sin(angle)* Gdx.graphics.getDeltaTime();
                 angle+=0.01;
 
             }
 			if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                //ship_box.x += ship_speed * Math.sin(angle)*Gdx.graphics.getDeltaTime();
                 angle-=0.01;
             }
 			if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
@@ -110,13 +114,10 @@ public class MainPlayScreen implements Screen {
 			if (Gdx.input.isKeyPressed(Input.Keys.UP)){
                 ship_box.y += ship_speed *Math.cos(angle)* Gdx.graphics.getDeltaTime();
                 ship_box.x -= ship_speed * Math.sin(angle)* Gdx.graphics.getDeltaTime();
-                //System.out.println(Math.sin(angle));
-               // System.out.println(Math.cos(angle));
-                System.out.println(angle);
             }
 		}
 		if(ship_box.x < 0) ship_box.x = 0;
-		if(ship_box.x > 600 - ship_size) ship_box.x = 600 - ship_size; //600 ширина экрана, 150 - ширина корабля
+		if(ship_box.x > 600 - ship_size) ship_box.x = 600 - ship_size; //600 ширина экрана, 50 - ширина корабля
 		if(ship_box.y > 800 - ship_size) ship_box.y = 800 - ship_size;
 		if(ship_box.y < 0) ship_box.y = 0;
     }
