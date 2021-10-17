@@ -96,7 +96,7 @@ project(":core") {
 
     jacoco {
         toolVersion = "0.8.5"
-        reportsDir = file("$buildDir/TestJacocoDir")
+        //reportsDir = file("$buildDir/TestJacocoDir")
 /*        test{
         finalizedBy jacocoTestReport
         jacoco {
