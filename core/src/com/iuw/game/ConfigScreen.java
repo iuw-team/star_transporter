@@ -126,18 +126,15 @@ public class ConfigScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {
-
+    public void resize(int width, int height) {//don't use yet
     }
 
     @Override
-    public void pause() {
-
+    public void pause() {//don't use yet
     }
 
     @Override
-    public void resume() {
-
+    public void resume() {//don't use yet
     }
 
     @Override

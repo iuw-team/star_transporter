@@ -4,11 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class SetScreen implements Screen {
@@ -35,17 +33,17 @@ public class SetScreen implements Screen {
 
         String[] text_1 = {"Green", "Blue"};
         String[] text_2 = {"12", "14", "16", "18", "20", "22"};
-        selectbox_1.setItems(text_1);
-        selectbox_2.setItems(text_2);
+        selectbox_1.setItems(new Array(text_1));
+        selectbox_2.setItems(new Array(text_2));
 
         Label label_1 = new Label("Music", Process.gameSkin);
         Label label_2 = new Label("Sound", Process.gameSkin);
         Label label_3 = new Label("Something", Process.gameSkin);
         Label label_4 = new Label("Chto-to", Process.gameSkin);
-        label_1.setFontScale(2,2);
-        label_2.setFontScale(2,2);
-        label_3.setFontScale(2,2);
-        label_4.setFontScale(2,2);
+        label_1.setFontScale(2f);
+        label_2.setFontScale(2f);
+        label_3.setFontScale(2f);
+        label_4.setFontScale(2f);
 
         slider_1.setSize(210, 100);
         slider_2.setSize(210, 100);
@@ -109,23 +107,20 @@ public class SetScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {
-
+    public void resize(int width, int height) {//don't use yet
     }
 
     @Override
-    public void pause() {
-
+    public void pause() {//don't use yet
     }
 
     @Override
-    public void resume() {
-
+    public void resume() { //don't use yet
     }
 
     @Override
     public void hide() {
-
+        dispose();
     }
 
     @Override

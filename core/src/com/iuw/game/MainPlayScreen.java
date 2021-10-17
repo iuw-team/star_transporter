@@ -28,9 +28,6 @@ public class MainPlayScreen implements Screen {
     private float g;
     private TextureRegion temp_t_region;
 
-    private void PlaySoundMove(){
-
-    }
     public MainPlayScreen(final Process game, Integer ship_speed){
         this.game = game;
         this.ship_speed = ship_speed;
@@ -64,22 +61,10 @@ public class MainPlayScreen implements Screen {
     public void render(float delta) {
 
         ScreenUtils.clear(1, 1, 1f, 1);
-//
-        Vector3 origin = new Vector3();
-        if(angle > 6.28 || angle < - 6.28) angle=0;
-       // angle+=1; if(angle > 360f) angle = 0f;
-        camera.unproject(origin);
-//        if(Gdx.input.isTouched()){
-//			Vector3 touchpos = new Vector3();
-//			float posX = Gdx.input.getX();
-//			float posY = Gdx.input.getY();
-//			touchpos.set(posX, posY, 0);
-//			camera.unproject(touchpos); // correct camera's system coordinates to touchpos
-//			bucket.x = touchpos.x - 150 / 2;
-//			bucket.y = touchpos.y - 150 / 2;
-//		}
+        if(angle > 6.28 || angle < - 6.28) {
+            angle=0;
+        }
         game.batch.begin();
-     //   game.batch.draw(ship, ship_box.x, ship_box.y);
         game.batch.draw(temp_t_region, ship_box.x, ship_box.y, ship_size/2, ship_size/2, 50, 50,1 , 1, angle*180/3.14f);
         game.batch.end();
         angle-=0.001;
@@ -94,9 +79,9 @@ public class MainPlayScreen implements Screen {
 					case 2:
 						ship_sound_2.play();
 						break;
-					case 3:
-						ship_sound_3.play();
-						break;
+                    default:
+                        ship_sound_3.play();
+                        break;
 				}
 				ship_sound_time = TimeUtils.nanoTime();
 			}
@@ -123,23 +108,19 @@ public class MainPlayScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {
-
+    public void resize(int width, int height) {//don't use yet
     }
 
     @Override
-    public void pause() {
-
+    public void pause() {//don't use yet
     }
 
     @Override
-    public void resume() {
-
+    public void resume() {//don't use yet
     }
 
     @Override
-    public void hide() {
-
+    public void hide() {//don't use yet
     }
 
     @Override
