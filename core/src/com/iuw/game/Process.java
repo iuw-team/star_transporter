@@ -10,10 +10,11 @@ public class Process extends Game {
 	public SpriteBatch batch;
 	public Music SpaceMusic;
     public BitmapFont font;
-	 public static Skin gameSkin = new Skin(Gdx.files.internal("temp_textures/buttons_pack.json"));
+	 public static Skin gameSkin;
 	 public static Integer WIDTH = 600, HEIGHT = 800;
 	@Override
 	public void create () {
+		gameSkin = new Skin(Gdx.files.internal("temp_textures/buttons_pack.json"));
 		this.setScreen(new MainMenuScreen(this));
 		batch = new SpriteBatch();
 		font = new BitmapFont();

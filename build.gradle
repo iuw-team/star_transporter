@@ -96,55 +96,54 @@ project(":core") {
 
     jacoco {
         toolVersion = "0.8.5"
-      //  reportsDir = file("$buildDir/TestJacocoDir")
-        test{
-//        finalizedBy jacocoTestReport
-//        jacoco {
-//            enabled = true
-//            destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
-//            includes = []
-//            excludes = []
-//            excludeClassLoaders = []
-//            includeNoLocationClasses = false
-//            sessionId = "<auto-genterated value>"
-//            dumpOnExit = true
-//            classDumpDir = null //file("$buildDir/jacoco/classpathdumps")
-//            output = JacocoTaskExtension.Output.FILE
-//            address = 6300
-//            jmx = false
-//        }
+        reportsDir = file("$buildDir/TestJacocoDir")
+/*        test{
+        finalizedBy jacocoTestReport
+        jacoco {
+            enabled = true
+            destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
+            includes = []
+            excludes = []
+            excludeClassLoaders = []
+            includeNoLocationClasses = false
+            sessionId = "<auto-genterated value>"
+            dumpOnExit = true
+            classDumpDir = null //file("$buildDir/jacoco/classpathdumps")
+            output = JacocoTaskExtension.Output.FILE
+            address = 6300
+            jmx = false
         }
+        }*/
 
-//    test {
-//        finalizedBy jacocoTestReport
-//    }
-        jacocoTestReport {
-            dependsOn test
-            reports {
-                xml.enabled true
-            }
-        }
-        jacocoTestCoverageVerification {
-            violationRules {
-                rule {
-                    limit {
-                        minimum = 0.5
-                    }
-                }
-                rule {
-                    enabled = false
-                    element = 'CLASS'
-                    includes = ['org.gradle']
-                    limit {
-                        counter = 'LINE'
-                        value = 'TOTALCOUNT'
-                        maximum = 0.3
-                    }
-                }
-            }
+//        jacocoTestCoverageVerification {
+//            violationRules {
+//                rule {
+//                    limit {
+//                        minimum = 0.5
+//                    }
+//                }
+//                rule {
+//                    enabled = false
+//                    element = 'CLASS'
+//                    includes = ['org.gradle']
+//                    limit {
+//                        counter = 'LINE'
+//                        value = 'TOTALCOUNT'
+//                        maximum = 0.3
+//                    }
+//                }
+//            }
+//        }
+    }
+    test {
+        finalizedBy jacocoTestReport
+    }
+    jacocoTestReport {
+        dependsOn test
+        reports {
+            xml.enabled true
         }
     }
-
     plugins.withType(JacocoPlugin) {
         tasks["test"].finalizedBy 'jacocoTestReport'
     }
