@@ -10,53 +10,41 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ConfigScreen implements Screen {
     final Process game;
     private final Stage stage;
-    private final Texture img;
+   private final Texture img;
     private final OrthographicCamera camera;
-    private final Map<String, Integer> speed_map = new HashMap<>();
-    private final Map<String, Integer> mass_map = new HashMap<>();
-    private Integer chosen_planet_num;
-    private Integer chosen_load_num;
-    private Integer chosen_speed;
-    private Integer chosen_star;
     final Integer default_speed = 10;
     final Integer default_mass = 10;
+
+    final Integer[] planet_num_list = new Integer[]{4, 5, 6, 7}; //list for planet number
+    final Integer[] load_num_list= new Integer[]{1, 2, 3, 4}; //number of loads for delivery
+    final Integer[] speed_list= new Integer[]{default_speed, 2*default_speed, 3*default_speed}; //speed of the ship
+    final Integer[] mass_star_list = new Integer[]{default_mass, 2*default_mass, 3*default_mass,
+                                                   default_mass, 2*default_mass, 3*default_mass}; //mass of definite star
+
+    final Integer[][] index_array =
+            new Integer[][]{planet_num_list, load_num_list, speed_list, mass_star_list};
+    private Integer[] chosen_variables = new Integer[4];
     final float WIDTH_BOX = 100, HEIGHT_BOX = 50;
+
       public ConfigScreen(final Process game) {
         this.game = game;
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 600, 800);
-
-        final Integer[] list_1 = new Integer[]{4, 5, 6, 7}; //list for planet number
-        final Integer[] list_2= new Integer[]{1, 2, 3, 4}; //number of loads for delivery
+        camera.setToOrtho(false, Process.WIDTH, Process.HEIGHT);
         final String[] list_3 = new String[]{"Slow", "Medium", "Fast"}; //velocity of ship
         final String[] list_4 = new String[]{ "Ia", "Ib", "II", "III", "IV","V"}; //types of sun
 
         img = new Texture("Space.jfif");
-        speed_map.put(list_3[0], default_speed);
-        speed_map.put(list_3[1], default_speed*2);
-        speed_map.put(list_3[2], default_speed*3);
-
-        speed_map.put(list_4[0], default_mass);
-        speed_map.put(list_4[1], default_mass*2);
-        speed_map.put(list_4[2], default_mass*3);
-        speed_map.put(list_4[3], default_mass);
-        speed_map.put(list_4[4], default_mass*2);
-        speed_map.put(list_4[5], default_mass*3);
-
-        stage = new Stage(new ScreenViewport());
+             stage = new Stage(new ScreenViewport());
              final TextTooltip planet_info_tooltip = new TextTooltip("Average number of planet", Process.gameSkin);
              planet_info_tooltip.setInstant(true);
              final Label planet_info = new Label("Chose number of planet", Process.gameSkin);
              planet_info.setFontScale(1.5f);
-
              final SelectBox planet_numbs = new SelectBox<Integer>(Process.gameSkin);
              final SelectBox load_numbs = new SelectBox<Integer>(Process.gameSkin);
              final SelectBox ship_speeds = new SelectBox<String>(Process.gameSkin);
@@ -74,50 +62,31 @@ public class ConfigScreen implements Screen {
              play_but.setPosition(265f,250f);
              exit_but.setPosition(50f,700f);
 
-             planet_numbs.setItems(list_1);
-             load_numbs.setItems(list_2);
-             ship_speeds.setItems(list_3);
-             star_types.setItems(list_4);
-              chosen_planet_num = (Integer)planet_numbs.getSelected();
-              chosen_load_num = (Integer)load_numbs.getSelected();
-              chosen_speed =speed_map.get(ship_speeds.getSelected());
-              chosen_star = mass_map.get(star_types.getSelected());
 
-          planet_info.addListener(planet_info_tooltip);
-        planet_numbs.addListener(new ChangeListener() { // ChangeListener uses especially for select box
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                 chosen_planet_num = (Integer)planet_numbs.getSelected();
-                }
-            });
+             planet_numbs.setItems(new Array(planet_num_list));
+             load_numbs.setItems(new Array(load_num_list));
+             ship_speeds.setItems(new Array(list_3));
+             star_types.setItems(new Array(list_4));
 
-        load_numbs.addListener(new ChangeListener() {
-            @Override()
-            public void changed(ChangeEvent event, Actor actor) {
-                chosen_load_num = (Integer)load_numbs.getSelected();
-            }
-        });
-        ship_speeds.addListener(new ChangeListener() {
-            @Override()
-            public void changed(ChangeEvent event, Actor actor) {
-                chosen_speed = speed_map.get(ship_speeds.getSelected());
-            }
-        });
-        star_types.addListener(new ChangeListener() {
-            @Override()
-            public void changed(ChangeEvent event, Actor actor) {
-                chosen_star = mass_map.get(star_types.getSelected());
-            }
-        });
+             chosen_variables[0] = (Integer)planet_numbs.getSelected();
+             chosen_variables[1] = (Integer)load_numbs.getSelected();
+             chosen_variables[2] = speed_list[ship_speeds.getSelectedIndex()];
+             chosen_variables[3] = mass_star_list[star_types.getSelectedIndex()];
+
+          ListenBox(planet_numbs, 0);
+          ListenBox(load_numbs, 1);
+          ListenBox(ship_speeds, 2);
+          ListenBox(star_types, 3);
 
 
         play_but.addListener(new ClickListener(){ // InputListener is uses for low-level input
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println(chosen_load_num);
-                System.out.println(chosen_planet_num);
-                System.out.println(chosen_speed);
-                game.setScreen(new MainPlayScreen(game, chosen_speed));
+                System.out.println(chosen_variables[0]);
+                System.out.println(chosen_variables[1]);
+                System.out.println(chosen_variables[2]);
+                System.out.println(chosen_variables[3]);
+                game.setScreen(new MainPlayScreen(game, chosen_variables[0]));
             }
 
         });
@@ -181,4 +150,15 @@ public class ConfigScreen implements Screen {
         stage.dispose();
         img.dispose();
     }
+
+    public boolean ListenBox(final SelectBox box, final Integer index){
+          if (index > 3 || index < 0) return false;
+          else return box.addListener(new ChangeListener() {
+            @Override()
+            public void changed(ChangeEvent event, Actor actor) {
+                chosen_variables[index] = index_array[index][box.getSelectedIndex()];
+            }
+        });
+    }
+
 }
