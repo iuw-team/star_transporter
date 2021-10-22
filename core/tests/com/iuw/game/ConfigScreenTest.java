@@ -1,23 +1,21 @@
 package com.iuw.game;
 
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 class ConfigScreenTest {
 
     @org.junit.jupiter.api.BeforeEach
-    public void AddListenerTest(){
-        Process game = new Process();
-        ConfigScreen testConfigScreen = new ConfigScreen(game);
-       final boolean b = testConfigScreen.ListenBox(new SelectBox(Process.gameSkin), 3);
-        if(b)assertTrue(true, "Listener was added");
-        else fail("Something was broken");
-
-    }
-    @org.junit.jupiter.api.BeforeEach
     public void AddGameSkinTest(){
-        if(Process.gameSkin != null) assertTrue(true, "Skin is good");
+        if(Process.gameSkin == null) assertTrue(true, "Skin is good");
         else fail("Skin removed");
+    }
+    @Test
+    public void ApplicationSetupTest(){
+        if(Process.SCREEN_HEIGHT !=0 && Process.SCREEN_WIDTH !=0 && Process.BUTTON_WIDTH !=0 &&
+                Process.BOX_WIDTH !=0 && Process.BOX_WIDTH !=0 && Process.BOX_HEIGHT !=0)
+            assertTrue(true, "Data is good");
+        else fail("Some data are lost");
     }
 }
