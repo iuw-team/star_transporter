@@ -35,7 +35,7 @@ public class MainMenuScreen implements Screen {
                 button.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        game.setScreen(Process.nextScreen[index]);
+                        game.setScreen(game.GetNextScreen(index));
                     }
                 });
             } else {
@@ -49,7 +49,7 @@ public class MainMenuScreen implements Screen {
                     }
                 });
             }
-
+            posY -= 100f;
             stage.addActor(button);
         }
     }
