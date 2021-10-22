@@ -5,66 +5,53 @@ package com.iuw.game;
         import com.badlogic.gdx.graphics.OrthographicCamera;
         import com.badlogic.gdx.graphics.Texture;
         import com.badlogic.gdx.scenes.scene2d.InputEvent;
-        import com.badlogic.gdx.scenes.scene2d.InputListener;
         import com.badlogic.gdx.scenes.scene2d.Stage;
-        import com.badlogic.gdx.scenes.scene2d.ui.Button;
-        import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-        import com.badlogic.gdx.utils.ScreenUtils;
+        import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+        import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
         import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class MainMenuScreen implements Screen {
     final Process game;
-    private Stage stage;
-    private Texture img;
-    private OrthographicCamera camera;
-
+    private final Stage stage;
+    private final Texture img;
+    private final OrthographicCamera camera;
     public MainMenuScreen(final Process game) {
         this.game = game;
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 600, 800);
+        camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
 
+        final String[] ButtonName = new String[]{"Play", "Settings", "Exit"};
         img = new Texture("main_theme.jpg");
-
         stage = new Stage(new ScreenViewport());
-        Button play_but = new Button(Process.gameSkin), set_but = new Button(Process.gameSkin), exit_but = new Button(Process.gameSkin); // 300x70 sizes
-        play_but.setPosition(50,600);
-        set_but.setPosition(50,500);
-        exit_but.setPosition(50,400);
-        play_but.addListener(new InputListener(){
-            @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                game.setScreen(new ConfigScreen(game));
-            }
-            @Override
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-        });
-        set_but.addListener(new InputListener(){
+        final float posX = 50f;
+        float posY = 600f;
+        for(int i =0; i<3; i++){
+            final TextButton button = new TextButton(ButtonName[i], Process.gameSkin);
+            button.setPosition(posX, posY);
+            button.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
 
-            @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                //game.setScreen(new ConfigScreen(game));
+            if(i<2) {
+                final Integer index = i+1; //first screen is MainMenu, so others start with 1
+                button.addListener(new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        game.setScreen(Process.nextScreen[index]);
+                    }
+                });
+            } else {
+                button.addListener(new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        game.batch.dispose();
+                        game.font.dispose();
+                        game.SpaceMusic.dispose();
+                        Gdx.app.exit();
+                    }
+                });
             }
-            @Override
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-        });
-        exit_but.addListener(new InputListener(){
 
-            @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                //game.setScreen(new ConfigScreen(game));
-            }
-            @Override
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-        });
-        stage.addActor(play_but); stage.addActor(set_but); stage.addActor(exit_but);
-
-
+            stage.addActor(button);
+        }
     }
 
     @Override
@@ -74,46 +61,36 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1, 1, 1, 1);
-
-
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
 
         game.batch.begin();
-        game.batch.draw(img, 0, 0);
+        game.batch.draw(img, 0f, 0f);
         game.batch.end();
         stage.act();
         stage.draw();
-       // game.button3.getClickListener().touchUp();
-//        if (Gdx.input.isTouched()) {
-//            game.setScreen(new ConfigScreen(game));
-//            dispose();
-//        }
     }
 
     @Override
-    public void resize(int width, int height) {
-
+    public void resize(int width, int height) {//don't use yet
     }
 
     @Override
-    public void pause() {
-
+    public void pause() {//don't use yet
     }
 
     @Override
-    public void resume() {
-
+    public void resume() {//don't use yet
     }
 
     @Override
     public void hide() {
-
+        dispose();
     }
 
     @Override
     public void dispose() {
-stage.dispose();
+        stage.dispose();
+        img.dispose();
     }
 }

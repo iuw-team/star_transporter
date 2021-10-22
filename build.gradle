@@ -1,3 +1,12 @@
+//plugins {
+//    id 'jacoco'
+//}jacocoTestReport {
+//    reports {
+//        xml.enabled true
+//    }
+//}
+//test.finalizedBy jacocoTestReport
+
 buildscript {
 repositories {
         mavenLocal()
@@ -5,6 +14,7 @@ repositories {
         gradlePluginPortal()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         google()
+      //  jcenter()
     maven { url "https://plugins.gradle.org/m2/" }
 }
     dependencies {
@@ -13,14 +23,23 @@ repositories {
     }
 }
 //
+
 apply plugin: "org.sonarqube"
     sonarqube {
-  properties {
-    property "sonar.projectKey", "iuw-team_star_transporter"
-    property "sonar.organization", "iuw-team"
-    property "sonar.host.url", "https://sonarcloud.io"
+          properties {
+            property "sonar.projectKey", "iuw-team_star_transporter"
+            property "sonar.organization", "iuw-team"
+            property "sonar.host.url", "https://sonarcloud.io"
+            property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
+         //   property "sonar.projectBaseDir", "$rootDir"
+           // property "sonar.sources", "."
+        //    property "sonar.tests", ""
+          //  property "sonar.coverage.exclusions", "**/src/androidTest/**, **/src/test/**"
+            //property "sonar.coverage.jacoco.xmlReportPaths", fileTree(include: ['*/*/jacoco*.xml'], dir: "$rootDir/app/build/reports/jacoco").collect()
   }
 }
+
+
 allprojects {
     apply plugin: "eclipse"
 
@@ -62,7 +81,78 @@ project(":desktop") {
 
 project(":core") {
     apply plugin: "java-library"
+    apply plugin: "jacoco"
 
+    test {
+        useJUnitPlatform()
+    }
+    sourceSets {
+        test {
+            java {
+                srcDirs = ["../core/tests"]
+            }
+        }
+    }
+
+    jacoco {
+        toolVersion = "0.8.5"
+        //reportsDir = file("$buildDir/TestJacocoDir")
+/*        test{
+        finalizedBy jacocoTestReport
+        jacoco {
+            enabled = true
+            destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
+            includes = []
+            excludes = []
+            excludeClassLoaders = []
+            includeNoLocationClasses = false
+            sessionId = "<auto-genterated value>"
+            dumpOnExit = true
+            classDumpDir = null //file("$buildDir/jacoco/classpathdumps")
+            output = JacocoTaskExtension.Output.FILE
+            address = 6300
+            jmx = false
+        }
+        }*/
+
+//        jacocoTestCoverageVerification {
+//            violationRules {
+//                rule {
+//                    limit {
+//                        minimum = 0.5
+//                    }
+//                }
+//                rule {
+//                    enabled = false
+//                    element = 'CLASS'
+//                    includes = ['org.gradle']
+//                    limit {
+//                        counter = 'LINE'
+//                        value = 'TOTALCOUNT'
+//                        maximum = 0.3
+//                    }
+//                }
+//            }
+//        }
+    }
+    test {
+        finalizedBy jacocoTestReport
+    }
+    jacocoTestReport {
+        dependsOn test
+        reports {
+            xml.enabled true
+        }
+    }
+    plugins.withType(JacocoPlugin) {
+        tasks["test"].finalizedBy 'jacocoTestReport'
+    }
+
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+        compile 'junit:junit:4.12'
+    }
 
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
@@ -70,6 +160,5 @@ project(":core") {
         api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-
     }
 }
