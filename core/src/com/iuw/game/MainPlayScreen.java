@@ -29,7 +29,7 @@ public class MainPlayScreen implements Screen {
         this.game = game;
         this.ship_speed = ship_speed;
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, Process.WIDTH, Process.HEIGHT);
+        camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
         angle = 0;
         ship_box = new Rectangle();
         ship_box.x =  300f;
