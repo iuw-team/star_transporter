@@ -50,7 +50,6 @@ public class MainPlayScreen implements Screen {
         ship_box.height = ship_size;
         ship = new Texture("ship_50.png"); // 150x150
         temp_t_region = new TextureRegion(ship);
-
         stage = new Stage(new ScreenViewport());
         TextButton exit_but = new TextButton("X", Process.gameSkin);
         exit_but.setSize(Process.SMALL_BUTTON_WIDTH, Process.SMALL_BUTTON_HEIGHT);
@@ -81,6 +80,7 @@ public class MainPlayScreen implements Screen {
         game.batch.end();
         stage.act();
         stage.draw();
+
         angle-=0.001f;
         ship_box.x-= Math.sin(angle)*Gdx.graphics.getDeltaTime();
         ship_box.y+= Math.cos(angle)*Gdx.graphics.getDeltaTime();
@@ -88,6 +88,7 @@ public class MainPlayScreen implements Screen {
 			if(TimeUtils.nanoTime() - ship_sound_time > 7e9) {
                 int i = MathUtils.random(0, 2);
                 sounds[i].play(Process.VOLUME_LEVELS[1]);
+
 				ship_sound_time = TimeUtils.nanoTime();
 			}
 			if (Gdx.input.isKeyPressed(Input.Keys.LEFT)){

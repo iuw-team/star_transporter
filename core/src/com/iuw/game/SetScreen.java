@@ -117,6 +117,7 @@ public class SetScreen implements Screen {
     @Override
     public void resume() {
 
+
     }
 
     @Override
@@ -127,6 +128,7 @@ public class SetScreen implements Screen {
     @Override
     public void dispose() {
         stage.dispose();
+
         img.dispose();
     }
 }

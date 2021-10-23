@@ -77,6 +77,7 @@ public class ConfigScreen implements Screen {
                  button.setPosition(ButtonPos[i][0], ButtonPos[i][1]);
                  button.setSize(Process.SMALL_BUTTON_WIDTH, Process.SMALL_BUTTON_HEIGHT);
 
+
                  final Integer index = (i==0) ? i:3;
                  button.addListener(new ClickListener() {
                      @Override

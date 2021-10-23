@@ -1,6 +1,5 @@
 package com.iuw.game;
 
-
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import org.junit.jupiter.api.Test;
