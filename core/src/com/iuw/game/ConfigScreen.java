@@ -75,7 +75,8 @@ public class ConfigScreen implements Screen {
              for(int i = 0; i<2;i++) {
                  final TextButton button = new TextButton(ButtonName[i], Process.gameSkin);
                  button.setPosition(ButtonPos[i][0], ButtonPos[i][1]);
-                 button.setSize(70, 50);
+                 button.setSize(Process.SMALL_BUTTON_WIDTH, Process.SMALL_BUTTON_HEIGHT);
+
 
                  final Integer index = (i==0) ? i:3;
                  button.addListener(new ClickListener() {
@@ -99,7 +100,6 @@ public class ConfigScreen implements Screen {
 
     @Override
     public void render(float delta){
-
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
