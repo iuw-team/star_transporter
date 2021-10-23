@@ -26,35 +26,36 @@ public class SetScreen implements Screen {
         stage = new Stage(new ScreenViewport());
 
         Slider slider_1 = new Slider(0, 100, 1, false, Process.gameSkin);
-        Slider slider_2 = new Slider(0, 100, 1, false, Process.gameSkin);
-
-        SelectBox selectbox_1 = new SelectBox<String>(Process.gameSkin);
-        SelectBox selectbox_2 = new SelectBox<String>(Process.gameSkin);
 
         String[] text_1 = {"Green", "Blue"};
         String[] text_2 = {"12", "14", "16", "18", "20", "22"};
-        selectbox_1.setItems(text_1);
-        selectbox_2.setItems(text_2);
 
-        Label label_1 = new Label("Music", Process.gameSkin);
-        Label label_2 = new Label("Sound", Process.gameSkin);
-        Label label_3 = new Label("Something", Process.gameSkin);
-        Label label_4 = new Label("Chto-to", Process.gameSkin);
+        final String[] LabelName = new String[]{"Music", "Sound", "Something"};
+        for(int i=0; i<3; i++){
+            final Label label = new Label(LabelName[i], Process.gameSkin);
+            label.setFontScale(2,2);
+            label.setPosition(250, 340+i*175);
+            stage.addActor(label);
+        }
+
+        for(int i=0; i<2; i++){
+            SelectBox selectbox = new SelectBox<String>(Process.gameSkin);
+            if(i==0) {
+                selectbox.setItems(text_1);
+            }
+            else{
+                selectbox.setItems(text_2);
+            }
+            selectbox.setPosition(170, 400+i*170);
+            selectbox.setSize(250, 100);
+            stage.addActor(selectbox);
+        }
 
         TextButton t_but_exit = new TextButton("MainMenu", Process.gameSkin);
 
-        label_1.setFontScale(2,2);
-        label_2.setFontScale(2,2);
-        label_3.setFontScale(2,2);
-        label_4.setFontScale(2,2);
-
-        slider_1.setSize(210, 100);
-        slider_2.setSize(210, 100);
+        slider_1.setSize(250, 100);
 
         t_but_exit.setSize(250, 100);
-
-        selectbox_1.setSize(210, 100);
-        selectbox_2.setSize(210, 100);
 
         t_but_exit.addListener(new InputListener(){
 
@@ -71,27 +72,9 @@ public class SetScreen implements Screen {
 
         t_but_exit.setPosition(170, 100);
 
-        slider_1.setPosition(60, 300);
-        slider_2.setPosition(330, 300);
-
-        selectbox_1.setPosition(60, 500);
-        selectbox_2.setPosition(330, 500);
-
-        label_1.setPosition(130,600);
-        label_2.setPosition(130,400);
-        label_3.setPosition(380,600);
-        label_4.setPosition(380,400);
+        slider_1.setPosition(170, 250);
 
         stage.addActor(slider_1);
-        stage.addActor(slider_2);
-
-        stage.addActor(label_1);
-        stage.addActor(label_2);
-        stage.addActor(label_3);
-        stage.addActor(label_4);
-
-        stage.addActor(selectbox_1);
-        stage.addActor(selectbox_2);
 
         stage.addActor(t_but_exit);
 
