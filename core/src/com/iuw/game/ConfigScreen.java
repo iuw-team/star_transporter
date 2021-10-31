@@ -21,10 +21,10 @@ public class ConfigScreen implements Screen {
     final Integer default_mass = 10;
 
     final Integer[] planets = new Integer[]{4, 5, 6, 7}; //list for planet number
-    final Integer[] goods= new Integer[]{1, 2, 3, 4}; //number of loads for delivery
-    final Integer[] velocities= new Integer[]{default_speed, 2*default_speed, 3*default_speed}; //speed of the ship
-    final Integer[] stars = new Integer[]{default_mass, 2*default_mass, 3*default_mass,
-                                                   default_mass, 2*default_mass, 3*default_mass}; //mass of definite star
+    final Integer[] goods = new Integer[]{1, 2, 3, 4}; //number of loads for delivery
+    final Integer[] velocities = new Integer[]{default_speed, 2 * default_speed, 3 * default_speed}; //speed of the ship
+    final Integer[] stars = new Integer[]{default_mass, 2 * default_mass, 3 * default_mass,
+            default_mass, 2 * default_mass, 3 * default_mass}; //mass of definite star
 
     final Integer[][] box_variables =
             new Integer[][]{planets, goods, velocities, stars};
@@ -32,66 +32,66 @@ public class ConfigScreen implements Screen {
     final String[] list_1 = new String[]{"4", "5", "6", "7"}; //quantity of planets
     final String[] list_2 = new String[]{"1", "2", "3", "4"}; //quantity of goods
     final String[] list_3 = new String[]{"Slow", "Medium", "Fast"}; //velocities of ship
-    final String[] list_4 = new String[]{ "Ia", "Ib", "II", "III", "IV","V"}; //types of stars
+    final String[] list_4 = new String[]{"Ia", "Ib", "II", "III", "IV", "V"}; //types of stars
     final String[][] box_items = new String[][]{list_1, list_2, list_3, list_4};
-      public ConfigScreen(final Process game) {
+
+    public ConfigScreen(final Process game) {
         this.game = game;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
 
 
-
         img = new Texture("Space.jfif");
-             stage = new Stage(new ScreenViewport());
-             final TextTooltip planet_info_tooltip = new TextTooltip("Average number of planet", Process.gameSkin);
-             planet_info_tooltip.setInstant(true);
-             final Label planet_info = new Label("Chose number of planet", Process.gameSkin);
-             planet_info.setFontScale(1.5f);
-             planet_info.addListener(planet_info_tooltip);
+        stage = new Stage(new ScreenViewport());
+        final TextTooltip planet_info_tooltip = new TextTooltip("Average number of planet", Process.gameSkin);
+        planet_info_tooltip.setInstant(true);
+        final Label planet_info = new Label("Chose number of planet", Process.gameSkin);
+        planet_info.setFontScale(1.5f);
+        planet_info.addListener(planet_info_tooltip);
 
-             final float posX = (Process.SCREEN_WIDTH - Process.BOX_WIDTH)/2f;
-             float posY = 600f;
-             for(int i =0; i<4; i++) {
-                 final SelectBox<String> box = new SelectBox<>(Process.gameSkin);
-                 box.setPosition(posX,posY);
-                 box.setSize(Process.BOX_WIDTH, Process.BOX_HEIGHT);
-                 box.setItems(box_items[i]);
-                 Process.SYSTEM_VARIABLES[i] = box_variables[i][0];
+        final float posX = (Process.SCREEN_WIDTH - Process.BOX_WIDTH) / 2f;
+        float posY = 600f;
+        for (int i = 0; i < 4; i++) {
+            final SelectBox<String> box = new SelectBox<>(Process.gameSkin);
+            box.setPosition(posX, posY);
+            box.setSize(Process.BOX_WIDTH, Process.BOX_HEIGHT);
+            box.setItems(box_items[i]);
+            Process.SYSTEM_VARIABLES[i] = box_variables[i][0];
 
-                 final Integer index = i;
-                  box.addListener(new ChangeListener() {
-                    @Override
-                     public void changed(ChangeEvent event, Actor actor) {
-                        Process.SYSTEM_VARIABLES[index] = box_variables[index][box.getSelectedIndex()];
-                        }
-                  });
+            final Integer index = i;
+            box.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    Process.SYSTEM_VARIABLES[index] = box_variables[index][box.getSelectedIndex()];
+                }
+            });
 
-                 stage.addActor(box);
-                 posY -=100f;
-             }
+            stage.addActor(box);
+            posY -= 100f;
+        }
 
-             final String[] ButtonName = new String[]{"X", "Play"};
-             final float[][] ButtonPos = new float[][]{{50f,700f},{265f, 250f}};
-             for(int i = 0; i<2;i++) {
-                 final TextButton button = new TextButton(ButtonName[i], Process.gameSkin);
-                 button.setPosition(ButtonPos[i][0], ButtonPos[i][1]);
-                 button.setSize(Process.SMALL_BUTTON_WIDTH, Process.SMALL_BUTTON_HEIGHT);
+        final String[] ButtonName = new String[]{"X", "Play"};
+        final float[][] ButtonPos = new float[][]{{50f, 700f}, {265f, 250f}};
+        for (int i = 0; i < 2; i++) {
+            final TextButton button = new TextButton(ButtonName[i], Process.gameSkin);
+            button.setPosition(ButtonPos[i][0], ButtonPos[i][1]);
+            button.setSize(Process.SMALL_BUTTON_WIDTH, Process.SMALL_BUTTON_HEIGHT);
 
 
-                 final Integer index = (i==0) ? i:3;
-                 button.addListener(new ClickListener() {
-                     @Override
-                     public void clicked(InputEvent event, float x, float y) {
-                         game.setScreen(game.GetNextScreen(index));
-                     }
-                 });
-                 stage.addActor(button);
-             }
-                 planet_info.setPosition(posX - 40f, 630f);
-                 planet_info.setSize(Process.BOX_WIDTH, Process.BOX_HEIGHT);
-                 stage.addActor(planet_info);
+            final Integer index = (i == 0) ? i : 3;
+            button.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    game.setScreen(game.GetNextScreen(index));
+                }
+            });
+            stage.addActor(button);
+        }
+        planet_info.setPosition(posX - 40f, 630f);
+        planet_info.setSize(Process.BOX_WIDTH, Process.BOX_HEIGHT);
+        stage.addActor(planet_info);
 
-      }
+    }
 
     @Override
     public void show() {
@@ -99,7 +99,7 @@ public class ConfigScreen implements Screen {
     }
 
     @Override
-    public void render(float delta){
+    public void render(float delta) {
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
@@ -123,7 +123,7 @@ public class ConfigScreen implements Screen {
 
     @Override
     public void hide() {
-                dispose();
+        dispose();
     }
 
     @Override

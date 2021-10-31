@@ -27,16 +27,16 @@ public class SetScreen implements Screen {
         stage = new Stage(new ScreenViewport());
         String[] text_1 = {"Green", "Blue"};
         final String[] LabelName = new String[]{"Music", "Sound", "Something"};
-        for(int i=0; i<3; i++){
+        for (int i = 0; i < 3; i++) {
             final Label label = new Label(LabelName[i], Process.gameSkin);
-            label.setFontScale(2f,2f);
-            label.setPosition(250, 340+i*175);
+            label.setFontScale(2f, 2f);
+            label.setPosition(250, 340 + i * 175);
             stage.addActor(label);
         }
         //Sliders
-        float posX = Process.SCREEN_WIDTH/2f - Process.SLIDER_WIDTH/2f;
+        float posX = Process.SCREEN_WIDTH / 2f - Process.SLIDER_WIDTH / 2f;
         float posY = 400;
-        for(int i=0; i<2; i++,posY-=100f){
+        for (int i = 0; i < 2; i++, posY -= 100f) {
             final Slider volume = new Slider(0f, Process.MAX_LEVEL, 0.001f, false, Process.gameSkin);
             volume.setValue(Process.VOLUME_LEVELS[i]);
             volume.setPosition(posX, posY);
@@ -55,8 +55,9 @@ public class SetScreen implements Screen {
         final String[] words = new String[]{"first", "second"};
         final CheckBox[] checks = new CheckBox[2];
         Boolean WhoChosen = true;
-        posY = 500f; posX = 150f;
-        for(int i =0; i<2;i++, posX+=300f){
+        posY = 500f;
+        posX = 150f;
+        for (int i = 0; i < 2; i++, posX += 300f) {
             checks[i] = new CheckBox(words[i], Process.gameSkin);
             checks[i].setPosition(posX, posY);
             checks[i].setSize(100f, 100f);
@@ -66,7 +67,7 @@ public class SetScreen implements Screen {
             checks[i].addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    if(Process.ChosenSkin != index){
+                    if (Process.ChosenSkin != index) {
                         checks[Process.ChosenSkin].setChecked(false);
                         checks[index].setChecked(true);
                         Process.ChosenSkin = index;
@@ -77,9 +78,9 @@ public class SetScreen implements Screen {
         }
         TextButton t_but_exit = new TextButton("Save and exit", Process.gameSkin);
         t_but_exit.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
-        t_but_exit.addListener(new ClickListener(){
+        t_but_exit.addListener(new ClickListener() {
             @Override
-            public void clicked (InputEvent event, float x, float y) {
+            public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(game.GetNextScreen(0));
             }
         });
@@ -105,8 +106,8 @@ public class SetScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-    Process.SCREEN_WIDTH = width;
-    Process.SCREEN_HEIGHT = height;
+        Process.SCREEN_WIDTH = width;
+        Process.SCREEN_HEIGHT = height;
     }
 
     @Override

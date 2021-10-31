@@ -1,20 +1,21 @@
 package com.iuw.game;
 
-        import com.badlogic.gdx.Gdx;
-        import com.badlogic.gdx.Screen;
-        import com.badlogic.gdx.graphics.OrthographicCamera;
-        import com.badlogic.gdx.graphics.Texture;
-        import com.badlogic.gdx.scenes.scene2d.InputEvent;
-        import com.badlogic.gdx.scenes.scene2d.Stage;
-        import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-        import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-        import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class MainMenuScreen implements Screen {
     final Process game;
     private final Stage stage;
     private final Texture img;
     private final OrthographicCamera camera;
+
     public MainMenuScreen(final Process game) {
         this.game = game;
         camera = new OrthographicCamera();
@@ -25,13 +26,13 @@ public class MainMenuScreen implements Screen {
         stage = new Stage(new ScreenViewport());
         final float posX = 50f;
         float posY = 600f;
-        for(int i =0; i<3; i++){
+        for (int i = 0; i < 3; i++) {
             final TextButton button = new TextButton(ButtonName[i], Process.gameSkin);
             button.setPosition(posX, posY);
             button.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
 
-            if(i<2) {
-                final Integer index = i+1; //first screen is MainMenu, so others start with 1
+            if (i < 2) {
+                final Integer index = i + 1; //first screen is MainMenu, so others start with 1
                 button.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
