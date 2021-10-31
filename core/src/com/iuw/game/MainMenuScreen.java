@@ -17,6 +17,7 @@ public class MainMenuScreen implements Screen {
     private final OrthographicCamera camera;
     public MainMenuScreen(final Process game) {
         this.game = game;
+        game.setCurrentScreen(0);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
 
@@ -25,7 +26,7 @@ public class MainMenuScreen implements Screen {
         stage = new Stage(new ScreenViewport());
         final float posX = 50f;
         float posY = 600f;
-        for(int i =0; i<3; i++){
+        for(int i =0; i<3; i++, posY -= 100f){
             final TextButton button = new TextButton(ButtonName[i], Process.gameSkin);
             button.setPosition(posX, posY);
             button.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
@@ -42,14 +43,10 @@ public class MainMenuScreen implements Screen {
                 button.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        game.batch.dispose();
-                        game.font.dispose();
-                        game.SpaceMusic.dispose();
-                        Gdx.app.exit();
+                    game.exit();
                     }
                 });
             }
-            posY -= 100f;
             stage.addActor(button);
         }
     }

@@ -38,6 +38,7 @@ public class MainPlayScreen implements Screen {
 
     public MainPlayScreen(final Process game, @NotNull Integer[] data_map){
         this.game = game;
+        game.setCurrentScreen(2);
         this.data_map = data_map;
         ship_speed = data_map[2];
         camera = new OrthographicCamera();
@@ -87,7 +88,7 @@ public class MainPlayScreen implements Screen {
 		if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)|| Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
 			if(TimeUtils.nanoTime() - ship_sound_time > 7e9) {
                 int i = MathUtils.random(0, 2);
-                sounds[i].play(Process.VOLUME_LEVELS[1]);
+                sounds[i].play(Process.VOLUME_LEVELS[0]);
 				ship_sound_time = TimeUtils.nanoTime();
 			}
 			if (Gdx.input.isKeyPressed(Input.Keys.LEFT)){
