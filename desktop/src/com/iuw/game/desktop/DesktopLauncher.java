@@ -1,17 +1,15 @@
 package com.iuw.game.desktop;
 
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.iuw.game.Process;
 
 public class DesktopLauncher {
-	final private static String title = new String("Star Transporter");
+	final private static String title = "Star Transporter";
 	public static void main (String[] arg) {
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.title = title;
-		config.width = 600;
-		config.height = 800;
-		new LwjglApplication(new Process(), config);
+		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+		config.setTitle(title);
+		config.setWindowedMode(600, 800);
+		new Lwjgl3Application(new Process(), config);
 	}
-
 }
