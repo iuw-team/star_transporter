@@ -26,6 +26,7 @@ public class SetScreen implements Screen {
         img = new Texture("main_theme.jpg");
         stage = new Stage(new ScreenViewport());
         String[] text_1 = {"Green", "Blue"};
+
         final String[] LabelName = new String[]{"Music", "Sound", "Something"};
         for (int i = 0; i < 3; i++) {
             final Label label = new Label(LabelName[i], Process.gameSkin);
@@ -95,6 +96,7 @@ public class SetScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        ScreenUtils.clear(0f, 0f, 0f, 0f);
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();

@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class MainMenuScreen implements Screen {
@@ -25,7 +26,7 @@ public class MainMenuScreen implements Screen {
         img = new Texture("main_theme.jpg");
         stage = new Stage(new ScreenViewport());
         final float posX = 50f;
-        float posY = 600f;
+        float posY = 300f;
         for (int i = 0; i < 3; i++) {
             final TextButton button = new TextButton(ButtonName[i], Process.gameSkin);
             button.setPosition(posX, posY);
@@ -50,7 +51,7 @@ public class MainMenuScreen implements Screen {
                     }
                 });
             }
-            posY -= 100f;
+            posY -= 70f;
             stage.addActor(button);
         }
     }
@@ -62,6 +63,7 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        ScreenUtils.clear(0f, 0f, 0f, 0f);
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
 

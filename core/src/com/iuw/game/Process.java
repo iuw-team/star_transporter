@@ -15,6 +15,7 @@ public class Process extends Game {
     public Music SpaceMusic;
     public BitmapFont font;
     public static Skin gameSkin;
+
     public static Integer SCREEN_WIDTH = 600, SCREEN_HEIGHT = 800;
     public static Integer BUTTON_WIDTH = 300, BUTTON_HEIGHT = 70;
     public static Integer SMALL_BUTTON_WIDTH = 70, SMALL_BUTTON_HEIGHT = 50;
@@ -22,7 +23,6 @@ public class Process extends Game {
     public static Integer SLIDER_WIDTH = 250, SLIDER_HEIGHT = 50;
     public static Integer SYSTEM_VARIABLES[] = new Integer[4];   /* Planets, goods, velocities, star types*/
     final public static float MAX_LEVEL = 1f;
-    public static Boolean WhoChosen = true; //true - first; false - second
     public static Integer ChosenSkin = 0;
     public static float[] VOLUME_LEVELS = new float[]{
             MAX_LEVEL / 2,  /* SOUND_LEVEL*/
@@ -40,15 +40,7 @@ public class Process extends Game {
         font = new BitmapFont();
         SpaceMusic = Gdx.audio.newMusic(Gdx.files.internal("Space.mp3"));
         SpaceMusic.setLooping(true);
-        SpaceMusic.play();
-    }
-
-    @Override
-    public void render() {
-        ScreenUtils.clear(0f, 0f, 0f, 0f);
-        super.render();
-        SpaceMusic.setVolume(VOLUME_LEVELS[1]);
-        gameSkin = skins[ChosenSkin];
+        //SpaceMusic.play();
     }
 
     public Screen GetNextScreen(@NotNull Integer index) {
@@ -60,7 +52,7 @@ public class Process extends Game {
             case 2:
                 return new SetScreen(this);
             default:
-                return new MainPlayScreen(this, SYSTEM_VARIABLES);
+                return new MainPlayScreen(this);
         }
 
     }
