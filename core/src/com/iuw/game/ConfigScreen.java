@@ -1,13 +1,14 @@
 package com.iuw.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -18,13 +19,12 @@ public class ConfigScreen implements Screen {
     private final Stage stage;
     private final OrthographicCamera camera;
     private final Integer defMass = 10;
-
     private final Integer[][] boxVariables = new Integer[][]{
             new Integer[]{4, 5, 6, 7}, //list for planet number
             new Integer[]{1, 2, 3, 4}, //number of loads for delivery
             new Integer[]{10, 20, 30}, //speed of the ship
-            new Integer[]{defMass, 2*defMass, 3*defMass,
-                          defMass, 2*defMass, 3*defMass}, //mass of definite star
+            new Integer[]{defMass, 2 * defMass, 3 * defMass,
+                    defMass, 2 * defMass, 3 * defMass}, //mass of definite star
     };
 
     public ConfigScreen(@NotNull final Process game) {
@@ -36,7 +36,7 @@ public class ConfigScreen implements Screen {
         InitBoxes();
         InitButtons();
         InitLabels();
-      }
+    }
 
     @Override
     public void show() {
@@ -44,7 +44,7 @@ public class ConfigScreen implements Screen {
     }
 
     @Override
-    public void render(float delta){
+    public void render(float delta) {
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
         stage.act();
@@ -65,26 +65,29 @@ public class ConfigScreen implements Screen {
 
     @Override
     public void hide() {
-                dispose();
+        dispose();
     }
 
     @Override
     public void dispose() {
         stage.dispose();
     }
-    /** Инициализация SelectBoxes */
-    private void InitBoxes(){
-        final float posX = (Process.SCREEN_WIDTH - Process.BOX_WIDTH)/2f;
-        float posY = 600f;
+
+    /**
+     * Инициализация SelectBoxes
+     */
+    private void InitBoxes() {
+        final float posX = (Process.SCREEN_WIDTH - Process.BOX_WIDTH) / 2f;
+        float posY = 500f;
         String[][] boxItems = new String[][]{
                 new String[]{"4", "5", "6", "7"},  // Количество планет
                 new String[]{"1", "2", "3", "4"},  //Количество грузов
                 new String[]{"Slow", "Medium", "Fast"},  //Варианты скорости корабля
                 new String[]{"Ia", "Ib", "II", "III", "IV", "V"}  //Типы звёзд
-         };
-        for(int i =0; i<4; i++, posY -=100f) {
+        };
+        for (int i = 0; i < 4; i++, posY -= 100f) {
             final SelectBox<String> box = new SelectBox<>(Process.gameSkin);
-            box.setPosition(posX,posY);
+            box.setPosition(posX, posY);
             box.setSize(Process.BOX_WIDTH, Process.BOX_HEIGHT);
             box.setItems(boxItems[i]);
             Process.SYSTEM_VARIABLES[i] = boxVariables[i][0];
@@ -98,15 +101,18 @@ public class ConfigScreen implements Screen {
             this.stage.addActor(box);
         }
     }
-    private void  InitButtons(){
+
+    private void InitButtons() {
         final String[] butName = new String[]{"X", "Play"};
-        final float[][] butPos = new float[][]{{50f,700f},{265f, 250f}};
-        for(int i = 0; i<2;i++) {
+        final float[][] butPos = new float[][]{
+                {50f, 500f},
+                {Process.SCREEN_WIDTH/2f - Process.SMALL_BUTTON_WIDTH/2f, 150f}};
+        for (int i = 0; i < 2; i++) {
             final TextButton button = new TextButton(butName[i], Process.gameSkin);
             button.setPosition(butPos[i][0], butPos[i][1]);
             button.setSize(Process.SMALL_BUTTON_WIDTH, Process.SMALL_BUTTON_HEIGHT);
 
-            final int index = (i==0) ? i:3;
+            final int index = (i == 0) ? i : 3;
             button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -116,16 +122,17 @@ public class ConfigScreen implements Screen {
             stage.addActor(button);
         }
     }
-    private void InitLabels(){
+
+    private void InitLabels() {
         final String[] labelText = new String[]{
                 "Number of planet",
                 "Quantity of goods ",
                 "Ship's velocity",
                 "System star type",
         };
-        final float posX = (Process.SCREEN_WIDTH/2f - Process.BOX_WIDTH) ;
-        float posY = 630f;
-        for(int i = 0; i< 4; i++, posY-= 100f){
+        final float posX = (Process.SCREEN_WIDTH / 2f - Process.BOX_WIDTH);
+        float posY = 530f;
+        for (int i = 0; i < 4; i++, posY -= 100f) {
 
             final Label label = new Label(labelText[i], Process.gameSkin);
             label.setFontScale(Process.TYPE);

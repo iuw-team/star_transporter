@@ -8,15 +8,14 @@
 //test.finalizedBy jacocoTestReport
 
 buildscript {
-repositories {
+    repositories {
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         google()
-      //  jcenter()
-    maven { url "https://plugins.gradle.org/m2/" }
-}
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
     dependencies {
         classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3"
 
@@ -25,18 +24,18 @@ repositories {
 //
 
 apply plugin: "org.sonarqube"
-    sonarqube {
-          properties {
-            property "sonar.projectKey", "iuw-team_star_transporter"
-            property "sonar.organization", "iuw-team"
-            property "sonar.host.url", "https://sonarcloud.io"
-            property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
-         //   property "sonar.projectBaseDir", "$rootDir"
-           // property "sonar.sources", "."
+sonarqube {
+    properties {
+        property "sonar.projectKey", "iuw-team_star_transporter"
+        property "sonar.organization", "iuw-team"
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
+        //   property "sonar.projectBaseDir", "$rootDir"
+        // property "sonar.sources", "."
         //    property "sonar.tests", ""
-          //  property "sonar.coverage.exclusions", "**/src/androidTest/**, **/src/test/**"
-            //property "sonar.coverage.jacoco.xmlReportPaths", fileTree(include: ['*/*/jacoco*.xml'], dir: "$rootDir/app/build/reports/jacoco").collect()
-  }
+        //  property "sonar.coverage.exclusions", "**/src/androidTest/**, **/src/test/**"
+        //property "sonar.coverage.jacoco.xmlReportPaths", fileTree(include: ['*/*/jacoco*.xml'], dir: "$rootDir/app/build/reports/jacoco").collect()
+    }
 }
 
 
@@ -52,6 +51,8 @@ allprojects {
         ashleyVersion = '1.7.3'
         aiVersion = '1.8.2'
         gdxControllersVersion = '2.1.0'
+        junitVersion = "5.6.0"
+        mockitoVersion = "3.4.4"
     }
 
     repositories {
@@ -70,7 +71,7 @@ project(":desktop") {
 
     dependencies {
         implementation project(":core")
-        api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
@@ -85,7 +86,7 @@ project(":core") {
     apply plugin: "jacoco"
 
     test {
-       // useJUnitPlatform()
+         useJUnitPlatform()
     }
     sourceSets {
         test {
@@ -112,21 +113,30 @@ project(":core") {
     }
 
     dependencies {
-//       testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
-//       testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+
+        testCompile "org.junit.platform:junit-platform-launcher:1.2.0" // needed for a bug in older eclipse versions
+
+        testImplementation "org.junit.jupiter:junit-jupiter-engine:5.3.1"
+        testImplementation "org.mockito:mockito-core:$mockitoVersion"
+        testImplementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+        testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+        testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+
+         //testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+       // testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
         compile 'junit:junit:4.12'
-        compile "org.mockito:mockito-all:1.9.+"
-        testCompile 'junit:junit:4.12'
-        testCompile "org.mockito:mockito-all:1.10.19"
+    //    compile "org.mockito:mockito-all:1.10.+"
+        //testCompile 'junit:junit:4.12'
+  //      testCompile "org.mockito:mockito-all:1.10.19"
 
         compile "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
 
-        testCompile "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
-        testCompile "com.badlogicgames.gdx:gdx:$gdxVersion"
-        testCompile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+       // testCompile "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+       // testCompile "com.badlogicgames.gdx:gdx:$gdxVersion"
+        //testCompile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 
-        api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
 
     }
 
