@@ -27,15 +27,15 @@ public class SetScreen implements Screen {
         stage = new Stage(new ScreenViewport());
         String[] text_1 = {"Green", "Blue"};
 
-        final String[] LabelName = new String[]{"Music", "Sound", "Something"};
-        for (int i = 0; i < 3; i++) {
+        final String[] LabelName = new String[]{"Music", "Sound"};
+        for (int i = 0; i < 2; i++) {
             final Label label = new Label(LabelName[i], Process.gameSkin);
             label.setFontScale(2f, 2f);
-            label.setPosition(250, 340 + i * 175);
+            label.setPosition(340, 340 + i * 110);
             stage.addActor(label);
         }
         //Sliders
-        float posX = Process.SCREEN_WIDTH / 2f - Process.SLIDER_WIDTH / 2f;
+        float posX = 250;
         float posY = 400;
         for (int i = 0; i < 2; i++, posY -= 100f) {
             final Slider volume = new Slider(0f, Process.MAX_LEVEL, 0.001f, false, Process.gameSkin);
@@ -58,7 +58,7 @@ public class SetScreen implements Screen {
         Boolean WhoChosen = true;
         posY = 500f;
         posX = 150f;
-        for (int i = 0; i < 2; i++, posX += 300f) {
+        for (int i = 0; i < 2; i++, posX += 355f) {
             checks[i] = new CheckBox(words[i], Process.gameSkin);
             checks[i].setPosition(posX, posY);
             checks[i].setSize(100f, 100f);
@@ -78,14 +78,14 @@ public class SetScreen implements Screen {
             stage.addActor(checks[i]);
         }
         TextButton t_but_exit = new TextButton("Save and exit", Process.gameSkin);
-        t_but_exit.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
+        t_but_exit.setSize(300, 70);
         t_but_exit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(game.GetNextScreen(0));
             }
         });
-        t_but_exit.setPosition(170, 100);
+        t_but_exit.setPosition(225, 100);
         stage.addActor(t_but_exit);
     }
 

@@ -47,6 +47,7 @@ public class MainPlayScreen extends ScreenAdapter {
 
     @Override
     public void render(float dt) {
+
         ScreenUtils.clear(0f, 0f, 0f, 0f);
         float thrust;
         float steering;
@@ -331,11 +332,8 @@ class PhysicalSimulation {
             }
             sun.update(dt);
         }
-
-        if (sun.collidesWith(ship)){
-            System.exit(1);
         }
-    }
+
 
     public void draw(SpriteBatch batch) {
         ship.draw(batch);
@@ -349,5 +347,8 @@ class PhysicalSimulation {
     public void setInput(float steering, float thrust) {
         this.steering = steering;
         this.thrust = thrust;
+    }
+    public boolean collidedWithSun(){
+       return sun.collidesWith(ship);
     }
 }
