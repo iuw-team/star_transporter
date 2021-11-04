@@ -50,7 +50,7 @@ public class Process extends Game {
             case 1:
                 return new ConfigScreen(this);
             case 2:
-                return new SetScreen(this);
+                return new ResultScreen(this);
             default:
                 return new MainPlayScreen(this);
         }
