@@ -106,7 +106,7 @@ public class ConfigScreen implements Screen {
         final String[] butName = new String[]{"X", "Play"};
         final float[][] butPos = new float[][]{
                 {50f, 500f},
-                {Process.SCREEN_WIDTH/2f - Process.SMALL_BUTTON_WIDTH/2f, 150f}};
+                {Process.SCREEN_WIDTH / 2f - Process.SMALL_BUTTON_WIDTH / 2f, 150f}};
         for (int i = 0; i < 2; i++) {
             final TextButton button = new TextButton(butName[i], Process.gameSkin);
             button.setPosition(butPos[i][0], butPos[i][1]);

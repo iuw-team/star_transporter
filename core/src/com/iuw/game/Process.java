@@ -77,7 +77,7 @@ public class Process extends Game {
     public void create() {
         skins[0] = new Skin(Gdx.files.internal("temp_textures/buttons_pack.json"));
         skins[1] = new Skin(Gdx.files.internal("temp_textures/buttons_pack.json"));
-        gameSkin = skins[0];
+        gameSkin = skins[ChosenSkin];
         this.setScreen(new MainMenuScreen(this));
         batch = new SpriteBatch();
         font = new BitmapFont();
@@ -93,7 +93,7 @@ public class Process extends Game {
      */
     @Override
     public void render() {
-        ScreenUtils.clear(0f, 0f, 0f, 0f);
+        ScreenUtils.clear(0f, 0f, 0f, 1f);
         super.render();
         SpaceMusic.setVolume(VOLUME_LEVELS[1]);
         gameSkin = skins[ChosenSkin];
@@ -145,7 +145,7 @@ public class Process extends Game {
             case 2:
                 return new SetScreen(this);
             default:
-                return new MainPlayScreen(this, SYSTEM_VARIABLES);
+                return new MainPlayScreen(this);
         }
 
     }

@@ -54,7 +54,7 @@ public class SetScreen implements Screen {
         }
         final String[] words = new String[]{"GREEN", "BLUE"};
         final CheckBox[] checks = new CheckBox[2];
-        boolean WhoChosen = true;
+        boolean WhoChosen = Process.ChosenSkin != 1;
         posY = 500f;
         posX = 150f;
         for (int i = 0; i < 2; i++, posX += 300f) {
@@ -95,7 +95,6 @@ public class SetScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(0f, 0f, 0f, 0f);
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
         stage.act();
