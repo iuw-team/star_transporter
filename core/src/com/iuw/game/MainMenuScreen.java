@@ -8,17 +8,19 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.ScreenUtils;
+
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import org.jetbrains.annotations.NotNull;
 
 public class MainMenuScreen implements Screen {
     final Process game;
     private final Stage stage;
     private final Texture img;
     private final OrthographicCamera camera;
-
-    public MainMenuScreen(final Process game) {
+  
+    public MainMenuScreen(@NotNull final Process game) {
         this.game = game;
+        game.setCurrentScreen(0);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
 
@@ -26,8 +28,8 @@ public class MainMenuScreen implements Screen {
         img = new Texture("main_theme.jpg");
         stage = new Stage(new ScreenViewport());
         final float posX = 50f;
-        float posY = 300f;
-        for (int i = 0; i < 3; i++) {
+        float posY = 400f;
+        for (int i = 0; i < 3; i++, posY -= 100f) {
             final TextButton button = new TextButton(ButtonName[i], Process.gameSkin);
             button.setPosition(posX, posY);
             button.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
@@ -44,14 +46,10 @@ public class MainMenuScreen implements Screen {
                 button.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        game.batch.dispose();
-                        game.font.dispose();
-                        game.SpaceMusic.dispose();
-                        Gdx.app.exit();
+                        game.exit();
                     }
                 });
             }
-            posY -= 70f;
             stage.addActor(button);
         }
     }
