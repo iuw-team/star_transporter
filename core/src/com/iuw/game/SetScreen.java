@@ -25,6 +25,7 @@ public class SetScreen implements Screen {
         game.setCurrentScreen(1);
         camera = new OrthographicCamera();
         stage = new Stage(new ScreenViewport());
+
         float posX = 325f;
         float posY = 350f;
         final String[] LabelName = new String[]{"Music", "Sound", "Chosen interface"};
@@ -94,6 +95,7 @@ public class SetScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        ScreenUtils.clear(0f, 0f, 0f, 0f);
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
         stage.act();
@@ -111,6 +113,7 @@ public class SetScreen implements Screen {
 
     @Override
     public void resume() {
+
 
     }
 

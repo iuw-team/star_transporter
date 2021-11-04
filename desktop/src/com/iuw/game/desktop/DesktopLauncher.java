@@ -5,14 +5,12 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.iuw.game.Process;
 
 public class DesktopLauncher {
-    final private static String title = "Star Transporter";
-
-    public static void main(String[] arg) {
-        Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-        config.setTitle(title);
-        config.setWindowedMode(800, 600);
-        config.setResizable(false);
-        new Lwjgl3Application(new Process(), config);
-    }
-
+	final private static String title = "Star Transporter";
+	public static void main (String[] arg) {
+		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+		config.setTitle(title);
+		config.setWindowedMode(800, 600);
+		config.setResizable(false);
+		new Lwjgl3Application(new Process(), config);
+	}
 }

@@ -1,11 +1,9 @@
-//plugins {
-//    id 'jacoco'
-//}jacocoTestReport {
-//    reports {
-//        xml.enabled true
-//    }
-//}
-//test.finalizedBy jacocoTestReport
+allprojects {
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = '1.10'
+        targetCompatibility = '1.10'
+    }
+}
 
 buildscript {
     repositories {
@@ -125,16 +123,10 @@ project(":core") {
          //testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
        // testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
         compile 'junit:junit:4.12'
-    //    compile "org.mockito:mockito-all:1.10.+"
-        //testCompile 'junit:junit:4.12'
-  //      testCompile "org.mockito:mockito-all:1.10.19"
-
-        compile "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-
-       // testCompile "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
-       // testCompile "com.badlogicgames.gdx:gdx:$gdxVersion"
-        //testCompile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        testCompile "org.mockito:mockito-all:1.10.19"
+        testCompile "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+        testCompile "com.badlogicgames.gdx:gdx:$gdxVersion"
+        testCompile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
 
