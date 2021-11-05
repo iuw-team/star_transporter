@@ -22,10 +22,11 @@ public class MainMenuScreen implements Screen {
         camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
 
         final String[] ButtonName = new String[]{"Play", "Settings", "Exit"};
-        img = new Texture("main_theme.jpg");
+        img = new Texture("main-theme2.jpg");
+
         stage = new Stage(new ScreenViewport());
-        final float posX = 50f;
-        float posY = 600f;
+        final float posX = 150f;
+        float posY = 300f;
         for (int i = 0; i < 3; i++) {
             final TextButton button = new TextButton(ButtonName[i], Process.gameSkin);
             button.setPosition(posX, posY);
