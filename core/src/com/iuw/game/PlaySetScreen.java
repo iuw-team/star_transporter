@@ -13,37 +13,54 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import javax.swing.*;
-
-public class ResultScreen implements Screen {
+public class PlaySetScreen implements Screen {
     final Process game;
     private Stage stage;
     private Texture img;
     private OrthographicCamera camera;
 
-    public ResultScreen(final Process game) {
+    public PlaySetScreen(final Process game) {
         this.game = game;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
         img = new Texture("main_theme.jpg");
         stage = new Stage(new ScreenViewport());
 
-        final String[] ButtonName = new String[]{"MainMenu", "Settings", "Play again"};
-        for (int i = 0; i < 3; i++) {
-            final TextButton button = new TextButton(ButtonName[i], Process.gameSkin);
-            button.setPosition(200, 200+i*100);
-            button.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
-            stage.addActor(button);
-            final Integer index = i + 1;
-            button.addListener(new ClickListener() {
-                public void clicked(InputEvent event, float x, float y) {
-                    game.setScreen(game.GetNextScreen(index));
+        final String[] LabelName = new String[]{"Music", "Sound"};
+        for (int i = 0; i < 2; i++) {
+            final Label label = new Label(LabelName[i], Process.gameSkin);
+            label.setFontScale(2f, 2f);
+            label.setPosition(340, 340 + i * 110);
+            stage.addActor(label);
+        }
+        //Sliders
+        float posX = 250;
+        float posY = 400;
+        for (int i = 0; i < 2; i++, posY -= 100f) {
+            final Slider volume = new Slider(0f, Process.MAX_LEVEL, 0.001f, false, Process.gameSkin);
+            volume.setValue(Process.VOLUME_LEVELS[i]);
+            volume.setPosition(posX, posY);
+            volume.setSize(Process.SLIDER_WIDTH, Process.SLIDER_HEIGHT);
+            final Integer index = i;
+            volume.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    Process.VOLUME_LEVELS[index] = volume.getValue();
                 }
             });
+            stage.addActor(volume);
         }
 
-
-
+        TextButton t_but_exit = new TextButton("Save and exit", Process.gameSkin);
+        t_but_exit.setSize(300, 70);
+        t_but_exit.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(game.GetNextScreen(0));
+            }
+        });
+        t_but_exit.setPosition(225, 100);
+        stage.addActor(t_but_exit);
     }
 
     @Override
