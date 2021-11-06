@@ -23,7 +23,7 @@ public class SetScreen implements Screen {
         this.game = game;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
-        img = new Texture("main_theme.jpg");
+        img = new Texture("main_theme.png");
         stage = new Stage(new ScreenViewport());
         String[] text_1 = {"Green", "Blue"};
         final String[] LabelName = new String[]{"Music", "Sound", "Something"};

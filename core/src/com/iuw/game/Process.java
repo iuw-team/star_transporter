@@ -15,7 +15,7 @@ public class Process extends Game {
     public Music SpaceMusic;
     public BitmapFont font;
     public static Skin gameSkin;
-    public static Integer SCREEN_WIDTH = 600, SCREEN_HEIGHT = 800;
+    public static Integer SCREEN_WIDTH = 950, SCREEN_HEIGHT = 600;
     public static Integer BUTTON_WIDTH = 300, BUTTON_HEIGHT = 70;
     public static Integer SMALL_BUTTON_WIDTH = 70, SMALL_BUTTON_HEIGHT = 50;
     public static Integer BOX_WIDTH = 100, BOX_HEIGHT = 50;

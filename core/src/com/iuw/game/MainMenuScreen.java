@@ -22,7 +22,7 @@ public class MainMenuScreen implements Screen {
         camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
 
         final String[] ButtonName = new String[]{"Play", "Settings", "Exit"};
-        img = new Texture("main-theme2.jpg");
+        img = new Texture("main-theme.png");
 
         stage = new Stage(new ScreenViewport());
         final float posX = 150f;
