@@ -51,7 +51,7 @@ public class PlaySetScreen implements Screen {
             stage.addActor(volume);
         }
 
-        TextButton t_but_exit = new TextButton("Save and exit", Process.gameSkin);
+        TextButton t_but_exit = new TextButton("MainMenu", Process.gameSkin);
         t_but_exit.setSize(300, 70);
         t_but_exit.addListener(new ClickListener() {
             @Override
@@ -59,8 +59,19 @@ public class PlaySetScreen implements Screen {
                 game.setScreen(game.GetNextScreen(0));
             }
         });
-        t_but_exit.setPosition(225, 100);
+        t_but_exit.setPosition(225, 210);
         stage.addActor(t_but_exit);
+
+        TextButton t_but_continue = new TextButton("Resume", Process.gameSkin);
+        t_but_continue.setSize(340, 90);
+        t_but_continue.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(game.GetNextScreen(3));
+            }
+        });
+        t_but_continue.setPosition(210, 90);
+        stage.addActor(t_but_continue);
     }
 
     @Override

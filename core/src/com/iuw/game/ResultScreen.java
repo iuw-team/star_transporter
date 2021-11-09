@@ -28,13 +28,13 @@ public class ResultScreen implements Screen {
         img = new Texture("main_theme.jpg");
         stage = new Stage(new ScreenViewport());
 
-        final String[] ButtonName = new String[]{"MainMenu", "Settings", "Play again"};
-        for (int i = 0; i < 3; i++) {
-            final TextButton button = new TextButton(ButtonName[i], Process.gameSkin);
-            button.setPosition(200, 200+i*100);
+        final String[] ButtonName = new String[]{"Play again", "Settings", "MainMenu"};
+        for (int i =-2; i < 1; i++) {
+            final TextButton button = new TextButton(ButtonName[i+2], Process.gameSkin);
+            button.setPosition(200, 200-100*i);
             button.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
             stage.addActor(button);
-            final Integer index = i + 1;
+            final Integer index = i;
             button.addListener(new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
                     game.setScreen(game.GetNextScreen(index));

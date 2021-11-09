@@ -45,10 +45,14 @@ public class Process extends Game {
 
     public Screen GetNextScreen(@NotNull Integer index) {
         switch (index) {
+            case -2:
+                return new MainPlayScreen(this);
+            case -1:
+                return new SetScreen(this);
             case 0:
                 return new MainMenuScreen(this);
             case 1:
-                return new ConfigScreen(this);
+                return new PlaySetScreen(this);
             case 2:
                 return new ResultScreen(this);
             default:
