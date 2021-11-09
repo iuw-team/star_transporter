@@ -22,7 +22,6 @@ public class MainPlayScreen extends ScreenAdapter {
     PhysicalSimulation sim;
     OrthographicCamera camera;
     ShapeRenderer shapeRenderer;
-
     Process game;
 
     public MainPlayScreen(final Process game) {
@@ -47,8 +46,6 @@ public class MainPlayScreen extends ScreenAdapter {
 
     @Override
     public void render(float dt) {
-
-        ScreenUtils.clear(0f, 0f, 0f, 0f);
         float thrust;
         float steering;
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
@@ -76,7 +73,7 @@ public class MainPlayScreen extends ScreenAdapter {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(0.1f, 0.7f, 0.4f, 1f);
-        var trajectory = sim.ship.getPath(6, sim.SUN_POS, sim.SUN_MASS);
+        ArrayList<Vector2> trajectory = sim.ship.getPath(6, sim.SUN_POS, sim.SUN_MASS);
 
         for (Vector2 point : trajectory) {
             shapeRenderer.circle(point.x, point.y, 2);
@@ -86,7 +83,7 @@ public class MainPlayScreen extends ScreenAdapter {
         for (PhysicalObject planet : sim.planets) {
             trajectory = planet.getPath(6, sim.SUN_POS, sim.SUN_MASS);
             for (int i = 0; i < trajectory.size(); i++) {
-                var point = trajectory.get(i);
+                Vector2 point = trajectory.get(i);
                 shapeRenderer.circle(point.x, point.y, 2);
             }
         }
@@ -162,14 +159,14 @@ class PhysicalObject {
 
         spacing = spacing * spacing;
 
-        var trajectory = new ArrayList<Vector2>();
-        var clonedShip = new PhysicalObject(this);
-        var startPos = new Vector2(clonedShip.position);
+        ArrayList<Vector2> trajectory = new ArrayList<>();
+        PhysicalObject clonedShip = new PhysicalObject(this);
+        Vector2 startPos = new Vector2(clonedShip.position);
 
         float cumDt = 0;
         int i = 0;
         boolean inStart = true;
-        var prevPos = new Vector2(clonedShip.position);
+        Vector2 prevPos = new Vector2(clonedShip.position);
 
         trajectory.add(new Vector2(clonedShip.position));
         while (i < MAX_STEPS) {
@@ -240,7 +237,7 @@ class PhysicalObject {
     }
 
     public void makeRoundOrbit(float mass, Vector2 center, boolean clockwise) { //fixme for any orbit position
-        var r = new Vector2(center).sub(position);
+        Vector2 r = new Vector2(center).sub(position);
         if (clockwise) {
             velocity = r.rotate90(1).setLength2(BIG_G * mass / r.len());
         } else {
@@ -290,7 +287,7 @@ class PhysicalSimulation {
     }
 
     public void createPlanet(int planetRadius, float planetRotation, Vector2 pos, Vector2 orbitDisturb, Texture texture) {
-        var planet = new PhysicalObject(pos.x, pos.y, 0, 0, 1f);
+        PhysicalObject planet = new PhysicalObject(pos.x, pos.y, 0, 0, 1f);
         planet.makeRoundOrbit(SUN_MASS, SUN_POS, true);
 
         planet.applyForce(orbitDisturb);
