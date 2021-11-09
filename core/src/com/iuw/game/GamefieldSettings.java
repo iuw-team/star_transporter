@@ -8,7 +8,6 @@ public class GamefieldSettings {
     public int amountOfPlanets;
     // #todo
 }
-
     class GameTextures {
     ArrayList<Texture> planetTextures;
 }

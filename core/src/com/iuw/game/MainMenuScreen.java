@@ -26,8 +26,9 @@ public class MainMenuScreen implements Screen {
         final String[] ButtonName = new String[]{"Play", "Settings", "Exit"};
         img = new Texture("main_theme.jpg");
         stage = new Stage(new ScreenViewport());
-        final float posX = 50f;
-        float posY = 400f;
+        final float posX = 190f;
+        float posY = 350f;
+
         for (int i = 0; i < 3; i++, posY -= 100f) {
             final TextButton button = new TextButton(ButtonName[i], Process.gameSkin);
             button.setPosition(posX, posY);

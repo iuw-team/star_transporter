@@ -36,6 +36,7 @@ public class Process extends Game {
             BOX_WIDTH = 100, BOX_HEIGHT = 50,
             SLIDER_WIDTH = 250, SLIDER_HEIGHT = 50;
 
+
     public final static float
             TYPE = 1.5f,
             MAX_LEVEL = 1f;
@@ -138,6 +139,10 @@ public class Process extends Game {
 
     public Screen GetNextScreen(int index) {
         switch (index) {
+            case -2:
+                return new MainPlayScreen(this);
+            case -1:
+                return new SetScreen(this);
             case 0:
                 return new MainMenuScreen(this);
             case 1:
