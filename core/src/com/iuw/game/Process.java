@@ -7,8 +7,11 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
 /**
  * Главный игровой класс, хранящий основные глобальные переменные и осуществляющий всю отрисовку
  *
@@ -16,16 +19,6 @@ import com.badlogic.gdx.utils.ScreenUtils;
  * @version 0.2
  */
 public class Process extends Game {
-    public SpriteBatch batch;
-    public BitmapFont font;
-    /**
-     * Поле основной фоновой мелодии
-     */
-    public Music SpaceMusic;
-    /**
-     * Поле скина, хранящего информацию о текстурах кнопок и иных компонентов графического интерфейса
-     */
-    public static Skin gameSkin;
     /**
      * Поля константных значений, таких как ширина и высота кнопок, слайдеров
      */
@@ -35,14 +28,13 @@ public class Process extends Game {
             SMALL_BUTTON_WIDTH = 70, SMALL_BUTTON_HEIGHT = 50,
             BOX_WIDTH = 100, BOX_HEIGHT = 50,
             SLIDER_WIDTH = 250, SLIDER_HEIGHT = 50;
-
     public final static float
             TYPE = 1.5f,
             MAX_LEVEL = 1f;
     /**
-     * Поле, хранящее основную информацию о конфигурации системы
+     * Поле скина, хранящего информацию о текстурах кнопок и иных компонентов графического интерфейса
      */
-    public static Integer[] SYSTEM_VARIABLES = new Integer[4];   /* Planets, goods, velocities, star types*/
+    public static Skin gameSkin;
     /**
      * Индекс выбранного скина
      */
@@ -55,6 +47,16 @@ public class Process extends Game {
             MAX_LEVEL / 2 /* MUSIC_LEVEL*/
     };
     /**
+     * Варианты скинов
+     */
+    final private Skin[] skins = new Skin[2];
+    public SpriteBatch batch;
+    /**
+     * Поле основной фоновой мелодии
+     */
+    public Music SpaceMusic;
+    private BitmapFont font;
+    /**
      * Условный номер выбранного скрина, используемый для перемещения между ними с помощью клавиши Esc
      * 0 - Главное меню
      * 1 - Меню настроек и Меню конфигурации системы
@@ -65,21 +67,18 @@ public class Process extends Game {
      * Поле, хранящее информацию, нажата ли клавиша Esc
      */
     private boolean exitPressed = false;
-    /**
-     * Варианты скинов
-     */
-    final private Skin[] skins = new Skin[2];
 
     /**
-     * Инициализация игры
+     * Инициализация отрисовщика и остальных компонентов
      */
     @Override
     public void create() {
         skins[0] = new Skin(Gdx.files.internal("temp_textures/buttons_pack.json"));
         skins[1] = new Skin(Gdx.files.internal("temp_textures/buttons_pack.json"));
+        GameSettings.game = this;
         gameSkin = skins[ChosenSkin];
+        batch = getBatch();
         this.setScreen(new MainMenuScreen(this));
-        batch = new SpriteBatch();
         font = new BitmapFont();
         SpaceMusic = Gdx.audio.newMusic(Gdx.files.internal("Space.mp3"));
         SpaceMusic.setLooping(true);
@@ -120,22 +119,64 @@ public class Process extends Game {
         this.dispose();
         Gdx.app.exit();
     }
-
+    /**
+     * Возвращает new Stage
+     */
+    public Stage getStage(){
+        return new Stage(new ScreenViewport(), batch);
+    }
+    /**
+     * Возвращает new Batch
+     */
+    public SpriteBatch getBatch(){
+        return new SpriteBatch();
+    }
+    /**
+     * Возвращает new SelectBox <String>
+     */
+    public SelectBox<String> getSelectBox(){
+        return new SelectBox(gameSkin);
+    }
+    /**
+     * Возвращает new TextButton с надписью text
+     */
+    public TextButton getTextButton(String text){
+        return new TextButton(text, gameSkin);
+    }
+    /**
+     * Возвращает new Label с надписью text
+     */
+    public Label getLabel(String text){
+        return new Label(text, gameSkin);
+    }
+    /**
+     * Возвращает new CheckBox с надписью text
+     */
+    public CheckBox getCheckBox(String text){
+        return new CheckBox(text, gameSkin);
+    }
+    /**
+     * Возвращает new Slider
+     */
+    public Slider getSlider(){
+        return new Slider(0f, Process.MAX_LEVEL, 0.001f, false, gameSkin);
+    }
     /**
      * Метод, определяющий ныне выбранный скрин
+     * 0 - MainMenuScreen
+     * 1 - ConfigScreen и SetScreen
+     * 2 - MainPlayScreen
      */
     public void setCurrentScreen(int index) {
         CURRENT_SCREEN = index;
     }
-
     /**
      * Функция получения скрина в соответсвии с его идентификационным номером
-     * 0 - Главное игровое меню
-     * 1 - Меню конфигурации системы
-     * 2 - Меню настроек
-     * 3 - Игровой процесс
+     * 0 - MainMenuScreen
+     * 1 - ConfigScreen
+     * 2 - SetScreen
+     * 3 - MainPlayScreen
      */
-
     public Screen GetNextScreen(int index) {
         switch (index) {
             case 0:
@@ -149,4 +190,5 @@ public class Process extends Game {
         }
 
     }
+
 }

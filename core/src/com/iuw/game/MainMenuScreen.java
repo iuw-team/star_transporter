@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 public class MainMenuScreen implements Screen {
     final Process game;
     private final Stage stage;
-    private final Texture img;
+   // private final Texture img;
     private final OrthographicCamera camera;
 
     public MainMenuScreen(@NotNull final Process game) {
@@ -23,13 +23,13 @@ public class MainMenuScreen implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
 
-        final String[] ButtonName = new String[]{"Play", "Settings", "Exit"};
-        img = new Texture("main_theme.jpg");
-        stage = new Stage(new ScreenViewport());
+        final String[] buttonName = new String[]{"Play", "Settings", "Exit"};
+//        img = new Texture("main_theme.jpg");
+        stage = game.getStage();
         final float posX = 50f;
         float posY = 400f;
         for (int i = 0; i < 3; i++, posY -= 100f) {
-            final TextButton button = new TextButton(ButtonName[i], Process.gameSkin);
+            final TextButton button = game.getTextButton(buttonName[i]);
             button.setPosition(posX, posY);
             button.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
 
@@ -64,7 +64,7 @@ public class MainMenuScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
 
         game.batch.begin();
-        game.batch.draw(img, 0f, 0f);
+      //  game.batch.draw(img, 0f, 0f);
         game.batch.end();
         stage.act();
         stage.draw();
@@ -90,6 +90,6 @@ public class MainMenuScreen implements Screen {
     @Override
     public void dispose() {
         stage.dispose();
-        img.dispose();
+       // img.dispose();
     }
 }

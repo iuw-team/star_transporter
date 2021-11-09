@@ -24,13 +24,13 @@ public class SetScreen implements Screen {
         this.game = game;
         game.setCurrentScreen(1);
         camera = new OrthographicCamera();
-        stage = new Stage(new ScreenViewport());
+        stage = game.getStage();
 
         float posX = 325f;
         float posY = 350f;
-        final String[] LabelName = new String[]{"Music", "Sound", "Chosen interface"};
+        final String[] labelName = new String[]{"Music", "Sound", "Chosen interface"};
         for (int i = 0; i < 3; i++, posY +=100f) {
-            final Label label = new Label(LabelName[i], Process.gameSkin);
+            final Label label = game.getLabel(labelName[i]);
             label.setFontScale(2f, 2f);
             label.setPosition(posX, posY);
             stage.addActor(label);
@@ -39,7 +39,7 @@ public class SetScreen implements Screen {
         posX = Process.SCREEN_WIDTH / 2f - Process.SLIDER_WIDTH / 2f;
         posY = 400f;
         for (int i = 0; i < 2; i++, posY -= 100f) {
-            final Slider volume = new Slider(0f, Process.MAX_LEVEL, 0.001f, false, Process.gameSkin);
+            final Slider volume = game.getSlider();
             volume.setValue(Process.VOLUME_LEVELS[i]);
             volume.setPosition(posX, posY);
             volume.setSize(Process.SLIDER_WIDTH, Process.SLIDER_HEIGHT);
@@ -58,7 +58,7 @@ public class SetScreen implements Screen {
         posY = 500f;
         posX = 150f;
         for (int i = 0; i < 2; i++, posX += 300f) {
-            checks[i] = new CheckBox(words[i], Process.gameSkin);
+            checks[i] = game.getCheckBox(words[i]);
             checks[i].setPosition(posX, posY);
             checks[i].setSize(100f, 100f);
             checks[i].setChecked(WhoChosen);
@@ -76,7 +76,7 @@ public class SetScreen implements Screen {
             });
             stage.addActor(checks[i]);
         }
-        TextButton t_but_exit = new TextButton("Save and exit", Process.gameSkin);
+        TextButton t_but_exit = game.getTextButton("Save and exit");
         t_but_exit.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
         t_but_exit.addListener(new ClickListener() {
             @Override
