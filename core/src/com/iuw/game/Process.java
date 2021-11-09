@@ -52,9 +52,9 @@ public class Process extends Game {
             case 0:
                 return new MainMenuScreen(this);
             case 1:
-                return new PlaySetScreen(this);
+                return new ConfigScreen(this);
             case 2:
-                return new ResultScreen(this);
+                return new SetScreen(this);
             default:
                 return new MainPlayScreen(this);
         }
