@@ -1,5 +1,6 @@
 package com.iuw.game;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -37,15 +38,15 @@ public class PlaySetScreen implements Screen {
         float posX = 250;
         float posY = 400;
         for (int i = 0; i < 2; i++, posY -= 100f) {
-            final Slider volume = new Slider(0f, Process.MAX_LEVEL, 0.001f, false, Process.gameSkin);
-            volume.setValue(Process.VOLUME_LEVELS[i]);
+            final Slider volume = new Slider(0f, GameSettings.MAX_LEVEL, 0.001f, false, Process.gameSkin);
+            volume.setValue(GameSettings.VOLUME_LEVELS[i]);
             volume.setPosition(posX, posY);
             volume.setSize(Process.SLIDER_WIDTH, Process.SLIDER_HEIGHT);
             final Integer index = i;
             volume.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    Process.VOLUME_LEVELS[index] = volume.getValue();
+                    GameSettings.VOLUME_LEVELS[index] = volume.getValue();
                 }
             });
             stage.addActor(volume);
@@ -93,8 +94,6 @@ public class PlaySetScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        Process.SCREEN_WIDTH = width;
-        Process.SCREEN_HEIGHT = height;
     }
 
     @Override

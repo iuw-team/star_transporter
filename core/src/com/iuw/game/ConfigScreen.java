@@ -76,7 +76,7 @@ public class ConfigScreen implements Screen {
     /**
      * Инициализация SelectBoxes
      */
-    public void InitBoxes() {
+    private void InitBoxes() {
         final float posX = (Process.SCREEN_WIDTH - Process.BOX_WIDTH) / 2f;
         float posY = 500f;
         Array<Array<String>> boxItems = new Array<>();
@@ -104,7 +104,7 @@ public class ConfigScreen implements Screen {
         }
     }
 
-    public void InitButtons() {
+    private void InitButtons() {
         final String[] butName = new String[]{"X", "Play"};
         final float[][] butPos = new float[][]{
                 {50f, 500f},
@@ -125,7 +125,7 @@ public class ConfigScreen implements Screen {
         }
     }
 
-    public void InitLabels() {
+    private void InitLabels() {
         final String[] labelText = new String[]{
                 "Number of planet",
                 "Quantity of goods ",

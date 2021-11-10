@@ -5,8 +5,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -29,8 +33,7 @@ public class Process extends Game {
             BOX_WIDTH = 100, BOX_HEIGHT = 50,
             SLIDER_WIDTH = 250, SLIDER_HEIGHT = 50;
     public final static float
-            TYPE = 1.5f,
-            MAX_LEVEL = 1f;
+            TYPE = 1.5f;
     /**
      * Поле скина, хранящего информацию о текстурах кнопок и иных компонентов графического интерфейса
      */
@@ -42,10 +45,7 @@ public class Process extends Game {
     /**
      * Громкость фоновой музыки и игровых звуков
      */
-    public static float[] VOLUME_LEVELS = new float[]{
-            MAX_LEVEL / 2,  /* SOUND_LEVEL*/
-            MAX_LEVEL / 2 /* MUSIC_LEVEL*/
-    };
+
     /**
      * Варианты скинов
      */
@@ -80,21 +80,19 @@ public class Process extends Game {
         batch = getBatch();
         this.setScreen(new MainMenuScreen(this));
         font = new BitmapFont();
-        SpaceMusic = Gdx.audio.newMusic(Gdx.files.internal("Space.mp3"));
+        SpaceMusic = Gdx.audio.newMusic(Gdx.files.internal("Sounds/Space.mp3"));
         SpaceMusic.setLooping(true);
         SpaceMusic.play();
     }
 
     /**
      * Отрисовка всего игрового процесса
-     * Настройка звука фоновой мелодии
-     * Обработка нажатия клавиши Ecs
      */
     @Override
     public void render() {
         ScreenUtils.clear(0f, 0f, 0f, 1f);
         super.render();
-        SpaceMusic.setVolume(VOLUME_LEVELS[1]);
+        SpaceMusic.setVolume(GameSettings.getVolumeLevelByName("music"));
         gameSkin = skins[ChosenSkin];
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) && !exitPressed) {
             exitPressed = true;
@@ -110,7 +108,7 @@ public class Process extends Game {
     }
 
     /**
-     * Метод выхода из игры
+     * Выход из игры
      */
     public void exit() {
         this.batch.dispose();
@@ -159,10 +157,53 @@ public class Process extends Game {
      * Возвращает new Slider
      */
     public Slider getSlider(){
-        return new Slider(0f, Process.MAX_LEVEL, 0.001f, false, gameSkin);
+        return new Slider(0f, GameSettings.MAX_LEVEL, 0.001f, false, gameSkin);
     }
     /**
-     * Метод, определяющий ныне выбранный скрин
+     * Возвращает new ShapeRenderer
+     */
+    public ShapeRenderer getShapeRenderer(){
+        return new ShapeRenderer();
+    }
+    /**
+     * Возвращает Texture по имени:
+     * ship - текстура корабля
+     * star - текстура звезды
+     * planet - текстура планеты
+     */
+    public Texture getTextureByName(String name){
+        switch(name){
+            case "ship": return new Texture("pixel_ship.png");
+            case "star": return new Texture("star_0.png");
+            case "planet": return new Texture("pixel_planet.png");
+            case "asteroid": return new Texture("asteroid.png");
+            default: throw new IllegalArgumentException("Incorrect name of system's variable");
+        }
+
+    }
+    /**
+     * Возвращает Sound по имени:
+     * ship - текстура корабля
+     * star - текстура звезды
+     * planet - текстура планеты
+     */
+    public Sound getSoundByName(String name){
+        switch(name) {
+            case "ship":
+            {
+                switch(MathUtils.random(1,3)){
+                    case 1: return Gdx.audio.newSound(Gdx.files.internal("Sounds/fly_1.wav"));
+                    case 2: return Gdx.audio.newSound(Gdx.files.internal("Sounds/fly_2.wav"));
+                    case 3: return Gdx.audio.newSound(Gdx.files.internal("Sounds/fly_3.wav"));
+                }
+            }
+            case "collision": return Gdx.audio.newSound(Gdx.files.internal("Sounds/collision.wav"));
+            default: throw new IllegalArgumentException("Incorrect name of system's variable");
+        }
+    }
+
+    /**
+     * Метод, определяющий ныне выбранный скрин:
      * 0 - MainMenuScreen
      * 1 - ConfigScreen и SetScreen
      * 2 - MainPlayScreen
@@ -171,7 +212,7 @@ public class Process extends Game {
         CURRENT_SCREEN = index;
     }
     /**
-     * Функция получения скрина в соответсвии с его идентификационным номером
+     * Функция получения скрина в соответсвии с его идентификационным номером:
      * 0 - MainMenuScreen
      * 1 - ConfigScreen
      * 2 - SetScreen

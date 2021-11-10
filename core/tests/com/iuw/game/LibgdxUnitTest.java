@@ -43,11 +43,14 @@ public abstract class LibgdxUnitTest {
         Gdx.files = Mockito.mock(Files.class);
         FileHandle file = Mockito.mock(FileHandle.class);
         Reader reader = Mockito.mock(Reader.class);
-
         Mockito.when(Gdx.files.internal(Mockito.anyString()))
                         .thenReturn(file);
         Mockito.when(file.sibling(Mockito.anyString()))
                 .thenReturn(file);
+        Mockito.when(file.name())
+                .thenReturn("pixel_planet.png");
+        Mockito.when(file.readBytes())
+                .thenReturn(new byte[]{1, 3, 5});
         Mockito.when(file.reader(Mockito.anyString()))
                 .thenReturn(reader);
         char[] data = new char[1024];

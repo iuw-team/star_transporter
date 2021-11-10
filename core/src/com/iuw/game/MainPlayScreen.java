@@ -25,7 +25,6 @@ public class MainPlayScreen extends ScreenAdapter {
     Process game;
     private float cameraScale;
     private boolean keyPressed;
-    private float elapsedTime;
 
     public MainPlayScreen(final Process game) {
         this.game = game;
@@ -33,35 +32,80 @@ public class MainPlayScreen extends ScreenAdapter {
         cameraScale = 1f;
         keyPressed = false;
         camera = new OrthographicCamera(cameraScale * Process.SCREEN_WIDTH, cameraScale * Process.SCREEN_HEIGHT);
-        shapeRenderer = new ShapeRenderer();
-        shipTexture = new Texture("pixel_ship.png");
-        sunTexture = new Texture("star_0.png");
-        planetTexture = new Texture("pixel_planet.png");
+        shapeRenderer = game.getShapeRenderer();
+        shipTexture = game.getTextureByName("ship");
+        sunTexture = game.getTextureByName("star");
+        planetTexture = game.getTextureByName("planet");
         sim = new PhysicalSimulation();
 
         sim.setShipTexture(shipTexture);
         sim.setSunTexture(sunTexture);
-
-        //todo planet generation
         createPlanets(GameSettings.getSystemVariableByName("planets"));
     }
 
     @Override
     public void render(float dt) {
-        float thrust = 0f;
-        float steering;
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            thrust += 100f;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            thrust -= 100f;
+        setShipController();
+        sim.update(dt);
+
+        game.batch.setProjectionMatrix(camera.combined);
+        game.batch.begin();
+        sim.draw(game.batch);
+        game.batch.end();
+        setCameraControl(dt);
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(0.1f, 0.7f, 0.4f, 1f);
+        //массив из координант которых рисуем кружки
+        ArrayList<Vector2> trajectory = sim.ship.getPath(6, dt, sim.SUN_POS, sim.SUN_MASS);
+
+        for (Vector2 point : trajectory) {
+            shapeRenderer.circle(point.x, point.y, 2);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            steering = -1f;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            steering = 1f;
-        } else {
-            steering = 0f;
+
+        shapeRenderer.setColor(0.6f, 0.3f, 0.4f, 1f);
+        for (PhysicalObject planet : sim.planets) {
+            trajectory = planet.getPath(6, dt, sim.SUN_POS, sim.SUN_MASS);
+            for (int i = 0; i < trajectory.size(); i++) {
+                Vector2 point = trajectory.get(i);
+                shapeRenderer.circle(point.x, point.y, 2);
+            }
         }
+        shapeRenderer.end();
+    }
+
+    @Override
+    public void dispose() {
+        //todo make dispose
+    }
+
+    /**
+     * Инициализация планет
+     *
+     * @param quantity - число планет
+     */
+    private void createPlanets(int quantity) {
+        float mass = 100f;
+        int radius = 10;
+        int partX = 1, partY = 1;
+        Vector2 position = new Vector2(-75, 75);
+        for (int i = 1; i <= quantity; i++) {
+            sim.createPlanet(radius, mass, position, new Vector2(), planetTexture);
+            radius *= MathUtils.random(1.2f, 1.4f);
+            mass *= MathUtils.random(1.4f, 1.7f);
+            if (MathUtils.random(1, 2) == 1) partX = -partX;
+            if (MathUtils.random(1, 2) == 1) partY = -partY;
+            position.x = partX * position.x * 1.3f;
+            position.y = partX * position.y * 1.3f;
+        }
+    }
+
+    /**
+     * Определяет охватываемую площадь и положение камеры
+     *
+     * @param deltaTime - время изменение кадра
+     */
+    private void setCameraControl(float deltaTime) {
         if (!keyPressed) {
             if (Gdx.input.isKeyPressed(Input.Keys.NUM_1) && cameraScale > 0.4f) {
                 cameraScale -= 0.05;
@@ -91,59 +135,41 @@ public class MainPlayScreen extends ScreenAdapter {
                 float temp = (float) Math.sqrt(camera.position.y * camera.position.y + camera.position.x * camera.position.x);
                 float cos = camera.position.x / temp, sin = camera.position.y / temp;
                 camera.position.set(
-                        camera.position.x - cos * GameSettings.DEFAULT_CAMERA_SPEED * dt,
-                        camera.position.y - sin * GameSettings.DEFAULT_CAMERA_SPEED * dt,
+                        camera.position.x - cos * GameSettings.DEFAULT_CAMERA_SPEED * deltaTime,
+                        camera.position.y - sin * GameSettings.DEFAULT_CAMERA_SPEED * deltaTime,
                         0f);
             }
             camera.update();
         } else if (!Gdx.input.isKeyPressed(Input.Keys.NUM_1) || !Gdx.input.isKeyPressed(Input.Keys.NUM_2))
             keyPressed = false;
+    }
 
-        sim.setInput(steering, thrust);
-        sim.update(dt);
-
-        game.batch.setProjectionMatrix(camera.combined);
-        game.batch.begin();
-        sim.draw(game.batch);
-        game.batch.end();
-
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(0.1f, 0.7f, 0.4f, 1f);
-        //массив из координанЮ на которых рисуем кружки
-        ArrayList<Vector2> trajectory = sim.ship.getPath(6, dt, sim.SUN_POS, sim.SUN_MASS);
-
-        for (Vector2 point : trajectory) {
-            shapeRenderer.circle(point.x, point.y, 2);
-        }
-
-        shapeRenderer.setColor(0.6f, 0.3f, 0.4f, 1f);
-        for (PhysicalObject planet : sim.planets) {
-            trajectory = planet.getPath(6, dt, sim.SUN_POS, sim.SUN_MASS);
-            for (int i = 0; i < trajectory.size(); i++) {
-                Vector2 point = trajectory.get(i);
-                shapeRenderer.circle(point.x, point.y, 2);
+    private void setShipController() {
+        float deltaTime = 0.01f;
+        if (GameSettings.soundIsPlaying) {
+            GameSettings.elapsedTime += delayTime;
+            if (GameSettings.elapsedTime > GameSettings.playTime) GameSettings.soundIsPlaying = false;
+        } else {
+            float thrust = 0f;
+            float steering;
+            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+                thrust += 50;
+            } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+                thrust -= 50;
             }
-        }
-        shapeRenderer.end();
-    }
-
-    @Override
-    public void dispose() {
-        //todo make dispose
-    }
-    private void createPlanets(int quantity){
-        float mass = 100f; int radius = 10;
-        int partX = 1, partY = 1;
-        Vector2 position = new Vector2(-75, 75);
-        for(int i = 1; i<=quantity; i++) {
-            sim.createPlanet(radius, mass, position, new Vector2(), planetTexture);
-            radius *= MathUtils.random(1.2f, 1.4f);
-            mass *= MathUtils.random(1.4f, 1.7f);
-            if (MathUtils.random(1,2) == 1) partX = -partX;
-            if (MathUtils.random(1,2) == 1) partY = -partY;
-            position.x =  partX * position.x * 1.3f;
-            position.y = partX * position.y * 1.3f;
+            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+                steering = -1f;
+            } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+                steering = 1f;
+            } else {
+                steering = 0f;
+            }
+            if (thrust != 0f) {
+                System.out.println(true);
+                game.getSoundByName("ship").play(GameSettings.getVolumeLevelByName("sound"));
+                GameSettings.soundIsPlaying = true;
+            }
+            sim.setInput(steering, thrust);
         }
     }
 }
@@ -334,7 +360,7 @@ class PhysicalSimulation {
         ship.makeRoundOrbit(SUN_MASS, SUN_POS, true);
 
         sun = new PhysicalObject(0, 0, 0, 0, 100);
-      //  sun.applyAngularAcceleration(-0f, 1f);
+        //  sun.applyAngularAcceleration(-0f, 1f);
 
         planets = new ArrayList<>();
     }

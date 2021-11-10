@@ -40,14 +40,14 @@ public class SetScreen implements Screen {
         posY = 400f;
         for (int i = 0; i < 2; i++, posY -= 100f) {
             final Slider volume = game.getSlider();
-            volume.setValue(Process.VOLUME_LEVELS[i]);
+            volume.setValue(GameSettings.VOLUME_LEVELS[i]);
             volume.setPosition(posX, posY);
             volume.setSize(Process.SLIDER_WIDTH, Process.SLIDER_HEIGHT);
             final Integer index = i;
             volume.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    Process.VOLUME_LEVELS[index] = volume.getValue();
+                    GameSettings.VOLUME_LEVELS[index] = volume.getValue();
                 }
             });
             stage.addActor(volume);
