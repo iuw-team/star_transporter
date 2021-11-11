@@ -27,7 +27,7 @@ public class SetScreen implements Screen {
         game.setCurrentScreen(1);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
-        img = new Texture("main_theme.jpg");
+        // img = new Texture("main_theme.jpg");
         stage = new Stage(new ScreenViewport());
 
         float posX = 325f;
@@ -112,8 +112,8 @@ public class SetScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        Process.SCREEN_WIDTH = width;
-        Process.SCREEN_HEIGHT = height;
+        // Process.SCREEN_WIDTH = width;
+        // Process.SCREEN_HEIGHT = height;
     }
 
     @Override
@@ -136,6 +136,6 @@ public class SetScreen implements Screen {
     public void dispose() {
         stage.dispose();
 
-        img.dispose();
+        //img.dispose();
     }
 }

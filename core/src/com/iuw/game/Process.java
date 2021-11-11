@@ -2,6 +2,7 @@ package com.iuw.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -21,7 +22,7 @@ public class Process extends Game {
     /**
      * Поле основной фоновой мелодии
      */
-    public Music SpaceMusic;
+    //public Music SpaceMusic;
     /**
      * Поле скина, хранящего информацию о текстурах кнопок и иных компонентов графического интерфейса
      */
@@ -145,7 +146,7 @@ public class Process extends Game {
             case 2:
                 return new SetScreen(this);
             default:
-                return new MainPlayScreen(this, SYSTEM_VARIABLES);
+                return new MainPlayScreen(this);
         }
 
     }

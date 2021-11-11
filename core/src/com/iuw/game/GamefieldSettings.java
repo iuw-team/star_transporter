@@ -5,6 +5,8 @@ public class GamefieldSettings {
     // #todo
 }
 
+/*
 public class GameTextures {
     ArrayList<Texture> planetTextures;
 }
+ */
