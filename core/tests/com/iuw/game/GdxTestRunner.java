@@ -28,8 +28,7 @@ public class GdxTestRunner extends BlockJUnit4ClassRunner implements Application
         Gdx.gl = mock(GL20.class);
     }
 
-    @Override
-    public void create() {
+    @Override    public void create() {
     }
 
     @Override

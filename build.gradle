@@ -74,7 +74,6 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
-
     }
 }
 
@@ -120,10 +119,15 @@ project(":core") {
         testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
         testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 
+        testImplementation 'org.mockito:mockito-all:2+'
+
+        testImplementation "org.powermock:powermock-module-junit4:2.0.7"
+        testImplementation "org.powermock:powermock-module-junit4-rule:2.0.7"
+        testImplementation "org.powermock:powermock-api-mockito2:2.0.7"
+        testImplementation "org.powermock:powermock-classloading-xstream:1.6.6"
          //testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
        // testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
         compile 'junit:junit:4.12'
-        testCompile "org.mockito:mockito-all:1.10.19"
         testCompile "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
         testCompile "com.badlogicgames.gdx:gdx:$gdxVersion"
         testCompile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
@@ -136,7 +140,9 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
-        api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
-        api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+       api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
+       api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+       // testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+
     }
 }

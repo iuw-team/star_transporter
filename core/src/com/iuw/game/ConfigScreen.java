@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.Array;
 import org.jetbrains.annotations.NotNull;
 
 public class ConfigScreen implements Screen {
@@ -32,7 +32,7 @@ public class ConfigScreen implements Screen {
         game.setCurrentScreen(1);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
-        stage = new Stage(new ScreenViewport());
+        stage = game.getStage();
         InitBoxes();
         InitButtons();
         InitLabels();
@@ -79,23 +79,25 @@ public class ConfigScreen implements Screen {
     private void InitBoxes() {
         final float posX = (Process.SCREEN_WIDTH - Process.BOX_WIDTH) / 2f;
         float posY = 500f;
-        String[][] boxItems = new String[][]{
-                new String[]{"4", "5", "6", "7"},  // Количество планет
-                new String[]{"1", "2", "3", "4"},  //Количество грузов
-                new String[]{"Slow", "Medium", "Fast"},  //Варианты скорости корабля
-                new String[]{"Ia", "Ib", "II", "III", "IV", "V"}  //Типы звёзд
-        };
+        Array<Array<String>> boxItems = new Array<>();
+        boxItems.add(
+                new Array<>(new String[]{"4", "5", "6", "7"}),
+                new Array<>(new String[]{"1", "2", "3", "4"}),
+                new Array<>(new String[]{"Slow", "Medium", "Fast"}),
+                new Array<>(new String[]{"Ia", "Ib", "II", "III", "IV", "V"})
+
+        );
         for (int i = 0; i < 4; i++, posY -= 100f) {
-            final SelectBox<String> box = new SelectBox<>(Process.gameSkin);
+            final SelectBox<String> box = game.getSelectBox();
             box.setPosition(posX, posY);
             box.setSize(Process.BOX_WIDTH, Process.BOX_HEIGHT);
-            box.setItems(boxItems[i]);
-            Process.SYSTEM_VARIABLES[i] = boxVariables[i][0];
+            box.setItems(boxItems.get(i));
+            GameSettings.setSystemVariables(i, boxVariables[i][0]);
             final Integer index = i;
             box.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    Process.SYSTEM_VARIABLES[index] = boxVariables[index][box.getSelectedIndex()];
+                    GameSettings.setSystemVariables(index, boxVariables[index][box.getSelectedIndex()]);
                 }
             });
             this.stage.addActor(box);
@@ -106,9 +108,9 @@ public class ConfigScreen implements Screen {
         final String[] butName = new String[]{"X", "Play"};
         final float[][] butPos = new float[][]{
                 {50f, 500f},
-                {Process.SCREEN_WIDTH/2f - Process.SMALL_BUTTON_WIDTH/2f, 150f}};
+                {Process.SCREEN_WIDTH / 2f - Process.SMALL_BUTTON_WIDTH / 2f, 150f}};
         for (int i = 0; i < 2; i++) {
-            final TextButton button = new TextButton(butName[i], Process.gameSkin);
+            final TextButton button = game.getTextButton(butName[i]);
             button.setPosition(butPos[i][0], butPos[i][1]);
             button.setSize(Process.SMALL_BUTTON_WIDTH, Process.SMALL_BUTTON_HEIGHT);
 
@@ -134,7 +136,7 @@ public class ConfigScreen implements Screen {
         float posY = 530f;
         for (int i = 0; i < 4; i++, posY -= 100f) {
 
-            final Label label = new Label(labelText[i], Process.gameSkin);
+            final Label label = game.getLabel(labelText[i]);
             label.setFontScale(Process.TYPE);
             label.setPosition(posX, posY);
             label.setSize(Process.BOX_WIDTH, Process.BOX_HEIGHT);
