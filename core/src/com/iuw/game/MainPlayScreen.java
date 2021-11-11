@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class MainPlayScreen extends ScreenAdapter {
     Texture shipTexture;
     Texture sunTexture;
     Texture planetTexture;
+    Texture asteroidTexture;
     PhysicalSimulation sim;
     OrthographicCamera camera;
     ShapeRenderer shapeRenderer;
@@ -36,12 +38,14 @@ public class MainPlayScreen extends ScreenAdapter {
         shipTexture = game.getTextureByName("ship");
         sunTexture = game.getTextureByName("star");
         planetTexture = game.getTextureByName("planet");
+        asteroidTexture = game.getTextureByName("asteroid");
         sim = new PhysicalSimulation();
 
         sim.setShipTexture(shipTexture);
         sim.setSunTexture(sunTexture);
         createPlanets(GameSettings.getSystemVariableByName("planets"));
     }
+
 
     @Override
     public void render(float dt) {
@@ -66,8 +70,7 @@ public class MainPlayScreen extends ScreenAdapter {
         shapeRenderer.setColor(0.6f, 0.3f, 0.4f, 1f);
         for (PhysicalObject planet : sim.planets) {
             trajectory = planet.getPath(6, dt, sim.SUN_POS, sim.SUN_MASS);
-            for (int i = 0; i < trajectory.size(); i++) {
-                Vector2 point = trajectory.get(i);
+            for (Vector2 point : trajectory) {
                 shapeRenderer.circle(point.x, point.y, 2);
             }
         }
@@ -144,6 +147,9 @@ public class MainPlayScreen extends ScreenAdapter {
             keyPressed = false;
     }
 
+    /**
+     * Настро
+     */
     private void setShipController() {
         float deltaTime = 0.01f;
         if (GameSettings.soundIsPlaying) {
@@ -352,19 +358,25 @@ class PhysicalSimulation {
 
     PhysicalObject ship;
     PhysicalObject sun;
+    Array<PhysicalObject> asteroids;
     ArrayList<PhysicalObject> planets;
 
     public PhysicalSimulation() {
         simSpeedFactor = 1;
         ship = new PhysicalObject(100, 0, 0, 1, 1);
         ship.makeRoundOrbit(SUN_MASS, SUN_POS, true);
-
         sun = new PhysicalObject(0, 0, 0, 0, 100);
-        //  sun.applyAngularAcceleration(-0f, 1f);
-
+          sun.applyAngularAcceleration(-0f, 1f);
         planets = new ArrayList<>();
+        asteroids = new Array<>();
     }
+    public void createAsteroid(int asteroidRadius, float asteroidRotation, Vector2 position, Vector2 orbitDisturb, Texture texture){
+//     PhysicalObject asteroid = new PhysicalObject((position.x, position.y, 0, 1f);
+//     asteroid.applyAngularAcceleration(asteroidRotation, 1f);
+//     asteroid.setTexture(texture);
+//        asteroid.setSize(asteroidRadius * 2, asteroidRadius * 2);
 
+    }
     public void createPlanet(int planetRadius, float planetRotation, Vector2 pos, Vector2 orbitDisturb, Texture texture) {
         PhysicalObject planet = new PhysicalObject(pos.x, pos.y, 0, 0, 1f);
         planet.makeRoundOrbit(SUN_MASS, SUN_POS, true);
@@ -406,6 +418,10 @@ class PhysicalSimulation {
                 planet.applyGravity(SUN_POS, SUN_MASS);
                 planet.update(deltaTime);
             }
+            for (PhysicalObject asteroid : asteroids) {
+                //asteroid.applyGravity(SUN_POS, SUN_MASS);
+                asteroid.update(deltaTime);
+            }
             sun.update(deltaTime);
         }
 
@@ -417,7 +433,9 @@ class PhysicalSimulation {
     public void draw(SpriteBatch batch) {
         ship.draw(batch);
         sun.draw(batch);
-
+        for (PhysicalObject asteroid : planets) {
+            asteroid.draw(batch);
+        }
         for (PhysicalObject planet : planets) {
             planet.draw(batch);
         }

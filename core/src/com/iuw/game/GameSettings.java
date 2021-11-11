@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 
 public class GameSettings {
+    private GameSettings(){}
     public final static float DEFAULT_CAMERA_SPEED = 500f;
     /**
      * Переменные конфигурации системы
@@ -55,7 +56,9 @@ public class GameSettings {
         }
 
     }
-
+    /**
+     * Настроить значение глобальной переменной системы по индексу
+     */
     public static void setSystemVariables(int index, int value) {
         SYSTEM_VARIABLES[index] = value;
     }

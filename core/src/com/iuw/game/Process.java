@@ -43,10 +43,6 @@ public class Process extends Game {
      */
     public static Integer ChosenSkin = 0;
     /**
-     * Громкость фоновой музыки и игровых звуков
-     */
-
-    /**
      * Варианты скинов
      */
     final private Skin[] skins = new Skin[2];
@@ -105,6 +101,8 @@ public class Process extends Game {
         } else if (!Gdx.input.isKeyPressed(Input.Keys.ESCAPE) && exitPressed) {
             exitPressed = false;
         }
+        if(Gdx.input.isKeyPressed((Input.Keys.ENTER))) this.setScreen(this.GetNextScreen(this.CURRENT_SCREEN + 1));
+
     }
 
     /**
@@ -130,10 +128,10 @@ public class Process extends Game {
         return new SpriteBatch();
     }
     /**
-     * Возвращает new SelectBox <String>
+     * @return SelectBox<String>
      */
     public SelectBox<String> getSelectBox(){
-        return new SelectBox(gameSkin);
+        return new SelectBox<>(gameSkin);
     }
     /**
      * Возвращает new TextButton с надписью text
@@ -170,6 +168,7 @@ public class Process extends Game {
      * ship - текстура корабля
      * star - текстура звезды
      * planet - текстура планеты
+     * asteroid - текстура астероида
      */
     public Texture getTextureByName(String name){
         switch(name){

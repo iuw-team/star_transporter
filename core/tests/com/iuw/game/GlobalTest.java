@@ -17,7 +17,10 @@ public class GlobalTest extends LibgdxUnitTest {
                 Process.BUTTON_HEIGHT != 0 && Process.BOX_WIDTH != 0 && Process.BOX_HEIGHT != 0 &&
                 Process.SMALL_BUTTON_WIDTH != 0 && Process.SMALL_BUTTON_HEIGHT != 0 &&
                 Process.SLIDER_WIDTH != 0 && Process.SLIDER_HEIGHT != 0 &&
-                Process.ChosenSkin != null && GameSettings.VOLUME_LEVELS[0] != 0 && GameSettings.VOLUME_LEVELS[1] != 0)
+                Process.ChosenSkin != null && GameSettings.VOLUME_LEVELS[0] != 0 && GameSettings.VOLUME_LEVELS[1] != 0 &&
+                GameSettings.getSystemVariableByName("planets") == 0 && GameSettings.getSystemVariableByName("velocity") == 0 &&
+                GameSettings.getSystemVariableByName("goods") == 0 && GameSettings.getSystemVariableByName("star") == 0 &&
+                GameSettings.getVolumeLevelByName("sound") == 0.5f && GameSettings.getVolumeLevelByName("music") == 0.5f)
             System.out.println("Data is good");
         else System.out.println("Some data are lost");
     }
@@ -27,7 +30,7 @@ public class GlobalTest extends LibgdxUnitTest {
         Process game = Mockito.mock(Process.class);
         Stage stage = Mockito.mock(Stage.class);
         SpriteBatch batch = Mockito.mock(SpriteBatch.class);
-        SelectBox box = Mockito.mock(SelectBox.class);
+        SelectBox box = Mockito.mock((SelectBox.class));
         TextButton button = Mockito.mock(TextButton.class);
         Label label = Mockito.mock(Label.class);
         CheckBox check = Mockito.mock(CheckBox.class);
