@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,15 +16,16 @@ public class MainMenuScreen implements Screen {
     private final Stage stage;
     private final Texture img;
     private final OrthographicCamera camera;
-  
-    public MainMenuScreen(@NotNull final Process game) {
+
+    public MainMenuScreen(final Process game) {
         this.game = game;
         game.setCurrentScreen(0);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
 
         final String[] ButtonName = new String[]{"Play", "Settings", "Exit"};
-        img = new Texture("main_theme.jpg");
+        img = new Texture("main-theme.png");
+
         stage = new Stage(new ScreenViewport());
         final float posX = 50f;
         float posY = 400f;

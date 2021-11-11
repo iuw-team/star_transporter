@@ -2,7 +2,6 @@ package com.iuw.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -17,6 +16,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
  */
 public class Process extends Game {
     public SpriteBatch batch;
+    public Music SpaceMusic;
     public BitmapFont font;
     /**
      * Поле основной фоновой мелодии
