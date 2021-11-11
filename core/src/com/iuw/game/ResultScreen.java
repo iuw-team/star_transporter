@@ -65,8 +65,7 @@ public class ResultScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        Process.SCREEN_WIDTH = width;
-        Process.SCREEN_HEIGHT = height;
+
     }
 
     @Override
