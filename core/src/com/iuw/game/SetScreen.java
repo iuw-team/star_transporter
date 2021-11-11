@@ -26,7 +26,7 @@ public class SetScreen implements Screen {
         this.game = game;
         game.setCurrentScreen(1);
         camera = new OrthographicCamera();
-        stage = new Stage(new ScreenViewport());
+        stage = game.getStage();
 
         float posX = 325f;
         float posY = 350f;
@@ -80,7 +80,7 @@ public class SetScreen implements Screen {
             });
             stage.addActor(checks[i]);
         }
-        TextButton t_but_exit = new TextButton("Save and exit", Process.gameSkin);
+        TextButton t_but_exit = game.getTextButton("Save and Exit");
         t_but_exit.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
         t_but_exit.addListener(new ClickListener() {
             @Override
