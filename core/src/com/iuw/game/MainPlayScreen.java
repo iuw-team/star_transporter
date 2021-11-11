@@ -167,8 +167,8 @@ public class MainPlayScreen extends ScreenAdapter {
         assert quantity <= 8;
 
         var MAX_DELTA_ORBIT = 200f;
-        var MIN_PLANET = 3f;
-        var MAX_PLANET = 20f;
+        var MIN_PLANET = 15f;
+        var MAX_PLANET = 30f;
 
         var MAX_ORBIT = 400f + Math.random() * 100f;
 
@@ -300,7 +300,6 @@ class PhysicalObject {
     }
 
     // todo rewrite this probably
-
     public ArrayList<Vector2> getPath(float spacing, float deltaTime, Vector2 sunPos, float sunMass) {
         if (!pathReqUpdate) {
             return curPath;
@@ -481,7 +480,7 @@ class PhysicalSimulation {
 
     public void setShipTexture(Texture texture) {
         ship.setTexture(texture);
-        ship.setSize(20, 20);
+        ship.setSize(30, 30);
     }
 
     public void setSunTexture(Texture texture) {
@@ -512,7 +511,7 @@ class PhysicalSimulation {
 
     public boolean isShipPlanetCollision(int planetId){
         var planet =planets.get(planetId);
-        return (planet.position.dst2(ship.position) < planet.radius*planet.radius);
+        return planet.collidesWith(ship);
     }
 
     public void draw(SpriteBatch batch) {
