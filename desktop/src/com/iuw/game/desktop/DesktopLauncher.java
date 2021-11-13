@@ -10,7 +10,7 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setTitle(title);
 		//config.setWindowedMode(800, 600);
-			config.setWindowedMode(1024, 768);
+			config.setWindowedMode(800, 600);
 		config.setResizable(false);
 		new Lwjgl3Application(new Process(), config);
 	}
