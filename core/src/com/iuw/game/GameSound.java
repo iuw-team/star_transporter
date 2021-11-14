@@ -13,6 +13,10 @@ public class GameSound {
     Sound spaceAmbienceS;
     Sound explosionS;
 
+    Sound getSound(String filename) {
+        return Gdx.audio.newSound(Gdx.files.internal("Sounds/".concat(filename)));
+    }
+
     public GameSound() {
         engineS = getSound("space_engine.wav");
         engineRunning = false;
@@ -64,10 +68,9 @@ public class GameSound {
         doneS.play();
     }
 
-    Sound getSound(String filename) {
-        return Gdx.audio.newSound(Gdx.files.internal("Sounds/".concat(filename)));
+    public void explosion() {
+        explosionS.play();
     }
-
     public void dispose(){
         engineS.dispose();
         turnS.dispose();

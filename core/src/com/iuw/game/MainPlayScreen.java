@@ -90,20 +90,20 @@ public class MainPlayScreen extends ScreenAdapter {
         setShipController();
         sim.update(dt);
 
-        // Ship path
         ArrayList<Vector2> trajectory = sim.ship.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
         Vector2 cameraPoint = new Vector2(sim.ship.apoapsis).interpolate(sim.ship.periapsis, 0.5f, Interpolation.linear);
 
-        //camera.position.set(, 0f);
         camera.zoom = 2.0f;
         camera.update();
-
-        //setCameraControl(dt);
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
 
         sim.draw(game.batch);
+        if (sim.isShipSunCollision()){
+            gameState = GameState.DONE;
+            sound.explosion();
+        }
 
         switch (gameState) {
             case TARGET_FIRST:
@@ -532,6 +532,10 @@ class PhysicalSimulation {
     public boolean isShipPlanetCollision(int planetId) {
         var planet = planets.get(planetId);
         return planet.collidesWith(ship);
+    }
+
+    public boolean isShipSunCollision() {
+        return ship.collidesWith(sun);
     }
 
     public void draw(SpriteBatch batch) {
