@@ -23,13 +23,11 @@ public class ConfigScreen extends ScreenAdapter {
     private final Process game;
     private final Stage stage;
     private final OrthographicCamera camera;
-    private final Integer defMass = 10;
     private final Integer[][] boxVariables = new Integer[][]{
             new Integer[]{4, 5, 6, 7}, //list for planet number
             new Integer[]{1, 2, 3, 4}, //number of loads for delivery
-            new Integer[]{10, 20, 30}, //speed of the ship
-            new Integer[]{defMass, 2 * defMass, 3 * defMass,
-                    defMass, 2 * defMass, 3 * defMass}, //mass of definite star
+            new Integer[]{1, 3, 5, 7}, //quantity of asteroids
+            new Integer[]{1, 2, 3, 4, 5, 6}, //system speedFactor or may be exactly star mass
     };
 
     /**
@@ -90,7 +88,7 @@ public class ConfigScreen extends ScreenAdapter {
         boxItems.add(
                 new Array<>(new String[]{"4", "5", "6", "7"}),
                 new Array<>(new String[]{"1", "2", "3", "4"}),
-                new Array<>(new String[]{"Slow", "Medium", "Fast"}),
+                new Array<>(new String[]{"1", "3", "5", "7"}),
                 new Array<>(new String[]{"Ia", "Ib", "II", "III", "IV", "V"})
 
         );
@@ -136,16 +134,15 @@ public class ConfigScreen extends ScreenAdapter {
         final String[] labelText = new String[]{
                 "Number of planet",
                 "Quantity of goods ",
-                "Ship's velocity",
+                "Number of asteroids",
                 "System star type",
         };
-        final float posX = (Process.SCREEN_WIDTH / 2f - Process.BOX_WIDTH);
+        final float posX = (Process.SCREEN_WIDTH / 2f);
         float posY = 530f;
         for (int i = 0; i < 4; i++, posY -= 100f) {
-
             final Label label = game.getLabel(labelText[i]);
             label.setFontScale(Process.TYPE);
-            label.setPosition(posX, posY);
+            label.setPosition(posX - label.getWidth()/1.3f, posY);
             label.setSize(Process.BOX_WIDTH, Process.BOX_HEIGHT);
             stage.addActor(label);
         }

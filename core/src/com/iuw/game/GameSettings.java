@@ -29,29 +29,32 @@ public class GameSettings {
                 throw new IllegalArgumentException("Incorrect name of sound/music");
         }
     }
-
+    /**
+     * Возвращает Заголовок ResultScreen
+     */
     public static String getGameResult() {
         return result;
     }
-
     /**
-     * Возвращает переменную системы по имени
-     * "planets" - число планет
-     * "goods" - число грузов
-     * "velocity" - скорость корабля
-     * "star" - массу звезды
+     * Настроить Заголовок ResultScreen
      */
     public static void setGameResult(String result) {
         GameSettings.result = result;
     }
-
+    /**
+     * Возвращает переменную системы по имени
+     * "planets" - число планет
+     * "goods" - число грузов
+     * "asteroids" - число астероидов
+     * "star" - массу звезды
+     */
     public static Integer getSystemVariableByName(String name) {
         switch (name) {
             case "planets":
                 return SYSTEM_VARIABLES[0];
             case "goods":
                 return SYSTEM_VARIABLES[1];
-            case "velocity":
+            case "asteroids":
                 return SYSTEM_VARIABLES[2];
             case "star":
                 return SYSTEM_VARIABLES[3];

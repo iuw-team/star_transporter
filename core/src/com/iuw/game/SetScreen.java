@@ -24,18 +24,16 @@ public class SetScreen extends ScreenAdapter {
         game.setCurrentScreen(1);
         camera = new OrthographicCamera();
         stage = game.getStage();
-
-        float posX = 325f;
         float posY = 350f;
-        final String[] labelName = new String[]{"Music", "Sound", "Chosen interface"};
-        for (int i = 0; i < 3; i++, posY += 100f) {
+        final String[] labelName = new String[]{"Music", "Sound"};
+        for (int i = 0; i < 2; i++, posY += 100f) {
             final Label label = game.getLabel(labelName[i]);
             label.setFontScale(2f, 2f);
-            label.setPosition(posX, posY);
+            label.setPosition(Process.SCREEN_WIDTH / 2f - label.getWidth(), posY);
             stage.addActor(label);
         }
         //Sliders
-        posX = Process.SCREEN_WIDTH / 2f - Process.SLIDER_WIDTH / 2f;
+        float posX = Process.SCREEN_WIDTH / 2f - Process.SLIDER_WIDTH / 2f;
         posY = 400f;
         for (int i = 0; i < 2; i++, posY -= 100f) {
             final Slider volume = game.getSlider();
@@ -57,8 +55,8 @@ public class SetScreen extends ScreenAdapter {
         final CheckBox[] checks = new CheckBox[2];
         boolean WhoChosen = Process.ChosenSkin != 1;
         posY = 500f;
-        posX = 150f;
-        for (int i = 0; i < 2; i++, posX += 300f) {
+        posX = Process.SCREEN_WIDTH / 5f;
+        for (int i = 0; i < 2; i++, posX += Process.SCREEN_WIDTH / 2f) {
             checks[i] = game.getCheckBox(words[i]);
             checks[i].setPosition(posX, posY);
             checks[i].setSize(100f, 100f);
@@ -86,7 +84,7 @@ public class SetScreen extends ScreenAdapter {
 
             }
         });
-        t_but_exit.setPosition(170, 100);
+        t_but_exit.setPosition(Process.SCREEN_WIDTH/2f - Process.BUTTON_WIDTH/2f, 100f);
         stage.addActor(t_but_exit);
     }
 
