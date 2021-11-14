@@ -33,14 +33,6 @@ public class GlobalTest extends LibgdxUnitTest {
             System.out.println("Data is good");
         else System.out.println("Some data are lost");
     }
-@Test
-public void ProcessTest(){
-    Texture texture = new Texture(super.textureData);
-
-//   Assertions.assertAll(()-> Assertions.assertNull( game.getTextureByName("ship")
-//    ));
-}
-
     @Test
     public void UITest() {
         OrthographicCamera camera = new OrthographicCamera();
@@ -53,12 +45,16 @@ public void ProcessTest(){
         Label label = Mockito.mock(Label.class);
         CheckBox check = Mockito.mock(CheckBox.class);
         Slider slider = Mockito.mock(Slider.class);
-        Texture texture = Mockito.mock(Texture.class);
         Sound sound = Mockito.mock(Sound.class);
+        Texture texture = Mockito.mock(Texture.class);
         Music music = Mockito.mock(Music.class);
         game.batch = batch;
+        GameSettings.game = game;
+
         Mockito.when(game.getBatch())
                 .thenReturn(batch);
+        Mockito.when(game.getSound(Mockito.anyString()))
+                .thenReturn(sound);
         Mockito.when(game.getStage())
                 .thenReturn(stage);
         Mockito.when(game.getSelectBox())
@@ -75,13 +71,8 @@ public void ProcessTest(){
                 .thenReturn(texture);
         Mockito.when(game.getShapeRenderer())
                 .thenReturn(shape);
-        Mockito.when(game.getSoundByName(Mockito.anyString()))
-                .thenReturn(sound);
-        Mockito.when(game.getMusic())
-                .thenReturn(music);
 
-        assertEquals(music, game.getMusic());
-        assertEquals(sound, game.getSoundByName(Mockito.anyString()));
+        assertEquals(sound, game.getSound(Mockito.anyString()));
         assertEquals(shape, game.getShapeRenderer());
         assertEquals(stage, game.getStage());
         assertEquals(batch, game.getBatch());
@@ -212,13 +203,22 @@ public void ProcessTest(){
         assertSame(GameState.DONE, play.gameState);
 
 
+        GameSound sounds = new GameSound();
+        sounds.done();
+        sounds.turnStop();
+        sounds.turnStart();
+        sounds.engineStart();
+        sounds.engineStop();
+        sounds.ambienceStart();
+        sounds.ambienceStop();
+        sounds.dispose();
 
         Process test = new Process();
-        GameSettings.game = game;
-        for(int i = 1; i < 100; i++) {
-            test.getSoundByName("ship");
-        }
-        test.getSoundByName("collision");
+        test.getSound("explosion.mp3");
+        test.getSound("space_ambience.wav");
+        test.getSound("transformer-1.mp3");
+        test.getSound("space_engine.wav");
+
         for(int i = 0; i< 3; i++) {
             test.setCurrentScreen(i);
             Assertions.assertEquals(test.getCurrentScreen(), i);

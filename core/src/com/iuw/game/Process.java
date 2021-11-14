@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -47,10 +46,6 @@ public class Process extends Game {
      */
     final private Skin[] skins = new Skin[2];
     public SpriteBatch batch;
-    /**
-     * Поле основной фоновой мелодии
-     */
-    public Music SpaceMusic;
     private BitmapFont font;
     /**
      * Условный номер выбранного скрина, используемый для перемещения между ними с помощью клавиши Esc
@@ -71,25 +66,22 @@ public class Process extends Game {
     public void create() {
         skins[0] = new Skin(Gdx.files.internal("temp_textures/buttons_pack.json"));
         skins[1] = new Skin(Gdx.files.internal("temp_textures/buttons_pack.json"));
-        if(GameSettings.game == null) GameSettings.game = this;
+        if (GameSettings.game == null) GameSettings.game = this;
         gameSkin = skins[ChosenSkin];
         batch = GameSettings.game.getBatch();
         this.setScreen(new MainMenuScreen(this));
         font = new BitmapFont();
-        SpaceMusic = getMusic();
-        SpaceMusic.setLooping(true);
-        SpaceMusic.play();
     }
 
     /**
-     * Отрисовка всего игрового процесса
+     * Отрисовка игрового процесса
      */
     @Override
     public void render() {
         ScreenUtils.clear(0f, 0f, 0f, 1f);
         super.render();
-        SpaceMusic.setVolume(GameSettings.getVolumeLevelByName("music"));
         gameSkin = skins[ChosenSkin];
+
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) && !exitPressed) {
             exitPressed = true;
             if (CURRENT_SCREEN == 0) {
@@ -97,6 +89,7 @@ public class Process extends Game {
             } else {
                 CURRENT_SCREEN--;
                 this.setScreen(GetScreenByIndex(CURRENT_SCREEN));
+
             }
         } else if (!Gdx.input.isKeyPressed(Input.Keys.ESCAPE) && exitPressed) {
             exitPressed = false;
@@ -109,12 +102,9 @@ public class Process extends Game {
     public void exit() {
         GameSettings.game.batch.dispose();
         this.font.dispose();
-        this.SpaceMusic.dispose();
         this.dispose();
         Gdx.app.exit();
     }
-
-    public Music getMusic(){return Gdx.audio.newMusic(Gdx.files.internal("Sounds/Space.mp3"));}
     /**
      * Возвращает new Stage
      */
@@ -170,6 +160,7 @@ public class Process extends Game {
     public ShapeRenderer getShapeRenderer() {
         return new ShapeRenderer();
     }
+
     /**
      * Возвращает Texture по имени:
      * ship - текстура корабля
@@ -202,11 +193,9 @@ public class Process extends Game {
                 return new Texture("planet8.png");
             case "asteroid":
                 return new Texture("asteroid.png");
-            case "here1":
+            case "signFrom":
                 return new Texture("here.png");
-            case "here2":
-                return new Texture("thenhere.png");
-            case "here3":
+            case "signTo":
                 return new Texture("lasthere.png");
             default:
                 throw new IllegalArgumentException("Incorrect name of system's variable");
@@ -219,25 +208,9 @@ public class Process extends Game {
      * ship - звуки движения корабля
      * collision - звук столкновения
      */
-    public Sound getSoundByName(String name) {
-        switch (name) {
-            case "ship": {
-                switch (MathUtils.random(1, 3)) {
-                    case 1:
-                        return Gdx.audio.newSound(Gdx.files.internal("Sounds/fly_1.wav"));
-                    case 2:
-                        return Gdx.audio.newSound(Gdx.files.internal("Sounds/fly_2.wav"));
-                    case 3:
-                        return Gdx.audio.newSound(Gdx.files.internal("Sounds/fly_3.wav"));
-                }
-            }
-            case "collision":
-                return Gdx.audio.newSound(Gdx.files.internal("Sounds/collision.wav"));
-            default:
-                throw new IllegalArgumentException("Incorrect name of system's variable");
-        }
+    Sound getSound(String filename) {
+        return Gdx.audio.newSound(Gdx.files.internal("Sounds/".concat(filename)));
     }
-
     public int getCurrentScreen() {
         return CURRENT_SCREEN;
     }
@@ -253,19 +226,21 @@ public class Process extends Game {
     }
 
     /**
-     * Функция получения скрина в соответсвии с его идентификационным номером:
+     * Функция получения скрина по его ID:
      * 0 - MainMenuScreen
      * 1 - ConfigScreen
      * 2 - SetScreen
      * 3 - MainPlayScreen
      */
     public Screen GetScreenByIndex(int index) {
+
         switch (index) {
             case 0:
                 return new MainMenuScreen(GameSettings.game);
             case 1:
                 return new ConfigScreen(GameSettings.game);
             case 2:
+
                 return new SetScreen(GameSettings.game);
             case 3:
                 return new MainPlayScreen(GameSettings.game);
@@ -273,8 +248,7 @@ public class Process extends Game {
                 return new ResultScreen(GameSettings.game);
             default:
                 throw new IllegalArgumentException("Incorrect index of screen");
+
         }
-
     }
-
 }

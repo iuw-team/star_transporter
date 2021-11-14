@@ -3,35 +3,28 @@ package com.iuw.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
-import javax.swing.*;
 
 public class ResultScreen implements Screen {
     final Process game;
-    private Stage stage;
-    private Texture img;
-    private OrthographicCamera camera;
+    private final Stage stage;
+    private final OrthographicCamera camera;
 
     public ResultScreen(final Process game) {
         this.game = game;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
-      //  img = new Texture("main_theme.jpg");
+        //  img = new Texture("main_theme.jpg");
         stage = game.getStage();
 
         final String[] ButtonName = new String[]{"Play again", "Settings", "MainMenu"};
         float posX, posY;
-        posX = 200f; posY = 400f;
-        for (int i =0; i < 3; i++, posY -=100f) {
+        posX = 200f;
+        posY = 400f;
+        for (int i = 0; i < 3; i++, posY -= 100f) {
             final TextButton button = game.getTextButton(ButtonName[i]);
             button.setPosition(posX, posY);
             button.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
@@ -40,12 +33,10 @@ public class ResultScreen implements Screen {
             button.addListener(new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
                     game.setScreen(game.GetScreenByIndex(index));
+
                 }
             });
         }
-
-
-
     }
 
     @Override
@@ -58,7 +49,6 @@ public class ResultScreen implements Screen {
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
-        //game.batch.draw(img, 0, 0);
         game.batch.end();
         stage.act();
         stage.draw();
