@@ -4,21 +4,18 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 
 public class GlobalTest extends LibgdxUnitTest {
@@ -33,6 +30,7 @@ public class GlobalTest extends LibgdxUnitTest {
             System.out.println("Data is good");
         else System.out.println("Some data are lost");
     }
+
     @Test
     public void UITest() {
         OrthographicCamera camera = new OrthographicCamera();
@@ -90,7 +88,7 @@ public class GlobalTest extends LibgdxUnitTest {
         MainPlayScreen play = new MainPlayScreen(game);
         play.numDelivered = GameSettings.getSystemVariableByName("goods");
 
-        for(int i = 1; i < 160; i++){
+        for (int i = 1; i < 160; i++) {
             Mockito.when(Gdx.input.isKeyPressed(i))
                     .thenReturn(true);
         }
@@ -98,21 +96,24 @@ public class GlobalTest extends LibgdxUnitTest {
         config.render(1f);
         menu.render(10f);
         set.render(10f);
-        for(int i = 1; i < 160; i++){
+        for (int i = 1; i < 160; i++) {
             Mockito.when(Gdx.input.isKeyPressed(i))
                     .thenReturn(false);
         }
         play.render(0.001f);
+        play.show();
         config.render(1f);
+        config.show();
         menu.render(10f);
+        menu.show();
         set.render(10f);
-
+        set.show();
 
 
         //Input keyboard test
         boolean ans = true;
         int key = 45;
-        for(int i = 0; i < 2; i++, key -= 12) {
+        for (int i = 0; i < 2; i++, key -= 12) {
             Mockito.when(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
                     .thenReturn(ans);
             Mockito.when(Gdx.input.isKeyPressed(Input.Keys.W))
@@ -124,12 +125,14 @@ public class GlobalTest extends LibgdxUnitTest {
             play.render(0.001f);
             Mockito.when(Gdx.input.isKeyPressed(Input.Keys.W))
                     .thenReturn(false);
-            for(int j = 0; j <20; j++){
+            for (int j = 0; j < 20; j++) {
                 Mockito.when(Gdx.input.isKeyPressed(key))
                         .thenReturn(true);
                 play.render(0.001f);
             }
-            Mockito.when(Gdx.input.isKeyPressed(key-12))
+            play.render(0.001f);
+
+            Mockito.when(Gdx.input.isKeyPressed(key - 12))
                     .thenReturn(false);
             Mockito.when(Gdx.input.isKeyPressed(Input.Keys.W))
                     .thenReturn(true);
@@ -159,14 +162,14 @@ public class GlobalTest extends LibgdxUnitTest {
             play.render(0.001f);
             Mockito.when(Gdx.input.isKeyPressed(Input.Keys.D))
                     .thenReturn(false);
-            for(int j = 0; j <20; j++){
+            for (int j = 0; j < 20; j++) {
                 Mockito.when(Gdx.input.isKeyPressed(Input.Keys.A))
                         .thenReturn(true);
                 play.render(0.001f);
             }
             Mockito.when(Gdx.input.isKeyPressed(Input.Keys.A))
                     .thenReturn(false);
-            for(int j = 0; j <20; j++){
+            for (int j = 0; j < 20; j++) {
                 Mockito.when(Gdx.input.isKeyPressed(Input.Keys.W))
                         .thenReturn(true);
                 play.render(0.001f);
@@ -176,7 +179,7 @@ public class GlobalTest extends LibgdxUnitTest {
             ans = false;
         }
         ///
-       play.sim.ship.isCollide = true;
+        play.sim.ship.isCollide = true;
         play.render(0.001f);
         GameSettings.setSystemVariables(0, 8);
         assertEquals(8, (int) GameSettings.getSystemVariableByName("planets"));
@@ -190,18 +193,22 @@ public class GlobalTest extends LibgdxUnitTest {
 
         play.gameState = GameState.TARGET_FIRST;
         play.render(0.001f);
-        for(int j = 1; j < GameSettings.getSystemVariableByName("goods"); j++){
-        for(int i = 0; i<GameSettings.getSystemVariableByName("planets"); i++){
-            play.sim.ship.position.set(play.sim.planets.get(i).position);
-            play.render(0.001f);
-        }
-        for(int i = 0; i<GameSettings.getSystemVariableByName("planets"); i++){
-            play.sim.ship.position.set(play.sim.planets.get(i).position);
-            play.render(0.001f);
-        }
+        for (int j = 1; j < GameSettings.getSystemVariableByName("goods"); j++) {
+            for (int i = 0; i < GameSettings.getSystemVariableByName("planets"); i++) {
+                play.sim.ship.position.set(play.sim.planets.get(i).position);
+                play.render(0.001f);
+            }
+            for (int i = 0; i < GameSettings.getSystemVariableByName("planets"); i++) {
+                play.sim.ship.position.set(play.sim.planets.get(i).position);
+                play.render(0.001f);
+            }
         }
         assertSame(GameState.DONE, play.gameState);
 
+        //Nul position
+        play.sim.ship.position.set(0f, 0f);
+        play.sim.ship.position.set(100f, 100f);
+        play.render(0.01f);
 
         GameSound sounds = new GameSound();
         sounds.done();
@@ -219,16 +226,20 @@ public class GlobalTest extends LibgdxUnitTest {
         test.getSound("transformer-1.mp3");
         test.getSound("space_engine.wav");
 
-        for(int i = 0; i< 3; i++) {
+        for (int i = 0; i < 3; i++) {
             test.setCurrentScreen(i);
             Assertions.assertEquals(test.getCurrentScreen(), i);
         }
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             test.GetScreenByIndex(i);
         }
         Mockito.when(Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
                 .thenReturn(true);
 
+
+        ResultScreen result = new ResultScreen(game);
+        result.show();
+        result.render(1f);
     }
 
 }

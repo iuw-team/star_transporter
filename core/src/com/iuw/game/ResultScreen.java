@@ -1,42 +1,43 @@
 package com.iuw.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class ResultScreen implements Screen {
+public class ResultScreen extends ScreenAdapter {
     final Process game;
     private final Stage stage;
     private final OrthographicCamera camera;
 
     public ResultScreen(final Process game) {
         this.game = game;
+        game.setCurrentScreen(2);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
-        //  img = new Texture("main_theme.jpg");
         stage = game.getStage();
+        final Label mainFrame = game.getLabel(GameSettings.getGameResult());
+        final Label scorePoints = game.getLabel("Goods was delivered: "
+                .concat(GameSettings.getSystemVariableByName("goods").toString()));
+        mainFrame.setPosition(Process.SCREEN_WIDTH / 2f - mainFrame.getWidth() / 2f, Process.SCREEN_HEIGHT / 2f);
+        scorePoints.setPosition(Process.SCREEN_WIDTH / 2f - scorePoints.getWidth() / 2f, Process.SCREEN_HEIGHT / 2.5f);
+        stage.addActor(mainFrame);
+        stage.addActor(scorePoints);
+        final TextButton retryButton = game.getTextButton("Play again");
+        retryButton.setPosition(Process.SCREEN_WIDTH / 2f - Process.BUTTON_WIDTH / 2f, Process.SCREEN_HEIGHT / 5f);
+        retryButton.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
+        stage.addActor(retryButton);
+        retryButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(game.GetScreenByIndex(1));
+            }
+        });
 
-        final String[] ButtonName = new String[]{"Play again", "Settings", "MainMenu"};
-        float posX, posY;
-        posX = 200f;
-        posY = 400f;
-        for (int i = 0; i < 3; i++, posY -= 100f) {
-            final TextButton button = game.getTextButton(ButtonName[i]);
-            button.setPosition(posX, posY);
-            button.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
-            stage.addActor(button);
-            final Integer index = i;
-            button.addListener(new ClickListener() {
-                public void clicked(InputEvent event, float x, float y) {
-                    game.setScreen(game.GetScreenByIndex(index));
-
-                }
-            });
-        }
     }
 
     @Override
@@ -48,25 +49,9 @@ public class ResultScreen implements Screen {
     public void render(float delta) {
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
-        game.batch.begin();
-        game.batch.end();
         stage.act();
         stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) game.setScreen(game.GetScreenByIndex(1));
     }
 
     @Override

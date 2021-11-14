@@ -25,7 +25,7 @@ public class GameSound {
     }
 
     public void ambienceStart() {
-        spaceAmbienceS.loop();
+        spaceAmbienceS.loop(GameSettings.getVolumeLevelByName("music"));
     }
     public void ambienceStop() {
         spaceAmbienceS.stop();
@@ -33,7 +33,7 @@ public class GameSound {
 
     public void engineStart() {
         if (!engineRunning) {
-            engineS.loop();
+            engineS.loop(GameSettings.getVolumeLevelByName("sound"));
             engineRunning = true;
         }
     }
@@ -47,7 +47,7 @@ public class GameSound {
 
     public void turnStart() {
         if (!turnRunning) {
-            turnS.loop();
+            turnS.loop(GameSettings.getVolumeLevelByName("sound"));
             turnRunning = true;
         }
     }
@@ -60,7 +60,7 @@ public class GameSound {
     }
 
     public void done() {
-        doneS.play();
+        doneS.play(GameSettings.getVolumeLevelByName("sound"));
     }
 
     public void dispose(){

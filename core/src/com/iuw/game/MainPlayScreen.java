@@ -14,7 +14,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
-import java.util.concurrent.ThreadLocalRandom;
 
 enum GameState {
     TARGET_FIRST,
@@ -94,6 +93,7 @@ public class MainPlayScreen extends ScreenAdapter {
     }
 
     private void setChosenPlanets(int quantity) {
+        quantity -= 1;
         pickupTargetPlanet =
                 MathUtils.random(quantity);
         do {
@@ -135,6 +135,7 @@ public class MainPlayScreen extends ScreenAdapter {
                 if (numDelivered == GameSettings.getSystemVariableByName("goods")) {
                     dispose();
                     sound.ambienceStop();
+                    GameSettings.setGameResult("You are win!");
                     game.setScreen(game.GetScreenByIndex(4));
                 } else {
                     gameState = GameState.TARGET_FIRST;
@@ -193,10 +194,10 @@ public class MainPlayScreen extends ScreenAdapter {
         var MIN_PLANET = 15f;
         var MAX_PLANET = 30f;
 
-        var MAX_ORBIT = 400f + Math.random() * 100f;
+        var MAX_ORBIT = 400f + MathUtils.random() * 100f;
 
         for (int i = 1; i <= quantity; i++) {
-            float orbit_r = (float) (((float) i / quantity) * MAX_ORBIT + MAX_DELTA_ORBIT * MathUtils.random());
+            float orbit_r = (((float) i / quantity) * MAX_ORBIT + MAX_DELTA_ORBIT * MathUtils.random());
             var angle = MathUtils.random() * Math.PI;
             var planet_r = getRangeFromAlpha(MIN_PLANET, MAX_PLANET, MathUtils.random());
             var pos = new Vector2((float) (Math.cos(angle) * orbit_r), (float) (Math.sin(angle) * orbit_r));
@@ -269,12 +270,12 @@ public class MainPlayScreen extends ScreenAdapter {
             } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
                 steering = 1f;
             }
-            if (thrust != 0f){
+            if (thrust != 0f) {
                 sound.engineStart();
             } else {
                 sound.engineStop();
             }
-            if (steering != 0f){
+            if (steering != 0f) {
                 sound.turnStart();
             } else {
                 sound.turnStop();
