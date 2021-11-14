@@ -86,7 +86,7 @@ public class Process extends Game {
     }
 
     /**
-     * Отрисовка всего игрового процесса
+     * Отрисовка игрового процесса
      */
     @Override
     public void render() {
@@ -94,6 +94,7 @@ public class Process extends Game {
         super.render();
         SpaceMusic.setVolume(GameSettings.getVolumeLevelByName("music"));
         gameSkin = skins[ChosenSkin];
+
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) && !exitPressed) {
             exitPressed = true;
             if (CURRENT_SCREEN == 0) {
@@ -117,99 +118,129 @@ public class Process extends Game {
         this.dispose();
         Gdx.app.exit();
     }
+
     /**
      * Возвращает new Stage
      */
-    public Stage getStage(){
+    public Stage getStage() {
         return new Stage(new ScreenViewport(), batch);
     }
+
     /**
      * Возвращает new Batch
      */
-    public SpriteBatch getBatch(){
+    public SpriteBatch getBatch() {
         return new SpriteBatch();
     }
+
     /**
      * Возвращает new SelectBox <String>
      */
-    public SelectBox<String> getSelectBox(){
+    public SelectBox<String> getSelectBox() {
         return new SelectBox(gameSkin);
     }
+
     /**
      * Возвращает new TextButton с надписью text
      */
-    public TextButton getTextButton(String text){
+    public TextButton getTextButton(String text) {
         return new TextButton(text, gameSkin);
     }
+
     /**
      * Возвращает new Label с надписью text
      */
-    public Label getLabel(String text){
+    public Label getLabel(String text) {
         return new Label(text, gameSkin);
     }
+
     /**
      * Возвращает new CheckBox с надписью text
      */
-    public CheckBox getCheckBox(String text){
+    public CheckBox getCheckBox(String text) {
         return new CheckBox(text, gameSkin);
     }
+
     /**
      * Возвращает new Slider
      */
-    public Slider getSlider(){
+    public Slider getSlider() {
         return new Slider(0f, GameSettings.MAX_LEVEL, 0.001f, false, gameSkin);
     }
+
     /**
      * Возвращает new ShapeRenderer
      */
-    public ShapeRenderer getShapeRenderer(){
+    public ShapeRenderer getShapeRenderer() {
         return new ShapeRenderer();
     }
+
     /**
      * Возвращает Texture по имени:
      * ship - текстура корабля
      * star - текстура звезды
      * planet - текстура планеты
      */
-    public Texture getTextureByName(String name){
-        switch(name){
-            case "ship": return new Texture("pixel_ship.png");
-            case "star": return new Texture("star_0.png");
-            case "planet": return new Texture("pixel_planet.png");
-            case "planet1": return new Texture("planet1.png");
-            case "planet2": return new Texture("planet2.png");
-            case "planet3": return new Texture("planet3.png");
-            case "planet4": return new Texture("planet4.png");
-            case "planet5": return new Texture("planet5.png");
-            case "planet6": return new Texture("planet6.png");
-            case "planet7": return new Texture("planet7.png");
-            case "planet8": return new Texture("planet8.png");
-            case "asteroid": return new Texture("asteroid.png");
-            case "here1": return new Texture("here.png");
-            case "here2": return new Texture("thenhere.png");
-            case "here3": return new Texture("lasthere.png");
-            default: throw new IllegalArgumentException("Incorrect name of system's variable");
+    public Texture getTextureByName(String name) {
+        switch (name) {
+            case "ship":
+                return new Texture("pixel_ship.png");
+            case "star":
+                return new Texture("star_0.png");
+            case "planet":
+                return new Texture("pixel_planet.png");
+            case "planet1":
+                return new Texture("planet1.png");
+            case "planet2":
+                return new Texture("planet2.png");
+            case "planet3":
+                return new Texture("planet3.png");
+            case "planet4":
+                return new Texture("planet4.png");
+            case "planet5":
+                return new Texture("planet5.png");
+            case "planet6":
+                return new Texture("planet6.png");
+            case "planet7":
+                return new Texture("planet7.png");
+            case "planet8":
+                return new Texture("planet8.png");
+            case "asteroid":
+                return new Texture("asteroid.png");
+            case "here1":
+                return new Texture("here.png");
+            case "here2":
+                return new Texture("thenhere.png");
+            case "here3":
+                return new Texture("lasthere.png");
+            default:
+                throw new IllegalArgumentException("Incorrect name of system's variable");
         }
 
     }
+
     /**
      * Возвращает Sound по имени:
      * ship - текстура корабля
      * star - текстура звезды
      * planet - текстура планеты
      */
-    public Sound getSoundByName(String name){
-        switch(name) {
-            case "ship":
-            {
-                switch(MathUtils.random(1,3)){
-                    case 1: return Gdx.audio.newSound(Gdx.files.internal("Sounds/fly_1.wav"));
-                    case 2: return Gdx.audio.newSound(Gdx.files.internal("Sounds/fly_2.wav"));
-                    case 3: return Gdx.audio.newSound(Gdx.files.internal("Sounds/fly_3.wav"));
+    public Sound getSoundByName(String name) {
+        switch (name) {
+            case "ship": {
+                switch (MathUtils.random(1, 3)) {
+                    case 1:
+                        return Gdx.audio.newSound(Gdx.files.internal("Sounds/fly_1.wav"));
+                    case 2:
+                        return Gdx.audio.newSound(Gdx.files.internal("Sounds/fly_2.wav"));
+                    case 3:
+                        return Gdx.audio.newSound(Gdx.files.internal("Sounds/fly_3.wav"));
                 }
             }
-            case "collision": return Gdx.audio.newSound(Gdx.files.internal("Sounds/collision.wav"));
-            default: throw new IllegalArgumentException("Incorrect name of system's variable");
+            case "collision":
+                return Gdx.audio.newSound(Gdx.files.internal("Sounds/collision.wav"));
+            default:
+                throw new IllegalArgumentException("Incorrect name of system's variable");
         }
     }
 
@@ -222,6 +253,7 @@ public class Process extends Game {
     public void setCurrentScreen(int index) {
         CURRENT_SCREEN = index;
     }
+
     /**
      * Функция получения скрина в соответсвии с его идентификационным номером:
      * 0 - MainMenuScreen

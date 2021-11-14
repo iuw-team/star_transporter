@@ -62,24 +62,24 @@ public class MainPlayScreen extends ScreenAdapter {
         generatePlayfield();
     }
 
-    Sprite makeHereSign(Texture texture){ //fixme
+    Sprite makeHereSign(Texture texture) { //fixme
         Sprite arrowSign = new Sprite(texture);
-        arrowSign.setOrigin(arrowSign.getWidth()/2, 0);
+        arrowSign.setOrigin(arrowSign.getWidth() / 2, 0);
         return arrowSign;
     }
 
-    void generatePlayfield(){
+    void generatePlayfield() {
         var planetNum = GameSettings.getSystemVariableByName("planets");
         createPlanets(planetNum);
         pickupTargetPlanet = ThreadLocalRandom.current().nextInt(planetNum);
         do {
-             dropTargetPlanet = ThreadLocalRandom.current().nextInt(planetNum);
+            dropTargetPlanet = ThreadLocalRandom.current().nextInt(planetNum);
         } while (dropTargetPlanet == pickupTargetPlanet);
 
         gameState = GameState.TARGET_FIRST;
     }
 
-    void drawSprite(Sprite sprite, Vector2 position){
+    void drawSprite(Sprite sprite, Vector2 position) {
         sprite.setOriginBasedPosition(position.x, position.y);
         sprite.draw(game.batch);
     }
@@ -104,9 +104,9 @@ public class MainPlayScreen extends ScreenAdapter {
 
         sim.draw(game.batch);
 
-        switch (gameState){
+        switch (gameState) {
             case TARGET_FIRST:
-                if (sim.isShipPlanetCollision(pickupTargetPlanet)){
+                if (sim.isShipPlanetCollision(pickupTargetPlanet)) {
                     gameState = GameState.TARGET_SECOND;
                 }
 
@@ -114,7 +114,7 @@ public class MainPlayScreen extends ScreenAdapter {
                 drawSprite(here2Sign, sim.planets.get(dropTargetPlanet).position);
                 break;
             case TARGET_SECOND:
-                if (sim.isShipPlanetCollision(dropTargetPlanet)){
+                if (sim.isShipPlanetCollision(dropTargetPlanet)) {
                     gameState = GameState.DONE;
                 }
                 drawSprite(here3Sign, sim.planets.get(dropTargetPlanet).position);
@@ -149,7 +149,7 @@ public class MainPlayScreen extends ScreenAdapter {
     }
 
 
-    private float getRangeFromAlpha(float alpha, float min, float max){
+    private float getRangeFromAlpha(float alpha, float min, float max) {
         return min + alpha * max;
     }
 
@@ -173,14 +173,14 @@ public class MainPlayScreen extends ScreenAdapter {
         var MAX_ORBIT = 400f + Math.random() * 100f;
 
         for (int i = 1; i <= quantity; i++) {
-            float orbit_r = (float)(((float)i/quantity) * MAX_ORBIT + MAX_DELTA_ORBIT*Math.random());
+            float orbit_r = (float) (((float) i / quantity) * MAX_ORBIT + MAX_DELTA_ORBIT * Math.random());
             var angle = Math.random() * Math.PI;
-            var planet_r = getRangeFromAlpha(MIN_PLANET, MAX_PLANET, (float)Math.random());
-            var pos = new Vector2((float) (Math.cos(angle)*orbit_r),(float) (Math.sin(angle)*orbit_r));
+            var planet_r = getRangeFromAlpha(MIN_PLANET, MAX_PLANET, (float) Math.random());
+            var pos = new Vector2((float) (Math.cos(angle) * orbit_r), (float) (Math.sin(angle) * orbit_r));
 
-            var eccentricity = (float)((1f - 0.5f * (Math.random() + Math.random())/2));
-            var angSpeed = (float)(90d + Math.random()*Math.random()*150d);
-            sim.createPlanet((int) planet_r, angSpeed, pos, game.getTextureByName("planet"+String.valueOf(i)), eccentricity);
+            var eccentricity = (float) ((1f - 0.5f * (Math.random() + Math.random()) / 2));
+            var angSpeed = (float) (90d + Math.random() * Math.random() * 150d);
+            sim.createPlanet((int) planet_r, angSpeed, pos, game.getTextureByName("planet" + String.valueOf(i)), eccentricity);
         }
     }
 
@@ -245,7 +245,7 @@ public class MainPlayScreen extends ScreenAdapter {
             steering = 1f;
         }
 
-            sim.setInput(steering, thrust);
+        sim.setInput(steering, thrust);
     }
 }
 
@@ -351,7 +351,7 @@ class PhysicalObject {
                 System.out.println(apoapsis); */
             }
 
-            if (distToSun < SUN_SIZE*SUN_SIZE) { // If moving throughout a sun
+            if (distToSun < SUN_SIZE * SUN_SIZE) { // If moving throughout a sun
                 break; // Don't draw buggy orbit
             } else {
                 if (a > 2 * posEps) {
@@ -412,9 +412,9 @@ class PhysicalObject {
     public void makeOrbit(float mass, Vector2 center, boolean clockwise, float squishification) {
         Vector2 r = new Vector2(center).sub(position);
         if (clockwise) {
-            velocity = r.rotate90(1).setLength2(BIG_G * mass / r.len()*squishification);
+            velocity = r.rotate90(1).setLength2(BIG_G * mass / r.len() * squishification);
         } else {
-            velocity = r.rotate90(-1).setLength2(BIG_G * mass / r.len()*squishification);
+            velocity = r.rotate90(-1).setLength2(BIG_G * mass / r.len() * squishification);
         }
     }
 
@@ -489,9 +489,9 @@ class PhysicalSimulation {
     }
 
     public void update(float deltaTime) {
-        deltaTime = (deltaTime+timeLeftover)*simSpeedFactor;
-        int steps = (int)(deltaTime/fixDeltaTime);
-        timeLeftover = deltaTime - steps*fixDeltaTime;
+        deltaTime = (deltaTime + timeLeftover) * simSpeedFactor;
+        int steps = (int) (deltaTime / fixDeltaTime);
+        timeLeftover = deltaTime - steps * fixDeltaTime;
 
         for (int i = 0; i < steps; i++) {
             ship.applyForceDirected(ship.angle, thrust * ENGINE_FORCE);
@@ -509,8 +509,8 @@ class PhysicalSimulation {
         }
     }
 
-    public boolean isShipPlanetCollision(int planetId){
-        var planet =planets.get(planetId);
+    public boolean isShipPlanetCollision(int planetId) {
+        var planet = planets.get(planetId);
         return planet.collidesWith(ship);
     }
 
