@@ -8,7 +8,7 @@ public class GameSound {
     boolean engineRunning;
     Sound turnS;
     boolean turnRunning;
-
+    Sound musicS;
     Sound doneS;
     Sound spaceAmbienceS;
     Sound explosionS;
@@ -18,7 +18,7 @@ public class GameSound {
         engineRunning = false;
         turnS = GameSettings.game.getSound("transformer-1.mp3");
         turnRunning = false;
-
+        musicS = GameSettings.game.getSound("meet-the-princess.wav");
         doneS = GameSettings.game.getSound("done.mp3");
         spaceAmbienceS = GameSettings.game.getSound("space_ambience.wav");
         explosionS = GameSettings.game.getSound("explosion.mp3");
@@ -26,9 +26,11 @@ public class GameSound {
 
     public void ambienceStart() {
         spaceAmbienceS.loop(GameSettings.getVolumeLevelByName("music"));
+        musicS.loop(GameSettings.getVolumeLevelByName("music"));
     }
     public void ambienceStop() {
         spaceAmbienceS.stop();
+        musicS.stop();
     }
 
     public void engineStart() {

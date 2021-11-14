@@ -56,7 +56,7 @@ public class MainPlayScreen extends ScreenAdapter {
         shapeRenderer = game.getShapeRenderer();
 
         sim = new PhysicalSimulation();
-        sound = new GameSound();
+
 
         sim.setShipTexture(game.getTextureByName("ship"));
         sim.setSunTexture(game.getTextureByName("star"));
