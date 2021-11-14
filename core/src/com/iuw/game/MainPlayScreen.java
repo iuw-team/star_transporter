@@ -194,6 +194,7 @@ public class MainPlayScreen extends ScreenAdapter {
                 }
             case DONE:
                 if (numDelivered == GameSettings.getSystemVariableByName("goods")) {
+
                     gameState = GameState.FADING;
                 } else {
                     gameState = GameState.TARGET_FIRST;
@@ -204,7 +205,9 @@ public class MainPlayScreen extends ScreenAdapter {
 
         if (gameState != GameState.FADING) { //fixme
             var gameOver = sim.isShipSunCollision();
-
+            if (sim.ship.position.dst2(sim.SUN_POS) > 1000*1000){
+                gameOver= true;
+            }
             for (PhysicalObject asteroid : sim.asteroids) {
                 if (asteroid.collidesWith(sim.ship)) {
                     gameOver = true;
