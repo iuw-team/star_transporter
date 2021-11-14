@@ -22,7 +22,7 @@ public class ResultScreen extends ScreenAdapter {
         camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
         stage = game.getStage();
         final Label mainFrame = game.getLabel(GameSettings.getGameResult());
-        final Label scorePoints = game.getLabel("Goods was delivered: "
+        final Label scorePoints = game.getLabel("Goods were delivered: "
                 .concat(GameSettings.getSystemVariableByName("goods").toString()));
         mainFrame.setPosition(Process.SCREEN_WIDTH / 2f - mainFrame.getWidth() / 2f, Process.SCREEN_HEIGHT / 2f);
         scorePoints.setPosition(Process.SCREEN_WIDTH / 2f - scorePoints.getWidth() / 2f, Process.SCREEN_HEIGHT / 2.5f);

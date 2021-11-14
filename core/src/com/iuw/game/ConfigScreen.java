@@ -15,6 +15,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Configuration planet system class
+ * @author iuw-team
+ */
 public class ConfigScreen extends ScreenAdapter {
     private final Process game;
     private final Stage stage;
@@ -28,6 +32,10 @@ public class ConfigScreen extends ScreenAdapter {
                     defMass, 2 * defMass, 3 * defMass}, //mass of definite star
     };
 
+    /**
+     * Create default Screen
+     * @param game - Process class
+     */
     public ConfigScreen(@NotNull final Process game) {
         this.game = game;
         game.setCurrentScreen(1);
@@ -38,12 +46,17 @@ public class ConfigScreen extends ScreenAdapter {
         InitButtons();
         InitLabels();
     }
-
+    /**
+     * Called before it appears
+     */
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
     }
-
+    /**
+     * Called before it appears
+     * Rendering User Interface
+     */
     @Override
     public void render(float delta) {
         camera.update();
@@ -53,19 +66,22 @@ public class ConfigScreen extends ScreenAdapter {
         if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) game.setScreen(game.GetScreenByIndex(3));
 
     }
-
+    /**
+     * Called when Screen is hidden
+     */
     @Override
     public void hide() {
         dispose();
     }
-
+    /**
+     * Destroy all components that were during rendering
+     */
     @Override
     public void dispose() {
         stage.dispose();
     }
-
     /**
-     * Инициализация SelectBoxes
+     * Initialisation of Selectable boxes
      */
     private void InitBoxes() {
         final float posX = (Process.SCREEN_WIDTH - Process.BOX_WIDTH) / 2f;

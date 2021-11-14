@@ -3,19 +3,16 @@ package com.iuw.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
-import java.util.concurrent.ThreadLocalRandom;
 
 enum GameState {
     TARGET_FIRST,
@@ -29,33 +26,32 @@ public class MainPlayScreen extends ScreenAdapter {
     OrthographicCamera camera;
     ShapeRenderer shapeRenderer;
     Process game;
-    private float cameraScale;
-    private boolean keyPressed;
-
-    Sprite here1Sign; //fixme
-    Sprite here2Sign;
-
+    Sprite signFrom; //fixme
+    Sprite signTo;
     Sprite pathMarker;
     Sprite blackSquare; //fixme
-
     GameState gameState;
     GameSound sound;
-
+    Timer keyWaiting;
     int pickupTargetPlanet;
     int dropTargetPlanet;
     int asteroidAmount;
+    int numDelivered;
     float fadeTimer; //fixme, change to better system i guess
     float MAX_FADE_TIMER = 2; // Seconds
+    private float cameraScale;
+    private boolean keyPressed;
 
     public MainPlayScreen(final Process game) {
         fadeTimer = MAX_FADE_TIMER;
-        asteroidAmount = 10; // fixme
+        asteroidAmount = 3; // fixme
 
         this.game = game;
         sound = new GameSound();
 
         game.setCurrentScreen(2);
         cameraScale = 1f;
+        numDelivered = 0;
         keyPressed = false;
         camera = new OrthographicCamera(cameraScale * Process.SCREEN_WIDTH, cameraScale * Process.SCREEN_HEIGHT);
         shapeRenderer = game.getShapeRenderer();
@@ -66,8 +62,8 @@ public class MainPlayScreen extends ScreenAdapter {
         sim.setShipTexture(game.getTextureByName("ship"));
         sim.setSunTexture(game.getTextureByName("star"));
 
-        here1Sign = makeHereSign(game.getTextureByName("signFrom"));
-        here2Sign = makeHereSign(game.getTextureByName("signTo"));
+        signFrom = makeHereSign(game.getTextureByName("signFrom"));
+        signTo = makeHereSign(game.getTextureByName("signTo"));
 
         pathMarker = new Sprite(game.getTextureByName("marker"));
         pathMarker.setSize(5, 5);
@@ -77,6 +73,13 @@ public class MainPlayScreen extends ScreenAdapter {
         blackSquare.setSize(3000, 3000);
         blackSquare.setOriginCenter();
 
+        keyWaiting = new Timer();
+        keyWaiting.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                setCameraControl(0.01f);
+            }
+        }, 0.01f, 0.01f);
         generatePlayfield();
     }
 
@@ -89,17 +92,22 @@ public class MainPlayScreen extends ScreenAdapter {
     void generatePlayfield() {
         var planetNum = GameSettings.getSystemVariableByName("planets");
         createPlanets(planetNum);
-        pickupTargetPlanet = ThreadLocalRandom.current().nextInt(planetNum);
-        do {
-            dropTargetPlanet = ThreadLocalRandom.current().nextInt(planetNum);
-        } while (dropTargetPlanet == pickupTargetPlanet);
-
+        setChosenPlanets(planetNum);
         gameState = GameState.TARGET_FIRST;
         sound.ambienceStart();
 
-        for (int i = 0; i < asteroidAmount; i++){
+        for (int i = 0; i < asteroidAmount; i++) {
             sim.createAsteroid(game.getTextureByName("asteroid"));
         }
+    }
+
+    private void setChosenPlanets(int quantity) {
+        quantity -= 1;
+        pickupTargetPlanet =
+                MathUtils.random(quantity);
+        do {
+            dropTargetPlanet = MathUtils.random(quantity);
+        } while (dropTargetPlanet == pickupTargetPlanet);
     }
 
     void drawSprite(Sprite sprite, Vector2 position) {
@@ -109,7 +117,7 @@ public class MainPlayScreen extends ScreenAdapter {
 
     @Override
     public void render(float dt) {
-        if (sim.asteroids.size() < asteroidAmount){
+        if (sim.asteroids.size() < asteroidAmount) {
             sim.createAsteroid(game.getTextureByName("asteroid"));
         }
 
@@ -120,16 +128,13 @@ public class MainPlayScreen extends ScreenAdapter {
         }
 
         ArrayList<Vector2> shipTrajectory = sim.ship.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
-        Vector2 cameraPoint = new Vector2(sim.ship.apoapsis).interpolate(sim.ship.periapsis, 0.5f, Interpolation.linear);
-
-        camera.zoom = 2.0f;
         camera.update();
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
 
         // Render path markers
-        pathMarker.setColor(153f / 255f, 255f / 255f, 153f / 255f, 1f);
+        pathMarker.setColor(153f / 255f, 1f, 153f / 255f, 1f);
         for (Vector2 point : shipTrajectory) {
             pathMarker.setOriginBasedPosition(point.x, point.y);
             pathMarker.draw(game.batch);
@@ -137,8 +142,7 @@ public class MainPlayScreen extends ScreenAdapter {
         pathMarker.setColor(102f / 255f, 102f / 255f, 153f / 255f, 1f);
         for (PhysicalObject planet : sim.planets) {
             var trajectory = planet.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
-            for (int i = 0; i < trajectory.size(); i++) {
-                Vector2 point = trajectory.get(i);
+            for (Vector2 point : trajectory) {
                 drawSprite(pathMarker, point);
             }
         }
@@ -146,8 +150,7 @@ public class MainPlayScreen extends ScreenAdapter {
         pathMarker.setColor(202f / 255f, 102f / 255f, 102 / 255f, 1f);
         for (PhysicalObject asteroid : sim.asteroids) {
             var trajectory = asteroid.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
-            for (int i = 0; i < trajectory.size(); i++) {
-                Vector2 point = trajectory.get(i);
+            for (Vector2 point : trajectory) {
                 drawSprite(pathMarker, point);
             }
         }
@@ -162,37 +165,49 @@ public class MainPlayScreen extends ScreenAdapter {
                     sound.done();
                     gameState = GameState.TARGET_SECOND;
                 }
-                drawSprite(here1Sign, sim.planets.get(pickupTargetPlanet).position);
-                drawSprite(here2Sign, sim.planets.get(dropTargetPlanet).position);
+                drawSprite(signFrom, sim.planets.get(pickupTargetPlanet).position);
                 break;
             case TARGET_SECOND:
                 if (sim.isShipPlanetCollision(dropTargetPlanet)) {
                     sound.done();
-                    gameState = GameState.FADING;
+                    gameState = GameState.DONE;
+                    numDelivered++;
                 }
-                drawSprite(here1Sign, sim.planets.get(dropTargetPlanet).position);
+                drawSprite(signTo, sim.planets.get(dropTargetPlanet).position);
                 break;
             case FADING:
-                var alpha = Math.max(0f,1f-(fadeTimer/MAX_FADE_TIMER)*(fadeTimer/MAX_FADE_TIMER));
+                var alpha = Math.max(0f, 1f - (fadeTimer / MAX_FADE_TIMER) * (fadeTimer / MAX_FADE_TIMER));
                 blackSquare.setColor(1f, 1f, 1f, alpha);
                 drawSprite(blackSquare, new Vector2());
                 fadeTimer -= dt;
                 if (fadeTimer < 0) {
-                    gameState = GameState.DONE;
+                    if (numDelivered == GameSettings.getSystemVariableByName("goods")) {
+                        GameSettings.setGameResult("You are win!");
+                    } else {
+                        GameSettings.setGameResult("Your ship was broken!");
+                        GameSettings.setSystemVariables(1, numDelivered);
+                    }
+                    game.setScreen(game.GetScreenByIndex(4));
+                    sound.dispose();
+                    break;
                 } else {
                     break; // fixme, no break, dirty hack, idk what to do
                 }
             case DONE:
-                sound.dispose();
-                game.setScreen(game.GetScreenByIndex(4));
+                if (numDelivered == GameSettings.getSystemVariableByName("goods")) {
+                    gameState = GameState.FADING;
+                } else {
+                    gameState = GameState.TARGET_FIRST;
+                    setChosenPlanets(GameSettings.getSystemVariableByName("planets"));
+                }
                 break;
         }
 
-        if (gameState != GameState.FADING){ //fixme
+        if (gameState != GameState.FADING) { //fixme
             var gameOver = sim.isShipSunCollision();
 
-            for (PhysicalObject asteroid: sim.asteroids){
-                if (asteroid.collidesWith(sim.ship)){
+            for (PhysicalObject asteroid : sim.asteroids) {
+                if (asteroid.collidesWith(sim.ship)) {
                     gameOver = true;
                 }
             }
@@ -302,7 +317,7 @@ public class MainPlayScreen extends ScreenAdapter {
         float steering = 0f;
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            thrust = +50;
+            thrust = 50;
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             thrust = -50;
         }
@@ -521,7 +536,7 @@ class PhysicalSimulation {
     float thrust;
 
     int simSpeedFactor;
-    float timeLeftover = 0;
+    float timeLeftover;
 
     PhysicalObject ship;
     PhysicalObject sun;
@@ -556,29 +571,29 @@ class PhysicalSimulation {
         planets.add(planet);
     }
 
-    public void createAsteroid(Texture texture){
+    public void createAsteroid(Texture texture) {
         var rAngle = Math.random() * 2 * Math.PI;
-        var rDistance = 1000f + 20f ;// More than screenWidth,
+        var rDistance = 1000f + 20f;// More than screenWidth,
         var x = Math.cos(rAngle) * rDistance;
         var y = Math.sin(rAngle) * rDistance;
 
-        var speedV = new Vector2((float)x, (float)y);
+        var speedV = new Vector2((float) x, (float) y);
         int randDir;
-        if (1 - Math.random()*3 > 0) {
+        if (1 - Math.random() * 3 > 0) {
             randDir = 1;
         } else {
             randDir = -1;
         }
 
-        var shiftV = new Vector2(speedV).nor().rotate90(randDir).scl(200+500f*(float)Math.random()); // kekw
+        var shiftV = new Vector2(speedV).nor().rotate90(randDir).scl(200 + 500f * (float) Math.random()); // kekw
         speedV.scl(-1).add(shiftV);
-        speedV.setLength2((2.2f + (float)Math.random()*2f)*PhysicalObject.BIG_G*SUN_MASS/rDistance);
+        speedV.setLength2((2.2f + (float) Math.random() * 2f) * PhysicalObject.BIG_G * SUN_MASS / rDistance);
 
-        var asteroid = new PhysicalObject((float)x, (float)y, speedV.x, speedV.y, 1f);
+        var asteroid = new PhysicalObject((float) x, (float) y, speedV.x, speedV.y, 1f);
         asteroid.setTexture(texture);
-        var size = 20 + (int)(Math.random()*30f);
+        var size = 20 + (int) (Math.random() * 30f);
         asteroid.setSize(size, size);
-        asteroid.applyAngularAcceleration(90f*randDir, 1f);
+        asteroid.applyAngularAcceleration(90f * randDir, 1f);
 
         asteroids.add(asteroid);
     }
@@ -617,7 +632,7 @@ class PhysicalSimulation {
             sun.update(fixDeltaTime);
         }
 
-        asteroids.removeIf(a -> a.position.dst2(SUN_POS)>1100*1100); // fixme
+        asteroids.removeIf(a -> a.position.dst2(SUN_POS) > 1100 * 1100); // fixme
     }
 
     public boolean isShipPlanetCollision(int planetId) {

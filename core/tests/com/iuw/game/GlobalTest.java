@@ -2,9 +2,7 @@ package com.iuw.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -33,7 +31,6 @@ public class GlobalTest extends LibgdxUnitTest {
 
     @Test
     public void UITest() {
-        OrthographicCamera camera = new OrthographicCamera();
         Process game = Mockito.mock(Process.class);
         Stage stage = Mockito.mock(Stage.class);
         SpriteBatch batch = Mockito.mock(SpriteBatch.class);
@@ -45,7 +42,6 @@ public class GlobalTest extends LibgdxUnitTest {
         Slider slider = Mockito.mock(Slider.class);
         Sound sound = Mockito.mock(Sound.class);
         Texture texture = Mockito.mock(Texture.class);
-        Music music = Mockito.mock(Music.class);
         game.batch = batch;
         GameSettings.game = game;
 
@@ -201,13 +197,24 @@ public class GlobalTest extends LibgdxUnitTest {
                 play.render(0.001f);
             }
         }
-        assertSame(GameState.DONE, play.gameState);
-
+        assertSame(GameState.FADING, play.gameState);
+        for (int i = 1; i < 5; i++) {
+            play.render(2f);
+        }
         //Nul position
         play.sim.ship.position.set(0f, 0f);
-        play.sim.ship.position.set(100f, 100f);
+        for (int i = 1; i < 5; i++) {
+            play.render(2f);
+        }
+        assertSame(GameState.FADING, play.gameState);
+        play.sim.ship.position.set(play.sim.asteroids.get(0).position);
         play.render(0.01f);
+        play.render(5f);
+        play.render(5f);
 
+
+        play.hide();
+        play.dispose();
         GameSound sounds = new GameSound();
         sounds.done();
         sounds.turnStop();
@@ -223,7 +230,7 @@ public class GlobalTest extends LibgdxUnitTest {
         test.getSound("space_ambience.wav");
         test.getSound("transformer-1.mp3");
         test.getSound("space_engine.wav");
-
+        GameSettings.setGameResult("Hello World!");
         for (int i = 0; i < 3; i++) {
             test.setCurrentScreen(i);
             Assertions.assertEquals(test.getCurrentScreen(), i);
