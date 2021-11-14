@@ -95,9 +95,7 @@ public class MainPlayScreen extends ScreenAdapter {
         gameState = GameState.TARGET_FIRST;
         sound.ambienceStart();
 
-        for (int i = 0; i < asteroidAmount; i++) {
-            sim.createAsteroid(game.getTextureByName("asteroid"));
-        }
+
     }
 
     private void setChosenPlanets(int quantity) {
@@ -116,8 +114,10 @@ public class MainPlayScreen extends ScreenAdapter {
 
     @Override
     public void render(float dt) {
-        if (sim.asteroids.size() < asteroidAmount) {
-            sim.createAsteroid(game.getTextureByName("asteroid"));
+        if(MathUtils.randomBoolean(0.005f)) {
+            if (sim.asteroids.size() < asteroidAmount) {
+                sim.createAsteroid(game.getTextureByName("asteroid"));
+            }
         }
 
         setShipController();
