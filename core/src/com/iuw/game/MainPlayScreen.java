@@ -403,10 +403,7 @@ class PhysicalObject {
                     inStart = false;
                 }
             }
-
-
         }
-
         clonedShip.position.setZero();
         curPath = trajectory;
         pathReqUpdate = false;

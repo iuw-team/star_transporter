@@ -104,10 +104,16 @@ public class GlobalTest extends LibgdxUnitTest {
         play.show();
         config.render(1f);
         config.show();
+        config.hide();
+        config.dispose();
         menu.render(10f);
         menu.show();
+        menu.hide();
+        menu.dispose();
         set.render(10f);
         set.show();
+        set.hide();
+        set.dispose();
 
 
         //Input keyboard test
