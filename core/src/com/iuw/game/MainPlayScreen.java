@@ -34,7 +34,7 @@ public class MainPlayScreen extends ScreenAdapter {
 
     Sprite here1Sign; //fixme
     Sprite here2Sign;
-    Sprite here3Sign;
+
     Sprite pathMarker;
     Sprite blackSquare; //fixme
 
@@ -66,9 +66,8 @@ public class MainPlayScreen extends ScreenAdapter {
         sim.setShipTexture(game.getTextureByName("ship"));
         sim.setSunTexture(game.getTextureByName("star"));
 
-        here1Sign = makeHereSign(game.getTextureByName("here1"));
-        here2Sign = makeHereSign(game.getTextureByName("here2"));
-        here3Sign = makeHereSign(game.getTextureByName("here3"));
+        here1Sign = makeHereSign(game.getTextureByName("signFrom"));
+        here2Sign = makeHereSign(game.getTextureByName("signTo"));
 
         pathMarker = new Sprite(game.getTextureByName("marker"));
         pathMarker.setSize(5, 5);
@@ -171,7 +170,7 @@ public class MainPlayScreen extends ScreenAdapter {
                     sound.done();
                     gameState = GameState.FADING;
                 }
-                drawSprite(here3Sign, sim.planets.get(dropTargetPlanet).position);
+                drawSprite(here1Sign, sim.planets.get(dropTargetPlanet).position);
                 break;
             case FADING:
                 var alpha = Math.max(0f,1f-(fadeTimer/MAX_FADE_TIMER)*(fadeTimer/MAX_FADE_TIMER));

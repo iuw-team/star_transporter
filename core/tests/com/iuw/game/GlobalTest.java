@@ -86,7 +86,7 @@ public class GlobalTest extends LibgdxUnitTest {
         SetScreen set = new SetScreen(game);
         GameSettings.setSystemVariables(0, 8);
         MainPlayScreen play = new MainPlayScreen(game);
-        play.numDelivered = GameSettings.getSystemVariableByName("goods");
+        //play.numDelivered = GameSettings.getSystemVariableByName("goods");
 
         for (int i = 1; i < 160; i++) {
             Mockito.when(Gdx.input.isKeyPressed(i))
@@ -179,7 +179,6 @@ public class GlobalTest extends LibgdxUnitTest {
             ans = false;
         }
         ///
-        play.sim.ship.isCollide = true;
         play.render(0.001f);
         GameSettings.setSystemVariables(0, 8);
         assertEquals(8, (int) GameSettings.getSystemVariableByName("planets"));
@@ -189,7 +188,6 @@ public class GlobalTest extends LibgdxUnitTest {
         assertEquals(3, (int) GameSettings.getSystemVariableByName("velocity"));
         GameSettings.setSystemVariables(3, 10);
         assertEquals(10, (int) GameSettings.getSystemVariableByName("star"));
-        play.sim.ship.isCollide = false;
 
         play.gameState = GameState.TARGET_FIRST;
         play.render(0.001f);
