@@ -192,11 +192,15 @@ public class Process extends Game {
             case "planet8":
                 return new Texture("planet8.png");
             case "asteroid":
-                return new Texture("asteroid.png");
+                return new Texture("pix_asteroid.png");
             case "signFrom":
                 return new Texture("here.png");
             case "signTo":
                 return new Texture("lasthere.png");
+            case "marker":
+                return new Texture("marker.png");
+            case "black_square":
+                return new Texture("black_square.png");
             default:
                 throw new IllegalArgumentException("Incorrect name of system's variable");
         }

@@ -63,6 +63,10 @@ public class GameSound {
         doneS.play(GameSettings.getVolumeLevelByName("sound"));
     }
 
+    public void explosion() {
+        explosionS.play();
+    }
+
     public void dispose(){
         engineS.dispose();
         turnS.dispose();

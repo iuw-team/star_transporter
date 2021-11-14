@@ -9,66 +9,75 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 enum GameState {
     TARGET_FIRST,
     TARGET_SECOND,
+    FADING,
     DONE,
 }
 
 public class MainPlayScreen extends ScreenAdapter {
-    ArrayList<Sound> soundArray;
     PhysicalSimulation sim;
     OrthographicCamera camera;
     ShapeRenderer shapeRenderer;
     Process game;
-    Sprite signFrom; //fixme
-    Sprite signTo;
-    boolean soundIsPlaying;
-    boolean Warning;
+    private float cameraScale;
+    private boolean keyPressed;
+
+    Sprite here1Sign; //fixme
+    Sprite here2Sign;
+    Sprite here3Sign;
+    Sprite pathMarker;
+    Sprite blackSquare; //fixme
+
     GameState gameState;
-    Timer keyWaiting;
     GameSound sound;
 
     int pickupTargetPlanet;
     int dropTargetPlanet;
-    int numDelivered;
-    private float cameraScale;
-    private boolean keyPressed;
+    int asteroidAmount;
+    float fadeTimer; //fixme, change to better system i guess
+    float MAX_FADE_TIMER = 2; // Seconds
 
     public MainPlayScreen(final Process game) {
+        fadeTimer = MAX_FADE_TIMER;
+        asteroidAmount = 10; // fixme
+
         this.game = game;
         sound = new GameSound();
 
         game.setCurrentScreen(2);
         cameraScale = 1f;
         keyPressed = false;
-        soundIsPlaying = false;
-        Warning = false;
         camera = new OrthographicCamera(cameraScale * Process.SCREEN_WIDTH, cameraScale * Process.SCREEN_HEIGHT);
         shapeRenderer = game.getShapeRenderer();
-        soundArray = new ArrayList<>();
+
         sim = new PhysicalSimulation();
-        numDelivered = 0;
         sound = new GameSound();
 
         sim.setShipTexture(game.getTextureByName("ship"));
         sim.setSunTexture(game.getTextureByName("star"));
 
-        signFrom = makeHereSign(game.getTextureByName("signFrom"));
-        signTo = makeHereSign(game.getTextureByName("signTo"));
-        keyWaiting = new Timer();
-        keyWaiting.scheduleTask(new Timer.Task() {
-            @Override
-            public void run() {
-                setCameraControl(0.01f);
-            }
-        }, 0.01f, 0.01f);
+        here1Sign = makeHereSign(game.getTextureByName("here1"));
+        here2Sign = makeHereSign(game.getTextureByName("here2"));
+        here3Sign = makeHereSign(game.getTextureByName("here3"));
+
+        pathMarker = new Sprite(game.getTextureByName("marker"));
+        pathMarker.setSize(5, 5);
+        pathMarker.setOriginCenter();
+
+        blackSquare = new Sprite(game.getTextureByName("black_square")); //fixme
+        blackSquare.setSize(3000, 3000);
+        blackSquare.setOriginCenter();
+
         generatePlayfield();
     }
 
@@ -81,10 +90,17 @@ public class MainPlayScreen extends ScreenAdapter {
     void generatePlayfield() {
         var planetNum = GameSettings.getSystemVariableByName("planets");
         createPlanets(planetNum);
-        setChosenPlanets(planetNum);
+        pickupTargetPlanet = ThreadLocalRandom.current().nextInt(planetNum);
+        do {
+            dropTargetPlanet = ThreadLocalRandom.current().nextInt(planetNum);
+        } while (dropTargetPlanet == pickupTargetPlanet);
 
         gameState = GameState.TARGET_FIRST;
         sound.ambienceStart();
+
+        for (int i = 0; i < asteroidAmount; i++){
+            sim.createAsteroid(game.getTextureByName("asteroid"));
+        }
     }
 
     void drawSprite(Sprite sprite, Vector2 position) {
@@ -92,78 +108,103 @@ public class MainPlayScreen extends ScreenAdapter {
         sprite.draw(game.batch);
     }
 
-    private void setChosenPlanets(int quantity) {
-        quantity -= 1;
-        pickupTargetPlanet =
-                MathUtils.random(quantity);
-        do {
-            dropTargetPlanet = MathUtils.random(quantity);
-        } while (dropTargetPlanet == pickupTargetPlanet);
-    }
-
     @Override
     public void render(float dt) {
-        setShipController();
-        sim.update(dt);
+        if (sim.asteroids.size() < asteroidAmount){
+            sim.createAsteroid(game.getTextureByName("asteroid"));
+        }
 
-        ArrayList<Vector2> trajectory = sim.ship.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
+        setShipController();
+
+        if (gameState != GameState.FADING) {
+            sim.update(dt);
+        }
+
+        ArrayList<Vector2> shipTrajectory = sim.ship.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
+        Vector2 cameraPoint = new Vector2(sim.ship.apoapsis).interpolate(sim.ship.periapsis, 0.5f, Interpolation.linear);
+
+        camera.zoom = 2.0f;
         camera.update();
+
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
 
+        // Render path markers
+        pathMarker.setColor(153f / 255f, 255f / 255f, 153f / 255f, 1f);
+        for (Vector2 point : shipTrajectory) {
+            pathMarker.setOriginBasedPosition(point.x, point.y);
+            pathMarker.draw(game.batch);
+        }
+        pathMarker.setColor(102f / 255f, 102f / 255f, 153f / 255f, 1f);
+        for (PhysicalObject planet : sim.planets) {
+            var trajectory = planet.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
+            for (int i = 0; i < trajectory.size(); i++) {
+                Vector2 point = trajectory.get(i);
+                drawSprite(pathMarker, point);
+            }
+        }
+
+        pathMarker.setColor(202f / 255f, 102f / 255f, 102 / 255f, 1f);
+        for (PhysicalObject asteroid : sim.asteroids) {
+            var trajectory = asteroid.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
+            for (int i = 0; i < trajectory.size(); i++) {
+                Vector2 point = trajectory.get(i);
+                drawSprite(pathMarker, point);
+            }
+        }
+
+        // Render simulation
         sim.draw(game.batch);
+
+        // Render target label and change game state todo: split game logic and render
         switch (gameState) {
             case TARGET_FIRST:
                 if (sim.isShipPlanetCollision(pickupTargetPlanet)) {
                     sound.done();
                     gameState = GameState.TARGET_SECOND;
                 }
-
-                drawSprite(signFrom, sim.planets.get(pickupTargetPlanet).position);
-
-
+                drawSprite(here1Sign, sim.planets.get(pickupTargetPlanet).position);
+                drawSprite(here2Sign, sim.planets.get(dropTargetPlanet).position);
                 break;
             case TARGET_SECOND:
                 if (sim.isShipPlanetCollision(dropTargetPlanet)) {
                     sound.done();
+                    gameState = GameState.FADING;
+                }
+                drawSprite(here3Sign, sim.planets.get(dropTargetPlanet).position);
+                break;
+            case FADING:
+                var alpha = Math.max(0f,1f-(fadeTimer/MAX_FADE_TIMER)*(fadeTimer/MAX_FADE_TIMER));
+                blackSquare.setColor(1f, 1f, 1f, alpha);
+                drawSprite(blackSquare, new Vector2());
+                fadeTimer -= dt;
+                if (fadeTimer < 0) {
                     gameState = GameState.DONE;
-                    numDelivered++;
-                }
-                drawSprite(signTo, sim.planets.get(dropTargetPlanet).position);
-                break;
-            case DONE:
-                if (numDelivered == GameSettings.getSystemVariableByName("goods")) {
-                    dispose();
-                    sound.ambienceStop();
-                    GameSettings.setGameResult("You are win!");
-                    game.setScreen(game.GetScreenByIndex(4));
                 } else {
-                    gameState = GameState.TARGET_FIRST;
-                    sound.done();
-                    setChosenPlanets(GameSettings.getSystemVariableByName("planets"));
+                    break; // fixme, no break, dirty hack, idk what to do
                 }
+            case DONE:
+                sound.dispose();
+                game.setScreen(game.GetScreenByIndex(4));
                 break;
+        }
+
+        if (gameState != GameState.FADING){ //fixme
+            var gameOver = sim.isShipSunCollision();
+
+            for (PhysicalObject asteroid: sim.asteroids){
+                if (asteroid.collidesWith(sim.ship)){
+                    gameOver = true;
+                }
+            }
+
+            if (gameOver) {
+                sound.explosion();
+                gameState = GameState.FADING;
+            }
         }
 
         game.batch.end();
-
-
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(0.1f, 0.7f, 0.4f, 1f);
-
-        for (Vector2 point : trajectory) {
-            shapeRenderer.circle(point.x, point.y, 2);
-        }
-
-        shapeRenderer.setColor(0.6f, 0.3f, 0.4f, 1f);
-        for (PhysicalObject planet : sim.planets) {
-            trajectory = planet.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
-            for (Vector2 point : trajectory) {
-                shapeRenderer.circle(point.x, point.y, 2);
-            }
-        }
-        shapeRenderer.end();
     }
 
     @Override
@@ -175,7 +216,6 @@ public class MainPlayScreen extends ScreenAdapter {
     public void dispose() {
         sound.dispose();
         //todo make dispose
-        soundArray.forEach(Sound::dispose);
     }
 
     private float getRangeFromAlpha(float alpha, float min, float max) {
@@ -190,6 +230,7 @@ public class MainPlayScreen extends ScreenAdapter {
     private void createPlanets(int quantity) {
         assert quantity >= 2;
         assert quantity <= 8;
+
         var MAX_DELTA_ORBIT = 200f;
         var MIN_PLANET = 15f;
         var MAX_PLANET = 30f;
@@ -260,28 +301,32 @@ public class MainPlayScreen extends ScreenAdapter {
     private void setShipController() {
         float thrust = 0f;
         float steering = 0f;
-        if (!Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                thrust = 50f;
-            } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-                thrust = -50f;
-            } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-                steering = -1f;
-            } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                steering = 1f;
-            }
-            if (thrust != 0f) {
-                sound.engineStart();
-            } else {
-                sound.engineStop();
-            }
-            if (steering != 0f) {
-                sound.turnStart();
-            } else {
-                sound.turnStop();
-            }
-            sim.setInput(steering, thrust);
+
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            thrust = +50;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            thrust = -50;
         }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            steering = -1f;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            steering = 1f;
+        }
+
+        if (thrust != 0f) {
+            sound.engineStart();
+        } else {
+            sound.engineStop();
+        }
+
+        if (steering != 0f) {
+            sound.turnStart();
+        } else {
+            sound.turnStop();
+        }
+
+        sim.setInput(steering, thrust);
     }
 }
 
@@ -299,7 +344,7 @@ class PhysicalObject {
     public Vector2 apoapsis;
     public Vector2 periapsis;
     boolean pathReqUpdate;
-    boolean isCollide;
+
     Sprite sprite;
 
     public PhysicalObject(PhysicalObject other) {
@@ -310,7 +355,6 @@ class PhysicalObject {
         this.angularSpeed = other.angularSpeed;
         this.mass = other.mass;
         pathReqUpdate = true;
-        isCollide = false;
         // this.sprite = other.sprite; // We are cloning object for headless simulation, so we don't need to copy sprite
     }
 
@@ -323,7 +367,6 @@ class PhysicalObject {
         angle = 0;
         angularSpeed = 0;
         pathReqUpdate = true;
-        isCollide = false;
     }
 
     static Vector2 getGravitationForce(float m1, float m2, Vector2 r1, Vector2 r2) {
@@ -342,7 +385,7 @@ class PhysicalObject {
         if (!pathReqUpdate) {
             return curPath;
         }
-        isCollide = false;
+
         final float posEps = 5f;
         final int MAX_STEPS = 500;
         final int SUN_SIZE = 64 - 30; // fixme Put in real sun size
@@ -386,8 +429,9 @@ class PhysicalObject {
 
                 /* System.out.println("FAR");
                 System.out.println(farDistance);
-                 System.out.println(apoapsis);*/
+                System.out.println(apoapsis); */
             }
+
             if (distToSun < SUN_SIZE * SUN_SIZE) { // If moving throughout a sun
                 break; // Don't draw buggy orbit
             } else {
@@ -478,11 +522,13 @@ class PhysicalSimulation {
     float thrust;
 
     int simSpeedFactor;
-    float timeLeftover;
+    float timeLeftover = 0;
 
     PhysicalObject ship;
     PhysicalObject sun;
+
     ArrayList<PhysicalObject> planets;
+    ArrayList<PhysicalObject> asteroids;
 
     public PhysicalSimulation() {
         simSpeedFactor = 1;
@@ -496,6 +542,7 @@ class PhysicalSimulation {
         sun.applyAngularAcceleration(-10f, 1f);
 
         planets = new ArrayList<>();
+        asteroids = new ArrayList<>();
     }
 
     public void createPlanet(int planetRadius, float planetRotation, Vector2 pos, Texture texture, float squishification) {
@@ -508,6 +555,33 @@ class PhysicalSimulation {
         planet.setSize(planetRadius * 2, planetRadius * 2);
 
         planets.add(planet);
+    }
+
+    public void createAsteroid(Texture texture){
+        var rAngle = Math.random() * 2 * Math.PI;
+        var rDistance = 1000f + 20f ;// More than screenWidth,
+        var x = Math.cos(rAngle) * rDistance;
+        var y = Math.sin(rAngle) * rDistance;
+
+        var speedV = new Vector2((float)x, (float)y);
+        int randDir;
+        if (1 - Math.random()*3 > 0) {
+            randDir = 1;
+        } else {
+            randDir = -1;
+        }
+
+        var shiftV = new Vector2(speedV).nor().rotate90(randDir).scl(200+500f*(float)Math.random()); // kekw
+        speedV.scl(-1).add(shiftV);
+        speedV.setLength2((2.2f + (float)Math.random()*2f)*PhysicalObject.BIG_G*SUN_MASS/rDistance);
+
+        var asteroid = new PhysicalObject((float)x, (float)y, speedV.x, speedV.y, 1f);
+        asteroid.setTexture(texture);
+        var size = 20 + (int)(Math.random()*30f);
+        asteroid.setSize(size, size);
+        asteroid.applyAngularAcceleration(90f*randDir, 1f);
+
+        asteroids.add(asteroid);
     }
 
     public void setShipTexture(Texture texture) {
@@ -536,8 +610,15 @@ class PhysicalSimulation {
                 planet.applyGravity(SUN_POS, SUN_MASS);
                 planet.update(fixDeltaTime);
             }
+            for (PhysicalObject asteroid : asteroids) {
+                asteroid.applyGravity(SUN_POS, SUN_MASS);
+                asteroid.update(fixDeltaTime);
+            }
+
             sun.update(fixDeltaTime);
         }
+
+        asteroids.removeIf(a -> a.position.dst2(SUN_POS)>1100*1100); // fixme
     }
 
     public boolean isShipPlanetCollision(int planetId) {
@@ -545,11 +626,18 @@ class PhysicalSimulation {
         return planet.collidesWith(ship);
     }
 
+    public boolean isShipSunCollision() {
+        return ship.collidesWith(sun);
+    }
+
     public void draw(SpriteBatch batch) {
         ship.draw(batch);
         sun.draw(batch);
         for (PhysicalObject planet : planets) {
             planet.draw(batch);
+        }
+        for (PhysicalObject asteroid : asteroids) {
+            asteroid.draw(batch);
         }
     }
 
