@@ -181,7 +181,7 @@ public class GlobalTest extends LibgdxUnitTest {
         GameSettings.setSystemVariables(1, 4);
         assertEquals(4, (int) GameSettings.getSystemVariableByName("goods"));
         GameSettings.setSystemVariables(2, 3);
-        assertEquals(3, (int) GameSettings.getSystemVariableByName("velocity"));
+        assertEquals(3, (int) GameSettings.getSystemVariableByName("asteroids"));
         GameSettings.setSystemVariables(3, 10);
         assertEquals(10, (int) GameSettings.getSystemVariableByName("star"));
 
