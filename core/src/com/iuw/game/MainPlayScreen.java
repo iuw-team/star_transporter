@@ -18,6 +18,7 @@ import java.util.concurrent.ThreadLocalRandom;
 enum GameState {
     TARGET_FIRST,
     TARGET_SECOND,
+    FADING,
     DONE,
 }
 
@@ -33,14 +34,19 @@ public class MainPlayScreen extends ScreenAdapter {
     Sprite here2Sign;
     Sprite here3Sign;
     Sprite pathMarker;
+    Sprite blackSquare; //fixme
 
     GameState gameState;
     GameSound sound;
 
     int pickupTargetPlanet;
     int dropTargetPlanet;
+    float fadeTimer; //fixme, change to better system i guess
+    float MAX_FADE_TIMER = 2; // Seconds
 
     public MainPlayScreen(final Process game) {
+        fadeTimer = MAX_FADE_TIMER;
+
         this.game = game;
         sound = new GameSound();
 
@@ -60,10 +66,13 @@ public class MainPlayScreen extends ScreenAdapter {
         here2Sign = makeHereSign(game.getTextureByName("here2"));
         here3Sign = makeHereSign(game.getTextureByName("here3"));
 
-
         pathMarker = new Sprite(game.getTextureByName("marker"));
         pathMarker.setSize(5, 5);
         pathMarker.setOriginCenter();
+
+        blackSquare = new Sprite(game.getTextureByName("black_square")); //fixme
+        blackSquare.setSize(3000, 3000);
+        blackSquare.setOriginCenter();
 
         generatePlayfield();
     }
@@ -94,7 +103,10 @@ public class MainPlayScreen extends ScreenAdapter {
     @Override
     public void render(float dt) {
         setShipController();
-        sim.update(dt);
+
+        if (gameState != GameState.FADING) {
+            sim.update(dt);
+        }
 
         ArrayList<Vector2> shipTrajectory = sim.ship.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
         Vector2 cameraPoint = new Vector2(sim.ship.apoapsis).interpolate(sim.ship.periapsis, 0.5f, Interpolation.linear);
@@ -106,27 +118,22 @@ public class MainPlayScreen extends ScreenAdapter {
         game.batch.begin();
 
         // Render path markers
-        pathMarker.setColor(153f/255f, 255f/255f, 153f/255f, 1f);
+        pathMarker.setColor(153f / 255f, 255f / 255f, 153f / 255f, 1f);
         for (Vector2 point : shipTrajectory) {
             pathMarker.setOriginBasedPosition(point.x, point.y);
             pathMarker.draw(game.batch);
         }
-        pathMarker.setColor(102f/255f, 102f/255f, 153f/255f, 1f);
+        pathMarker.setColor(102f / 255f, 102f / 255f, 153f / 255f, 1f);
         for (PhysicalObject planet : sim.planets) {
             var trajectory = planet.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
             for (int i = 0; i < trajectory.size(); i++) {
                 Vector2 point = trajectory.get(i);
-                pathMarker.setOriginBasedPosition(point.x, point.y);
-                pathMarker.draw(game.batch);
+                drawSprite(pathMarker, point);
             }
         }
 
         // Render simulation
         sim.draw(game.batch);
-        if (sim.isShipSunCollision()){
-            gameState = GameState.DONE;
-            sound.explosion();
-        }
 
         // Render target label and change game state todo: split game logic and render
         switch (gameState) {
@@ -141,14 +148,29 @@ public class MainPlayScreen extends ScreenAdapter {
             case TARGET_SECOND:
                 if (sim.isShipPlanetCollision(dropTargetPlanet)) {
                     sound.done();
-                    gameState = GameState.DONE;
+                    gameState = GameState.FADING;
                 }
                 drawSprite(here3Sign, sim.planets.get(dropTargetPlanet).position);
                 break;
+            case FADING:
+                var alpha = Math.max(0f,1f-(fadeTimer/MAX_FADE_TIMER)*(fadeTimer/MAX_FADE_TIMER));
+                blackSquare.setColor(1f, 1f, 1f, alpha);
+                drawSprite(blackSquare, new Vector2());
+                fadeTimer -= dt;
+                if (fadeTimer < 0) {
+                    gameState = GameState.DONE;
+                } else {
+                    break; // fixme, no break, dirty hack, idk what to do
+                }
             case DONE:
+                sound.dispose();
                 game.setScreen(game.getNextScreen(4));
-                sound.ambienceStop();
                 break;
+        }
+
+        if (sim.isShipSunCollision() && gameState != GameState.FADING) {
+            gameState = GameState.FADING;
+            sound.explosion();
         }
 
         game.batch.end();
@@ -257,13 +279,13 @@ public class MainPlayScreen extends ScreenAdapter {
             steering = 1f;
         }
 
-        if (thrust != 0f){
+        if (thrust != 0f) {
             sound.engineStart();
         } else {
             sound.engineStop();
         }
 
-        if (steering != 0f){
+        if (steering != 0f) {
             sound.turnStart();
         } else {
             sound.turnStop();
