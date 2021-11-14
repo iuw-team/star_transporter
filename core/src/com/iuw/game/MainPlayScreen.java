@@ -32,6 +32,7 @@ public class MainPlayScreen extends ScreenAdapter {
     Sprite here1Sign; //fixme
     Sprite here2Sign;
     Sprite here3Sign;
+    Sprite pathMarker;
 
     GameState gameState;
     GameSound sound;
@@ -58,6 +59,11 @@ public class MainPlayScreen extends ScreenAdapter {
         here1Sign = makeHereSign(game.getTextureByName("here1"));
         here2Sign = makeHereSign(game.getTextureByName("here2"));
         here3Sign = makeHereSign(game.getTextureByName("here3"));
+
+
+        pathMarker = new Sprite(game.getTextureByName("marker"));
+        pathMarker.setSize(5, 5);
+        pathMarker.setOriginCenter();
 
         generatePlayfield();
     }
@@ -90,7 +96,7 @@ public class MainPlayScreen extends ScreenAdapter {
         setShipController();
         sim.update(dt);
 
-        ArrayList<Vector2> trajectory = sim.ship.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
+        ArrayList<Vector2> shipTrajectory = sim.ship.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
         Vector2 cameraPoint = new Vector2(sim.ship.apoapsis).interpolate(sim.ship.periapsis, 0.5f, Interpolation.linear);
 
         camera.zoom = 2.0f;
@@ -99,19 +105,36 @@ public class MainPlayScreen extends ScreenAdapter {
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
 
+        // Render path markers
+        pathMarker.setColor(153f/255f, 255f/255f, 153f/255f, 1f);
+        for (Vector2 point : shipTrajectory) {
+            pathMarker.setOriginBasedPosition(point.x, point.y);
+            pathMarker.draw(game.batch);
+        }
+        pathMarker.setColor(102f/255f, 102f/255f, 153f/255f, 1f);
+        for (PhysicalObject planet : sim.planets) {
+            var trajectory = planet.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
+            for (int i = 0; i < trajectory.size(); i++) {
+                Vector2 point = trajectory.get(i);
+                pathMarker.setOriginBasedPosition(point.x, point.y);
+                pathMarker.draw(game.batch);
+            }
+        }
+
+        // Render simulation
         sim.draw(game.batch);
         if (sim.isShipSunCollision()){
             gameState = GameState.DONE;
             sound.explosion();
         }
 
+        // Render target label and change game state todo: split game logic and render
         switch (gameState) {
             case TARGET_FIRST:
                 if (sim.isShipPlanetCollision(pickupTargetPlanet)) {
                     sound.done();
                     gameState = GameState.TARGET_SECOND;
                 }
-
                 drawSprite(here1Sign, sim.planets.get(pickupTargetPlanet).position);
                 drawSprite(here2Sign, sim.planets.get(dropTargetPlanet).position);
                 break;
@@ -129,25 +152,6 @@ public class MainPlayScreen extends ScreenAdapter {
         }
 
         game.batch.end();
-
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(0.1f, 0.7f, 0.4f, 1f);
-
-
-        for (Vector2 point : trajectory) {
-            shapeRenderer.circle(point.x, point.y, 2);
-        }
-
-        shapeRenderer.setColor(0.6f, 0.3f, 0.4f, 1f);
-        for (PhysicalObject planet : sim.planets) {
-            trajectory = planet.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
-            for (int i = 0; i < trajectory.size(); i++) {
-                Vector2 point = trajectory.get(i);
-                shapeRenderer.circle(point.x, point.y, 2);
-            }
-        }
-        shapeRenderer.end();
     }
 
     @Override

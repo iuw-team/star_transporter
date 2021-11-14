@@ -211,6 +211,8 @@ public class Process extends Game {
                 return new Texture("thenhere.png");
             case "here3":
                 return new Texture("lasthere.png");
+            case "marker":
+                return new Texture("marker.png");
             default:
                 throw new IllegalArgumentException("Incorrect name of system's variable");
         }
