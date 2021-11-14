@@ -3,6 +3,7 @@ package com.iuw.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -10,37 +11,94 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import org.jetbrains.annotations.NotNull;
+import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 
+enum GameState {
+    TARGET_FIRST,
+    TARGET_SECOND,
+    DONE,
+}
+
 public class MainPlayScreen extends ScreenAdapter {
-    private final float delayTime = 0.3f;
-    Texture shipTexture;
-    Texture sunTexture;
-    Texture planetTexture;
+    ArrayList<Sound> soundArray;
     PhysicalSimulation sim;
     OrthographicCamera camera;
     ShapeRenderer shapeRenderer;
     Process game;
+    Sprite signFrom; //fixme
+    Sprite signTo;
+    boolean soundIsPlaying;
+    boolean Warning;
+    GameState gameState;
+    Timer keyWaiting;
+    GameSound sound;
+
+    int pickupTargetPlanet;
+    int dropTargetPlanet;
+    int numDelivered;
     private float cameraScale;
     private boolean keyPressed;
 
     public MainPlayScreen(final Process game) {
         this.game = game;
+        sound = new GameSound();
+
         game.setCurrentScreen(2);
         cameraScale = 1f;
         keyPressed = false;
+        soundIsPlaying = false;
+        Warning = false;
         camera = new OrthographicCamera(cameraScale * Process.SCREEN_WIDTH, cameraScale * Process.SCREEN_HEIGHT);
         shapeRenderer = game.getShapeRenderer();
-        shipTexture = game.getTextureByName("ship");
-        sunTexture = game.getTextureByName("star");
-        planetTexture = game.getTextureByName("planet");
+        soundArray = new ArrayList<>();
         sim = new PhysicalSimulation();
+        numDelivered = 0;
+        sound = new GameSound();
 
-        sim.setShipTexture(shipTexture);
-        sim.setSunTexture(sunTexture);
-        createPlanets(GameSettings.getSystemVariableByName("planets"));
+        sim.setShipTexture(game.getTextureByName("ship"));
+        sim.setSunTexture(game.getTextureByName("star"));
+
+        signFrom = makeHereSign(game.getTextureByName("signFrom"));
+        signTo = makeHereSign(game.getTextureByName("signTo"));
+        keyWaiting = new Timer();
+        keyWaiting.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                setCameraControl(0.01f);
+            }
+        }, 0.01f, 0.01f);
+        generatePlayfield();
+    }
+
+    Sprite makeHereSign(Texture texture) { //fixme
+        Sprite arrowSign = new Sprite(texture);
+        arrowSign.setOrigin(arrowSign.getWidth() / 2, 0);
+        return arrowSign;
+    }
+
+    void generatePlayfield() {
+        var planetNum = GameSettings.getSystemVariableByName("planets");
+        createPlanets(planetNum);
+        setChosenPlanets(planetNum);
+
+        gameState = GameState.TARGET_FIRST;
+        sound.ambienceStart();
+    }
+
+    void drawSprite(Sprite sprite, Vector2 position) {
+        sprite.setOriginBasedPosition(position.x, position.y);
+        sprite.draw(game.batch);
+    }
+
+    private void setChosenPlanets(int quantity) {
+        quantity -= 1;
+        pickupTargetPlanet =
+                MathUtils.random(quantity);
+        do {
+            dropTargetPlanet = MathUtils.random(quantity);
+        } while (dropTargetPlanet == pickupTargetPlanet);
     }
 
     @Override
@@ -48,16 +106,51 @@ public class MainPlayScreen extends ScreenAdapter {
         setShipController();
         sim.update(dt);
 
+        ArrayList<Vector2> trajectory = sim.ship.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
+        camera.update();
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
+
         sim.draw(game.batch);
+        switch (gameState) {
+            case TARGET_FIRST:
+                if (sim.isShipPlanetCollision(pickupTargetPlanet)) {
+                    sound.done();
+                    gameState = GameState.TARGET_SECOND;
+                }
+
+                drawSprite(signFrom, sim.planets.get(pickupTargetPlanet).position);
+
+
+                break;
+            case TARGET_SECOND:
+                if (sim.isShipPlanetCollision(dropTargetPlanet)) {
+                    sound.done();
+                    gameState = GameState.DONE;
+                    numDelivered++;
+                }
+                drawSprite(signTo, sim.planets.get(dropTargetPlanet).position);
+                break;
+            case DONE:
+                if (numDelivered == GameSettings.getSystemVariableByName("goods")) {
+                    dispose();
+                    sound.ambienceStop();
+                    GameSettings.setGameResult("You are win!");
+                    game.setScreen(game.GetScreenByIndex(4));
+                } else {
+                    gameState = GameState.TARGET_FIRST;
+                    sound.done();
+                    setChosenPlanets(GameSettings.getSystemVariableByName("planets"));
+                }
+                break;
+        }
+
         game.batch.end();
-        setCameraControl(dt);
+
+
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(0.1f, 0.7f, 0.4f, 1f);
-        //массив из координант которых рисуем кружки
-        ArrayList<Vector2> trajectory = sim.ship.getPath(6, dt, sim.SUN_POS, sim.SUN_MASS);
 
         for (Vector2 point : trajectory) {
             shapeRenderer.circle(point.x, point.y, 2);
@@ -65,9 +158,8 @@ public class MainPlayScreen extends ScreenAdapter {
 
         shapeRenderer.setColor(0.6f, 0.3f, 0.4f, 1f);
         for (PhysicalObject planet : sim.planets) {
-            trajectory = planet.getPath(6, dt, sim.SUN_POS, sim.SUN_MASS);
-            for (int i = 0; i < trajectory.size(); i++) {
-                Vector2 point = trajectory.get(i);
+            trajectory = planet.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
+            for (Vector2 point : trajectory) {
                 shapeRenderer.circle(point.x, point.y, 2);
             }
         }
@@ -75,8 +167,19 @@ public class MainPlayScreen extends ScreenAdapter {
     }
 
     @Override
+    public void hide() {
+        dispose();
+    }
+
+    @Override
     public void dispose() {
+        sound.dispose();
         //todo make dispose
+        soundArray.forEach(Sound::dispose);
+    }
+
+    private float getRangeFromAlpha(float alpha, float min, float max) {
+        return min + alpha * max;
     }
 
     /**
@@ -85,18 +188,23 @@ public class MainPlayScreen extends ScreenAdapter {
      * @param quantity - число планет
      */
     private void createPlanets(int quantity) {
-        float mass = 100f;
-        int radius = 10;
-        int partX = 1, partY = 1;
-        Vector2 position = new Vector2(-75, 75);
+        assert quantity >= 2;
+        assert quantity <= 8;
+        var MAX_DELTA_ORBIT = 200f;
+        var MIN_PLANET = 15f;
+        var MAX_PLANET = 30f;
+
+        var MAX_ORBIT = 400f + MathUtils.random() * 100f;
+
         for (int i = 1; i <= quantity; i++) {
-            sim.createPlanet(radius, mass, position, new Vector2(), planetTexture);
-            radius *= MathUtils.random(1.2f, 1.4f);
-            mass *= MathUtils.random(1.4f, 1.7f);
-            if (MathUtils.random(1, 2) == 1) partX = -partX;
-            if (MathUtils.random(1, 2) == 1) partY = -partY;
-            position.x = partX * position.x * 1.3f;
-            position.y = partX * position.y * 1.3f;
+            float orbit_r = (((float) i / quantity) * MAX_ORBIT + MAX_DELTA_ORBIT * MathUtils.random());
+            var angle = MathUtils.random() * Math.PI;
+            var planet_r = getRangeFromAlpha(MIN_PLANET, MAX_PLANET, MathUtils.random());
+            var pos = new Vector2((float) (Math.cos(angle) * orbit_r), (float) (Math.sin(angle) * orbit_r));
+
+            var eccentricity = ((1f - 0.5f * (MathUtils.random() + MathUtils.random()) / 2));
+            var angSpeed = (float) (90d + MathUtils.random() * MathUtils.random() * 150d);
+            sim.createPlanet((int) planet_r, angSpeed, pos, game.getTextureByName("planet" + i), eccentricity);
         }
     }
 
@@ -107,29 +215,32 @@ public class MainPlayScreen extends ScreenAdapter {
      */
     private void setCameraControl(float deltaTime) {
         if (!keyPressed) {
-            if (Gdx.input.isKeyPressed(Input.Keys.NUM_1) && cameraScale > 0.4f) {
-                cameraScale -= 0.05;
+            if (Gdx.input.isKeyPressed(Input.Keys.Q) && cameraScale > 0.4f) {
+                cameraScale -= 0.05f;
                 camera.zoom = cameraScale;
                 keyPressed = true;
             }
-            if (Gdx.input.isKeyPressed(Input.Keys.NUM_2) && cameraScale < 1.95f) {
-                cameraScale += 0.05;
-                keyPressed = true;
+            if (Gdx.input.isKeyPressed(Input.Keys.E) && cameraScale < 1.95f) {
+                cameraScale += 0.05f;
                 camera.zoom = cameraScale;
+                keyPressed = true;
             }
-            if (cameraScale < 1.8f) {
-                if (Gdx.input.isKeyPressed(Input.Keys.UP) && camera.position.y < Process.SCREEN_HEIGHT / 2f) {
-                    camera.position.set(camera.position.x, camera.position.y + 10f, 0f);
-                }
-                if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && camera.position.y > -Process.SCREEN_HEIGHT / 2f) {
-                    camera.position.set(camera.position.x, camera.position.y - 10f, 0f);
-                }
-                if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && camera.position.x > -Process.SCREEN_WIDTH / 2f) {
-                    camera.position.set(camera.position.x - 10f, camera.position.y, 0f);
 
-                }
-                if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && camera.position.x < Process.SCREEN_WIDTH / 2f) {
-                    camera.position.set(camera.position.x + 10f, camera.position.y, 0f);
+            if (cameraScale < 1.8f) {
+                if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+                    if (Gdx.input.isKeyPressed(Input.Keys.W) && camera.position.y < Process.SCREEN_HEIGHT / 2f) {
+                        camera.position.set(camera.position.x, camera.position.y + 10f, 0f);
+                    }
+                    if (Gdx.input.isKeyPressed(Input.Keys.S) && camera.position.y > -Process.SCREEN_HEIGHT / 2f) {
+                        camera.position.set(camera.position.x, camera.position.y - 10f, 0f);
+                    }
+                    if (Gdx.input.isKeyPressed(Input.Keys.A) && camera.position.x > -Process.SCREEN_WIDTH / 2f) {
+                        camera.position.set(camera.position.x - 10f, camera.position.y, 0f);
+
+                    }
+                    if (Gdx.input.isKeyPressed(Input.Keys.D) && camera.position.x < Process.SCREEN_WIDTH / 2f) {
+                        camera.position.set(camera.position.x + 10f, camera.position.y, 0f);
+                    }
                 }
             } else if (cameraScale < 2f && (Math.abs(camera.position.x) > 10f || Math.abs(camera.position.y) > 10f)) {
                 float temp = (float) Math.sqrt(camera.position.y * camera.position.y + camera.position.x * camera.position.x);
@@ -139,35 +250,35 @@ public class MainPlayScreen extends ScreenAdapter {
                         camera.position.y - sin * GameSettings.DEFAULT_CAMERA_SPEED * deltaTime,
                         0f);
             }
-            camera.update();
-        } else if (!Gdx.input.isKeyPressed(Input.Keys.NUM_1) || !Gdx.input.isKeyPressed(Input.Keys.NUM_2))
+
+
+        } else if (!Gdx.input.isKeyPressed(Input.Keys.Q) || !Gdx.input.isKeyPressed(Input.Keys.E)) {
             keyPressed = false;
+        }
     }
 
     private void setShipController() {
-        float deltaTime = 0.01f;
-        if (GameSettings.soundIsPlaying) {
-            GameSettings.elapsedTime += delayTime;
-            if (GameSettings.elapsedTime > GameSettings.playTime) GameSettings.soundIsPlaying = false;
-        } else {
-            float thrust = 0f;
-            float steering;
+        float thrust = 0f;
+        float steering = 0f;
+        if (!Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
             if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                thrust += 50;
+                thrust = 50f;
             } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-                thrust -= 50;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+                thrust = -50f;
+            } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
                 steering = -1f;
             } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
                 steering = 1f;
-            } else {
-                steering = 0f;
             }
             if (thrust != 0f) {
-                System.out.println(true);
-                game.getSoundByName("ship").play(GameSettings.getVolumeLevelByName("sound"));
-                GameSettings.soundIsPlaying = true;
+                sound.engineStart();
+            } else {
+                sound.engineStop();
+            }
+            if (steering != 0f) {
+                sound.turnStart();
+            } else {
+                sound.turnStop();
             }
             sim.setInput(steering, thrust);
         }
@@ -175,8 +286,7 @@ public class MainPlayScreen extends ScreenAdapter {
 }
 
 class PhysicalObject {
-    //final float BIG_G = 6.67f * 1e-11f;
-    static final float BIG_G = 1f;
+    static final float BIG_G = 1f; // IRL 6.67f * 1e-11f;
     public Vector2 position;
     public Vector2 velocity;
     public Vector2 force;
@@ -186,8 +296,10 @@ class PhysicalObject {
     public float radius;
 
     public ArrayList<Vector2> curPath;
+    public Vector2 apoapsis;
+    public Vector2 periapsis;
     boolean pathReqUpdate;
-
+    boolean isCollide;
     Sprite sprite;
 
     public PhysicalObject(PhysicalObject other) {
@@ -198,7 +310,8 @@ class PhysicalObject {
         this.angularSpeed = other.angularSpeed;
         this.mass = other.mass;
         pathReqUpdate = true;
-        //this.sprite = other.sprite;
+        isCollide = false;
+        // this.sprite = other.sprite; // We are cloning object for headless simulation, so we don't need to copy sprite
     }
 
     public PhysicalObject(float x, float y, float speedX, float speedY, float mass) {
@@ -210,6 +323,7 @@ class PhysicalObject {
         angle = 0;
         angularSpeed = 0;
         pathReqUpdate = true;
+        isCollide = false;
     }
 
     static Vector2 getGravitationForce(float m1, float m2, Vector2 r1, Vector2 r2) {
@@ -221,32 +335,33 @@ class PhysicalObject {
     public void setTexture(Texture texture) {
         this.sprite = new Sprite(texture);
         this.sprite.setOriginCenter();
-        this.sprite.setCenter(0, 0);
     }
 
-    // fixme fix this whole method, it's very buggy
+    // todo rewrite this probably
     public ArrayList<Vector2> getPath(float spacing, float deltaTime, Vector2 sunPos, float sunMass) {
         if (!pathReqUpdate) {
             return curPath;
         }
+        isCollide = false;
+        final float posEps = 5f;
+        final int MAX_STEPS = 500;
+        final int SUN_SIZE = 64 - 30; // fixme Put in real sun size
 
-        float simDeltaTime = 1f / 600f; //fixme
-        deltaTime *= 1f / 600f;
-        final float posEps = 0.5f;
-        final int MAX_STEPS = 1000;
-        //расстояние отлёта
         spacing = spacing * spacing;
 
         ArrayList<Vector2> trajectory = new ArrayList<>();
         PhysicalObject clonedShip = new PhysicalObject(this);
         Vector2 startPos = new Vector2(clonedShip.position);
 
-        float cumDt = 0;
         int i = 0;
         boolean inStart = true;
         Vector2 prevPos = new Vector2(clonedShip.position);
 
         trajectory.add(new Vector2(clonedShip.position));
+
+        float closeDistance = Float.POSITIVE_INFINITY;
+        float farDistance = Float.NEGATIVE_INFINITY;
+
         while (i < MAX_STEPS) {
             clonedShip.applyGravity(sunPos, sunMass);
             clonedShip.update(deltaTime);
@@ -256,16 +371,30 @@ class PhysicalObject {
                 trajectory.add(new Vector2(clonedShip.position));
                 i++;
             }
-            float a = startPos.dst2(clonedShip.position); //fixme
 
-            if (clonedShip.position.len2() < 64) { //fixme
-                break;
+            float a = startPos.dst2(clonedShip.position); //fixme refactor this
+
+            float distToSun = clonedShip.position.dst2(sunPos);
+
+            if (distToSun < closeDistance) {
+                closeDistance = distToSun;
+                periapsis = clonedShip.position.cpy();
+            }
+            if (distToSun > farDistance) {
+                farDistance = distToSun;
+                apoapsis = clonedShip.position.cpy();
+
+                /* System.out.println("FAR");
+                System.out.println(farDistance);
+                 System.out.println(apoapsis);*/
+            }
+            if (distToSun < SUN_SIZE * SUN_SIZE) { // If moving throughout a sun
+                break; // Don't draw buggy orbit
             } else {
                 if (a > 2 * posEps) {
                     inStart = false;
                 }
             }
-
 
             if (a < posEps && !inStart) {
                 break;
@@ -274,7 +403,10 @@ class PhysicalObject {
                     inStart = false;
                 }
             }
+
+
         }
+
         clonedShip.position.setZero();
         curPath = trajectory;
         pathReqUpdate = false;
@@ -293,11 +425,6 @@ class PhysicalObject {
         this.sprite.setCenter(0, 0);
     }
 
-    public void applyForce(@NotNull Vector2 force) {
-        this.force.add(force);
-        pathReqUpdate = true;
-    }
-
     public void applyForceDirected(float angle, float force) {
         if (force == 0) {
             return;
@@ -314,27 +441,27 @@ class PhysicalObject {
         force.add(getGravitationForce(this.mass, mass, this.position, position));
     }
 
-    public void makeRoundOrbit(float mass, Vector2 center, boolean clockwise) { //fixme for any orbit position
+    public void makeOrbit(float mass, Vector2 center, boolean clockwise, float squishification) {
         Vector2 r = new Vector2(center).sub(position);
         if (clockwise) {
-            velocity = r.rotate90(1).setLength2(BIG_G * mass / r.len());
+            velocity = r.rotate90(1).setLength2(BIG_G * mass / r.len() * squishification);
         } else {
-            velocity = r.rotate90(-1).setLength2(BIG_G * mass / r.len());
+            velocity = r.rotate90(-1).setLength2(BIG_G * mass / r.len() * squishification);
         }
     }
 
     public void update(float deltaTime) {
-        //изменяем скорость
+        // Apply force
         velocity.mulAdd(force, deltaTime / mass);
-        //обнуляем ситу тяжести
         force.setZero();
-        //нынешнее положение
+
+        // Update position
         position.mulAdd(velocity, deltaTime);
         angle += angularSpeed * deltaTime;
     }
 
     public void draw(SpriteBatch batch) {
-        sprite.setCenter(position.x, position.y);
+        sprite.setOriginBasedPosition(position.x, position.y);
         sprite.setRotation(angle);
         sprite.draw(batch);
     }
@@ -342,13 +469,16 @@ class PhysicalObject {
 
 class PhysicalSimulation {
     final int STEPS = 10;
+    final float fixDeltaTime;
     final float SUN_MASS = 1e7f;
     final Vector2 SUN_POS = new Vector2(0f, 0f);
     final float ENGINE_FORCE = 5f;
-    final float TURN_FORCE = 90f;
+    final float TURN_FORCE = 7000f;
     float steering;
     float thrust;
+
     int simSpeedFactor;
+    float timeLeftover;
 
     PhysicalObject ship;
     PhysicalObject sun;
@@ -356,20 +486,22 @@ class PhysicalSimulation {
 
     public PhysicalSimulation() {
         simSpeedFactor = 1;
-        ship = new PhysicalObject(100, 0, 0, 1, 1);
-        ship.makeRoundOrbit(SUN_MASS, SUN_POS, true);
+        timeLeftover = 0;
+        fixDeltaTime = 1f / 60f / STEPS;
+
+        ship = new PhysicalObject(200, 0, 0, 1, 1);
+        ship.makeOrbit(SUN_MASS, SUN_POS, true, 1f);
 
         sun = new PhysicalObject(0, 0, 0, 0, 100);
-        //  sun.applyAngularAcceleration(-0f, 1f);
+        sun.applyAngularAcceleration(-10f, 1f);
 
         planets = new ArrayList<>();
     }
 
-    public void createPlanet(int planetRadius, float planetRotation, Vector2 pos, Vector2 orbitDisturb, Texture texture) {
+    public void createPlanet(int planetRadius, float planetRotation, Vector2 pos, Texture texture, float squishification) {
         PhysicalObject planet = new PhysicalObject(pos.x, pos.y, 0, 0, 1f);
-        planet.makeRoundOrbit(SUN_MASS, SUN_POS, true);
+        planet.makeOrbit(SUN_MASS, SUN_POS, true, squishification);
 
-        planet.applyForce(orbitDisturb);
         planet.applyAngularAcceleration(planetRotation, 1f);
 
         planet.setTexture(texture);
@@ -380,7 +512,7 @@ class PhysicalSimulation {
 
     public void setShipTexture(Texture texture) {
         ship.setTexture(texture);
-        ship.setSize(20, 20);
+        ship.setSize(30, 30);
     }
 
     public void setSunTexture(Texture texture) {
@@ -389,35 +521,33 @@ class PhysicalSimulation {
     }
 
     public void update(float deltaTime) {
+        deltaTime = (deltaTime + timeLeftover) * simSpeedFactor;
+        int steps = (int) (deltaTime / fixDeltaTime);
+        timeLeftover = deltaTime - steps * fixDeltaTime;
 
-        //final float MAX_DT = 1f/30f;
-        //  deltaTime = Math.min(deltaTime, MAX_DT);
-
-        deltaTime = 1f / 60f;
-        deltaTime = deltaTime / STEPS;
-        for (int i = 0; i < STEPS * simSpeedFactor; i++) {
+        for (int i = 0; i < steps; i++) {
             ship.applyForceDirected(ship.angle, thrust * ENGINE_FORCE);
-
-            ship.applyAngularAcceleration(steering * TURN_FORCE, deltaTime);
+            ship.applyAngularAcceleration(steering * TURN_FORCE, fixDeltaTime);
             ship.applyGravity(SUN_POS, SUN_MASS);
 
-            ship.update(deltaTime);
+            ship.update(fixDeltaTime);
+            ship.angularSpeed *= 0.9;
             for (PhysicalObject planet : planets) {
                 planet.applyGravity(SUN_POS, SUN_MASS);
-                planet.update(deltaTime);
+                planet.update(fixDeltaTime);
             }
-            sun.update(deltaTime);
+            sun.update(fixDeltaTime);
         }
+    }
 
-        if (sun.collidesWith(ship)) {
-            System.exit(1);
-        }
+    public boolean isShipPlanetCollision(int planetId) {
+        var planet = planets.get(planetId);
+        return planet.collidesWith(ship);
     }
 
     public void draw(SpriteBatch batch) {
         ship.draw(batch);
         sun.draw(batch);
-
         for (PhysicalObject planet : planets) {
             planet.draw(batch);
         }

@@ -1,18 +1,16 @@
 package com.iuw.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import org.jetbrains.annotations.NotNull;
 
-public class MainMenuScreen implements Screen {
+public class MainMenuScreen extends ScreenAdapter {
     final Process game;
     private final Stage stage;
     // private final Texture img;
@@ -40,7 +38,7 @@ public class MainMenuScreen implements Screen {
                 button.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        game.setScreen(game.GetNextScreen(index));
+                        game.setScreen(game.GetScreenByIndex(index));
                     }
                 });
             } else {
@@ -66,18 +64,9 @@ public class MainMenuScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
         stage.act();
         stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {//don't use yet
-    }
-
-    @Override
-    public void pause() {//don't use yet
-    }
-
-    @Override
-    public void resume() {//don't use yet
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) game.setScreen(game.GetScreenByIndex(1));
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) game.setScreen(game.GetScreenByIndex(2));
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) game.exit();
     }
 
     @Override

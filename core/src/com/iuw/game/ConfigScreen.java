@@ -1,7 +1,8 @@
 package com.iuw.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -14,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import org.jetbrains.annotations.NotNull;
 
-public class ConfigScreen implements Screen {
+public class ConfigScreen extends ScreenAdapter {
     private final Process game;
     private final Stage stage;
     private final OrthographicCamera camera;
@@ -49,18 +50,8 @@ public class ConfigScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
         stage.act();
         stage.draw();
-    }
+        if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) game.setScreen(game.GetScreenByIndex(3));
 
-    @Override
-    public void resize(int width, int height) {//don't use yet
-    }
-
-    @Override
-    public void pause() {//don't use yet
-    }
-
-    @Override
-    public void resume() {//don't use yet
     }
 
     @Override
@@ -118,7 +109,7 @@ public class ConfigScreen implements Screen {
             button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    game.setScreen(game.GetNextScreen(index));
+                    game.setScreen(game.GetScreenByIndex(index));
                 }
             });
             stage.addActor(button);

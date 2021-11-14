@@ -1,38 +1,39 @@
 package com.iuw.game;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.Array;
-
 public class GameSettings {
     public final static float DEFAULT_CAMERA_SPEED = 500f;
+    public final static float MAX_LEVEL = 1f;
     /**
      * Переменные конфигурации системы
      */
-    private final static Integer[] SYSTEM_VARIABLES = new Integer[]{0, 0, 0, 0};
-    public final static float MAX_LEVEL = 1f;
+    private final static Integer[] SYSTEM_VARIABLES = new Integer[]{4, 0, 0, 0};
     public static Process game;
-    //public static boolean soundIsPlaying = false;
-    public static float elapsedTime = 0f;
-    public static boolean soundIsPlaying = false;
-    public final static float playTime = 1f;
     public static float[] VOLUME_LEVELS = new float[]{
             MAX_LEVEL / 2,
             MAX_LEVEL / 2
     };
+    private static String result;
+
     /**
      * Возвращает значение уровня звука по имени:
      * "sound" - звуки игры
      * "music" - фоновая музыка
      */
-    public static float getVolumeLevelByName(String name){
-        switch(name){
-            case "sound": return VOLUME_LEVELS[0];
-            case "music": return VOLUME_LEVELS[1];
+    public static float getVolumeLevelByName(String name) {
+        switch (name) {
+            case "sound":
+                return VOLUME_LEVELS[0];
+            case "music":
+                return VOLUME_LEVELS[1];
             default:
                 throw new IllegalArgumentException("Incorrect name of sound/music");
         }
     }
+
+    public static String getGameResult() {
+        return result;
+    }
+
     /**
      * Возвращает переменную системы по имени
      * "planets" - число планет
@@ -40,6 +41,10 @@ public class GameSettings {
      * "velocity" - скорость корабля
      * "star" - массу звезды
      */
+    public static void setGameResult(String result) {
+        GameSettings.result = result;
+    }
+
     public static Integer getSystemVariableByName(String name) {
         switch (name) {
             case "planets":
