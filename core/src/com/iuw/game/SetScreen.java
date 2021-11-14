@@ -1,9 +1,8 @@
 package com.iuw.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -13,11 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import org.jetbrains.annotations.NotNull;
 
-public class SetScreen implements Screen {
+public class SetScreen extends ScreenAdapter {
     final Process game;
     private final Stage stage;
     private final OrthographicCamera camera;
@@ -31,7 +28,7 @@ public class SetScreen implements Screen {
         float posX = 325f;
         float posY = 350f;
         final String[] labelName = new String[]{"Music", "Sound", "Chosen interface"};
-        for (int i = 0; i < 3; i++, posY +=100f) {
+        for (int i = 0; i < 3; i++, posY += 100f) {
             final Label label = game.getLabel(labelName[i]);
             label.setFontScale(2f, 2f);
             label.setPosition(posX, posY);
@@ -85,7 +82,7 @@ public class SetScreen implements Screen {
         t_but_exit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(game.GetNextScreen(0));
+                game.setScreen(game.GetScreenByIndex(game.getCurrentScreen()));
             }
         });
         t_but_exit.setPosition(170, 100);
@@ -99,26 +96,10 @@ public class SetScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(0f, 0f, 0f, 0f);
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
         stage.act();
         stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-
     }
 
     @Override

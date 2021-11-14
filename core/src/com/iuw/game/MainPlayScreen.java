@@ -6,21 +6,15 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.utils.Timer;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.system.CallbackI;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 enum GameState {
@@ -35,8 +29,6 @@ public class MainPlayScreen extends ScreenAdapter {
     OrthographicCamera camera;
     ShapeRenderer shapeRenderer;
     Process game;
-    private float cameraScale;
-    private boolean keyPressed;
     Sprite signFrom; //fixme
     Sprite signTo;
     boolean soundIsPlaying;
@@ -46,6 +38,8 @@ public class MainPlayScreen extends ScreenAdapter {
     int pickupTargetPlanet;
     int dropTargetPlanet;
     int numDelivered;
+    private float cameraScale;
+    private boolean keyPressed;
 
     public MainPlayScreen(final Process game) {
         this.game = game;
@@ -131,9 +125,10 @@ public class MainPlayScreen extends ScreenAdapter {
                 drawSprite(signTo, sim.planets.get(dropTargetPlanet).position);
                 break;
             case DONE:
-                if (numDelivered == GameSettings.getSystemVariableByName("goods"))
-                    game.setScreen(game.GetNextScreen(1));
-                else {
+                if (numDelivered == GameSettings.getSystemVariableByName("goods")) {
+                    dispose();
+                    game.setScreen(game.GetScreenByIndex(4));
+                } else {
                     gameState = GameState.TARGET_FIRST;
                     setChosenPlanets(GameSettings.getSystemVariableByName("planets"));
                 }
@@ -173,7 +168,6 @@ public class MainPlayScreen extends ScreenAdapter {
     public void dispose() {
         //todo make dispose
         soundArray.forEach(Sound::dispose);
-        shapeRenderer.dispose();
     }
 
     private float getRangeFromAlpha(float alpha, float min, float max) {
@@ -206,7 +200,7 @@ public class MainPlayScreen extends ScreenAdapter {
 
             var eccentricity = (float) ((1f - 0.5f * (Math.random() + Math.random()) / 2));
             var angSpeed = (float) (90d + Math.random() * Math.random() * 150d);
-            sim.createPlanet((int) planet_r, angSpeed, pos, game.getTextureByName("planet" + String.valueOf(i)), eccentricity);
+            sim.createPlanet((int) planet_r, angSpeed, pos, game.getTextureByName("planet" + i), eccentricity);
         }
     }
 
@@ -228,8 +222,9 @@ public class MainPlayScreen extends ScreenAdapter {
                 keyPressed = true;
             }
 
-            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-                if (cameraScale < 1.8f) {
+
+            if (cameraScale < 1.8f) {
+                if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                     if (Gdx.input.isKeyPressed(Input.Keys.W) && camera.position.y < Process.SCREEN_HEIGHT / 2f) {
                         camera.position.set(camera.position.x, camera.position.y + 10f, 0f);
                     }
@@ -243,15 +238,16 @@ public class MainPlayScreen extends ScreenAdapter {
                     if (Gdx.input.isKeyPressed(Input.Keys.D) && camera.position.x < Process.SCREEN_WIDTH / 2f) {
                         camera.position.set(camera.position.x + 10f, camera.position.y, 0f);
                     }
-                } else if (cameraScale < 2f && (Math.abs(camera.position.x) > 10f || Math.abs(camera.position.y) > 10f)) {
-                    float temp = (float) Math.sqrt(camera.position.y * camera.position.y + camera.position.x * camera.position.x);
-                    float cos = camera.position.x / temp, sin = camera.position.y / temp;
-                    camera.position.set(
-                            camera.position.x - cos * GameSettings.DEFAULT_CAMERA_SPEED * deltaTime,
-                            camera.position.y - sin * GameSettings.DEFAULT_CAMERA_SPEED * deltaTime,
-                            0f);
                 }
+            } else if (cameraScale < 2f && (Math.abs(camera.position.x) > 10f || Math.abs(camera.position.y) > 10f)) {
+                float temp = (float) Math.sqrt(camera.position.y * camera.position.y + camera.position.x * camera.position.x);
+                float cos = camera.position.x / temp, sin = camera.position.y / temp;
+                camera.position.set(
+                        camera.position.x - cos * GameSettings.DEFAULT_CAMERA_SPEED * deltaTime,
+                        camera.position.y - sin * GameSettings.DEFAULT_CAMERA_SPEED * deltaTime,
+                        0f);
             }
+
 
         } else if (!Gdx.input.isKeyPressed(Input.Keys.Q) || !Gdx.input.isKeyPressed(Input.Keys.E)) {
             keyPressed = false;
@@ -269,9 +265,7 @@ public class MainPlayScreen extends ScreenAdapter {
             } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
                 thrust = -50f;
                 pressed = true;
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
                 steering = -1f;
                 pressed = true;
             } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
@@ -297,6 +291,7 @@ public class MainPlayScreen extends ScreenAdapter {
                     sound.dispose();
                     soundIsPlaying = false;
                     soundArray.remove(sound);
+
                 }
             };
             keyWaiting.scheduleTask(waiter, 5f);

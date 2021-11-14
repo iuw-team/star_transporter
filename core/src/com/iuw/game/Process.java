@@ -71,14 +71,14 @@ public class Process extends Game {
     public void create() {
         skins[0] = new Skin(Gdx.files.internal("temp_textures/buttons_pack.json"));
         skins[1] = new Skin(Gdx.files.internal("temp_textures/buttons_pack.json"));
-        GameSettings.game = this;
+        if(GameSettings.game == null) GameSettings.game = this;
         gameSkin = skins[ChosenSkin];
-        batch = getBatch();
+        batch = GameSettings.game.getBatch();
         this.setScreen(new MainMenuScreen(this));
         font = new BitmapFont();
-        SpaceMusic = Gdx.audio.newMusic(Gdx.files.internal("Sounds/Space.mp3"));
-        //SpaceMusic.setLooping(true);
-        //SpaceMusic.play();
+        SpaceMusic = getMusic();
+        SpaceMusic.setLooping(true);
+        SpaceMusic.play();
     }
 
     /**
@@ -93,10 +93,10 @@ public class Process extends Game {
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) && !exitPressed) {
             exitPressed = true;
             if (CURRENT_SCREEN == 0) {
-                this.exit();
+                GameSettings.game.exit();
             } else {
                 CURRENT_SCREEN--;
-                this.setScreen(GetNextScreen(CURRENT_SCREEN));
+                this.setScreen(GetScreenByIndex(CURRENT_SCREEN));
             }
         } else if (!Gdx.input.isKeyPressed(Input.Keys.ESCAPE) && exitPressed) {
             exitPressed = false;
@@ -107,13 +107,14 @@ public class Process extends Game {
      * Выход из игры
      */
     public void exit() {
-        this.batch.dispose();
+        GameSettings.game.batch.dispose();
         this.font.dispose();
         this.SpaceMusic.dispose();
         this.dispose();
         Gdx.app.exit();
     }
 
+    public Music getMusic(){return Gdx.audio.newMusic(Gdx.files.internal("Sounds/Space.mp3"));}
     /**
      * Возвращает new Stage
      */
@@ -169,7 +170,6 @@ public class Process extends Game {
     public ShapeRenderer getShapeRenderer() {
         return new ShapeRenderer();
     }
-
     /**
      * Возвращает Texture по имени:
      * ship - текстура корабля
@@ -238,6 +238,10 @@ public class Process extends Game {
         }
     }
 
+    public int getCurrentScreen() {
+        return CURRENT_SCREEN;
+    }
+
     /**
      * Метод, определяющий ныне выбранный скрин:
      * 0 - MainMenuScreen
@@ -255,16 +259,20 @@ public class Process extends Game {
      * 2 - SetScreen
      * 3 - MainPlayScreen
      */
-    public Screen GetNextScreen(int index) {
+    public Screen GetScreenByIndex(int index) {
         switch (index) {
             case 0:
-                return new MainMenuScreen(this);
+                return new MainMenuScreen(GameSettings.game);
             case 1:
-                return new ConfigScreen(this);
+                return new ConfigScreen(GameSettings.game);
             case 2:
-                return new SetScreen(this);
+                return new SetScreen(GameSettings.game);
+            case 3:
+                return new MainPlayScreen(GameSettings.game);
+            case 4:
+                return new ResultScreen(GameSettings.game);
             default:
-                return new MainPlayScreen(this);
+                throw new IllegalArgumentException("Incorrect index of screen");
         }
 
     }
