@@ -41,11 +41,13 @@ public class MainPlayScreen extends ScreenAdapter {
 
     int pickupTargetPlanet;
     int dropTargetPlanet;
+    int asteroidAmount;
     float fadeTimer; //fixme, change to better system i guess
     float MAX_FADE_TIMER = 2; // Seconds
 
     public MainPlayScreen(final Process game) {
         fadeTimer = MAX_FADE_TIMER;
+        asteroidAmount = 3; // fixme
 
         this.game = game;
         sound = new GameSound();
@@ -93,6 +95,10 @@ public class MainPlayScreen extends ScreenAdapter {
 
         gameState = GameState.TARGET_FIRST;
         sound.ambienceStart();
+
+        for (int i = 0; i < asteroidAmount; i++){
+            sim.createAsteroid(game.getTextureByName("asteroid"));
+        }
     }
 
     void drawSprite(Sprite sprite, Vector2 position) {
@@ -102,6 +108,10 @@ public class MainPlayScreen extends ScreenAdapter {
 
     @Override
     public void render(float dt) {
+        if (sim.asteroids.size() < asteroidAmount){
+            sim.createAsteroid(game.getTextureByName("asteroid"));
+        }
+
         setShipController();
 
         if (gameState != GameState.FADING) {
@@ -126,6 +136,15 @@ public class MainPlayScreen extends ScreenAdapter {
         pathMarker.setColor(102f / 255f, 102f / 255f, 153f / 255f, 1f);
         for (PhysicalObject planet : sim.planets) {
             var trajectory = planet.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
+            for (int i = 0; i < trajectory.size(); i++) {
+                Vector2 point = trajectory.get(i);
+                drawSprite(pathMarker, point);
+            }
+        }
+
+        pathMarker.setColor(202f / 255f, 102f / 255f, 102 / 255f, 1f);
+        for (PhysicalObject asteroid : sim.asteroids) {
+            var trajectory = asteroid.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
             for (int i = 0; i < trajectory.size(); i++) {
                 Vector2 point = trajectory.get(i);
                 drawSprite(pathMarker, point);
@@ -168,9 +187,19 @@ public class MainPlayScreen extends ScreenAdapter {
                 break;
         }
 
-        if (sim.isShipSunCollision() && gameState != GameState.FADING) {
-            gameState = GameState.FADING;
-            sound.explosion();
+        if (gameState != GameState.FADING){ //fixme
+            var gameOver = sim.isShipSunCollision();
+
+            for (PhysicalObject asteroid: sim.asteroids){
+                if (asteroid.collidesWith(sim.ship)){
+                    gameOver = true;
+                }
+            }
+
+            if (gameOver) {
+                sound.explosion();
+                gameState = GameState.FADING;
+            }
         }
 
         game.batch.end();
@@ -496,7 +525,9 @@ class PhysicalSimulation {
 
     PhysicalObject ship;
     PhysicalObject sun;
+
     ArrayList<PhysicalObject> planets;
+    ArrayList<PhysicalObject> asteroids;
 
     public PhysicalSimulation() {
         simSpeedFactor = 1;
@@ -510,6 +541,7 @@ class PhysicalSimulation {
         sun.applyAngularAcceleration(-10f, 1f);
 
         planets = new ArrayList<>();
+        asteroids = new ArrayList<>();
     }
 
     public void createPlanet(int planetRadius, float planetRotation, Vector2 pos, Texture texture, float squishification) {
@@ -522,6 +554,33 @@ class PhysicalSimulation {
         planet.setSize(planetRadius * 2, planetRadius * 2);
 
         planets.add(planet);
+    }
+
+    public void createAsteroid(Texture texture){
+        var rAngle = Math.random() * 2 * Math.PI;
+        var rDistance = 1000f + 20f ;// More than screenWidth,
+        var x = Math.cos(rAngle) * rDistance;
+        var y = Math.sin(rAngle) * rDistance;
+
+        var speedV = new Vector2((float)x, (float)y);
+        int randDir;
+        if (1 - Math.random()*3 > 0) {
+            randDir = 1;
+        } else {
+            randDir = -1;
+        }
+
+        var shiftV = new Vector2(speedV).nor().rotate90(randDir).scl(200+500f*(float)Math.random()); // kekw
+        speedV.scl(-1).add(shiftV);
+        speedV.setLength2((2.2f + (float)Math.random()*2f)*PhysicalObject.BIG_G*SUN_MASS/rDistance);
+
+        var asteroid = new PhysicalObject((float)x, (float)y, speedV.x, speedV.y, 1f);
+        asteroid.setTexture(texture);
+        var size = 20 + (int)(Math.random()*30f);
+        asteroid.setSize(size, size);
+        asteroid.applyAngularAcceleration(90f*randDir, 1f);
+
+        asteroids.add(asteroid);
     }
 
     public void setShipTexture(Texture texture) {
@@ -551,8 +610,15 @@ class PhysicalSimulation {
                 planet.applyGravity(SUN_POS, SUN_MASS);
                 planet.update(fixDeltaTime);
             }
+            for (PhysicalObject asteroid : asteroids) {
+                asteroid.applyGravity(SUN_POS, SUN_MASS);
+                asteroid.update(fixDeltaTime);
+            }
+
             sun.update(fixDeltaTime);
         }
+
+        asteroids.removeIf(a -> a.position.dst2(SUN_POS)>1100*1100); // fixme
     }
 
     public boolean isShipPlanetCollision(int planetId) {
@@ -570,6 +636,9 @@ class PhysicalSimulation {
 
         for (PhysicalObject planet : planets) {
             planet.draw(batch);
+        }
+        for (PhysicalObject asteroid : asteroids) {
+            asteroid.draw(batch);
         }
     }
 

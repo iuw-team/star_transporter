@@ -204,7 +204,7 @@ public class Process extends Game {
             case "planet8":
                 return new Texture("planet8.png");
             case "asteroid":
-                return new Texture("asteroid.png");
+                return new Texture("pix_asteroid.png");
             case "here1":
                 return new Texture("here.png");
             case "here2":
