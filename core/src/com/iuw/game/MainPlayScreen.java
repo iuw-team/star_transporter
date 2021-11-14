@@ -47,7 +47,7 @@ public class MainPlayScreen extends ScreenAdapter {
 
     public MainPlayScreen(final Process game) {
         fadeTimer = MAX_FADE_TIMER;
-        asteroidAmount = 3; // fixme
+        asteroidAmount = 10; // fixme
 
         this.game = game;
         sound = new GameSound();
