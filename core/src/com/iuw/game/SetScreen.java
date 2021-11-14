@@ -3,7 +3,6 @@ package com.iuw.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -85,7 +84,7 @@ public class SetScreen implements Screen {
         t_but_exit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(game.GetNextScreen(0));
+                game.setScreen(game.getNextScreen(0));
             }
         });
         t_but_exit.setPosition(170, 100);

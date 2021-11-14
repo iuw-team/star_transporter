@@ -5,12 +5,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -101,7 +99,7 @@ public class Process extends Game {
                 this.exit();
             } else {
                 CURRENT_SCREEN--;
-                this.setScreen(GetNextScreen(CURRENT_SCREEN));
+                this.setScreen(getNextScreen(CURRENT_SCREEN));
             }
         } else if (!Gdx.input.isKeyPressed(Input.Keys.ESCAPE) && exitPressed) {
             exitPressed = false;
@@ -225,6 +223,7 @@ public class Process extends Game {
      * star - текстура звезды
      * planet - текстура планеты
      */
+ /*
     public Sound getSoundByName(String name) {
         switch (name) {
             case "ship": {
@@ -243,6 +242,7 @@ public class Process extends Game {
                 throw new IllegalArgumentException("Incorrect name of system's variable");
         }
     }
+    */
 
     /**
      * Метод, определяющий ныне выбранный скрин:
@@ -255,13 +255,13 @@ public class Process extends Game {
     }
 
     /**
-     * Функция получения скрина в соответсвии с его идентификационным номером:
+     * Функция получения скрина по его ID:
      * 0 - MainMenuScreen
      * 1 - ConfigScreen
      * 2 - SetScreen
      * 3 - MainPlayScreen
      */
-    public Screen GetNextScreen(int index) {
+    public Screen getNextScreen(int index) { //fixme, wtf
         switch (index) {
             case 0:
                 return new MainMenuScreen(this);
@@ -269,10 +269,12 @@ public class Process extends Game {
                 return new ConfigScreen(this);
             case 2:
                 return new SetScreen(this);
-            default:
+            case 3:
                 return new MainPlayScreen(this);
+            case 4:
+                return new ResultScreen(this);
         }
-
+        return new ConfigScreen(this); //fixme, this here for "no return statetment"
     }
 
 }

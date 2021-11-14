@@ -18,32 +18,27 @@ import javax.swing.*;
 public class ResultScreen implements Screen {
     final Process game;
     private Stage stage;
-    private Texture img;
     private OrthographicCamera camera;
 
     public ResultScreen(final Process game) {
         this.game = game;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
-        img = new Texture("main_theme.jpg");
         stage = new Stage(new ScreenViewport());
 
         final String[] ButtonName = new String[]{"Play again", "Settings", "MainMenu"};
-        for (int i =-2; i < 1; i++) {
-            final TextButton button = new TextButton(ButtonName[i+2], Process.gameSkin);
-            button.setPosition(200, 200-100*i);
+        for (int i = -2; i < 1; i++) {
+            final TextButton button = new TextButton(ButtonName[i + 2], Process.gameSkin);
+            button.setPosition(200, 200 - 100 * i);
             button.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
             stage.addActor(button);
             final Integer index = i;
             button.addListener(new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
-                    game.setScreen(game.GetNextScreen(index));
+                    game.setScreen(game.getNextScreen(index));
                 }
             });
         }
-
-
-
     }
 
     @Override
@@ -57,7 +52,6 @@ public class ResultScreen implements Screen {
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
-        //game.batch.draw(img, 0, 0);
         game.batch.end();
         stage.act();
         stage.draw();
@@ -87,6 +81,5 @@ public class ResultScreen implements Screen {
     public void dispose() {
         stage.dispose();
 
-        img.dispose();
     }
 }

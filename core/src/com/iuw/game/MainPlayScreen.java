@@ -5,18 +5,14 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.system.CallbackI;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 enum GameState {
@@ -38,12 +34,15 @@ public class MainPlayScreen extends ScreenAdapter {
     Sprite here3Sign;
 
     GameState gameState;
+    GameSound sound;
 
     int pickupTargetPlanet;
     int dropTargetPlanet;
 
     public MainPlayScreen(final Process game) {
         this.game = game;
+        sound = new GameSound();
+
         game.setCurrentScreen(2);
         cameraScale = 1f;
         keyPressed = false;
@@ -51,6 +50,7 @@ public class MainPlayScreen extends ScreenAdapter {
         shapeRenderer = game.getShapeRenderer();
 
         sim = new PhysicalSimulation();
+        sound = new GameSound();
 
         sim.setShipTexture(game.getTextureByName("ship"));
         sim.setSunTexture(game.getTextureByName("star"));
@@ -77,6 +77,7 @@ public class MainPlayScreen extends ScreenAdapter {
         } while (dropTargetPlanet == pickupTargetPlanet);
 
         gameState = GameState.TARGET_FIRST;
+        sound.ambienceStart();
     }
 
     void drawSprite(Sprite sprite, Vector2 position) {
@@ -107,6 +108,7 @@ public class MainPlayScreen extends ScreenAdapter {
         switch (gameState) {
             case TARGET_FIRST:
                 if (sim.isShipPlanetCollision(pickupTargetPlanet)) {
+                    sound.done();
                     gameState = GameState.TARGET_SECOND;
                 }
 
@@ -115,9 +117,14 @@ public class MainPlayScreen extends ScreenAdapter {
                 break;
             case TARGET_SECOND:
                 if (sim.isShipPlanetCollision(dropTargetPlanet)) {
+                    sound.done();
                     gameState = GameState.DONE;
                 }
                 drawSprite(here3Sign, sim.planets.get(dropTargetPlanet).position);
+                break;
+            case DONE:
+                game.setScreen(game.getNextScreen(4));
+                sound.ambienceStop();
                 break;
         }
 
@@ -145,6 +152,7 @@ public class MainPlayScreen extends ScreenAdapter {
 
     @Override
     public void dispose() {
+        sound.dispose();
         //todo make dispose
     }
 
@@ -243,6 +251,18 @@ public class MainPlayScreen extends ScreenAdapter {
             steering = -1f;
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             steering = 1f;
+        }
+
+        if (thrust != 0f){
+            sound.engineStart();
+        } else {
+            sound.engineStop();
+        }
+
+        if (steering != 0f){
+            sound.turnStart();
+        } else {
+            sound.turnStop();
         }
 
         sim.setInput(steering, thrust);

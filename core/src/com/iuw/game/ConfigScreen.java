@@ -118,7 +118,7 @@ public class ConfigScreen implements Screen {
             button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    game.setScreen(game.GetNextScreen(index));
+                    game.setScreen(game.getNextScreen(index));
                 }
             });
             stage.addActor(button);
