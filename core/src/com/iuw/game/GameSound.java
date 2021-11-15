@@ -15,6 +15,7 @@ public class GameSound {
     Sound doneS;
     Sound spaceAmbienceS;
     Sound explosionS;
+    private String[] musicName = new String[]{"SpaceMusic.mp3", "SpaceVacuum.wav"};
 
     public GameSound() {
         engineS = GameSettings.game.getSound("space_engine.wav");
@@ -23,7 +24,7 @@ public class GameSound {
         turnRunning = false;
 
         doneS = GameSettings.game.getSound("done.mp3");
-        spaceAmbienceS = GameSettings.game.getSound("space_ambience.wav");
+
         explosionS = GameSettings.game.getSound("explosion.mp3");
     }
 
@@ -31,6 +32,7 @@ public class GameSound {
      * Запуск фоновых звуков/музыки
      */
     public void ambienceStart() {
+        spaceAmbienceS = GameSettings.game.getSound(musicName[Process.ChosenSkin]);
         spaceAmbienceS.loop(GameSettings.getVolumeLevelByName("music"));
     }
 

@@ -40,10 +40,6 @@ public class Process extends Game {
      * Индекс выбранного скина
      */
     public static Integer ChosenSkin = 0;
-    /**
-     * Варианты скинов
-     */
-    final private Skin[] skins = new Skin[2];
     public SpriteBatch batch;
     private BitmapFont font;
     /**
@@ -63,10 +59,8 @@ public class Process extends Game {
      */
     @Override
     public void create() {
-        skins[0] = new Skin(Gdx.files.internal("temp_textures/buttons_pack.json"));
-        skins[1] = new Skin(Gdx.files.internal("temp_textures/buttons_pack.json"));
         if (GameSettings.game == null) GameSettings.game = this;
-        gameSkin = skins[ChosenSkin];
+        gameSkin = new Skin(Gdx.files.internal("temp_textures/buttons_pack.json"));
         batch = GameSettings.game.getBatch();
         this.setScreen(GetScreenByIndex(0));
         font = new BitmapFont();
@@ -79,8 +73,6 @@ public class Process extends Game {
     public void render() {
         ScreenUtils.clear(0f, 0f, 0f, 1f);
         super.render();
-        gameSkin = skins[ChosenSkin];
-
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) && !exitPressed) {
             exitPressed = true;
             if (CURRENT_SCREEN == 0) {

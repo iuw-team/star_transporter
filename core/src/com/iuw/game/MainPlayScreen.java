@@ -360,7 +360,7 @@ public class MainPlayScreen extends ScreenAdapter {
      * Обработчик нажатий для управления кораблём
      */
     private void setShipController() {
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+        if (!Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
             float thrust = 0f;
             float steering = 0f;
             if (Gdx.input.isKeyPressed(Input.Keys.W)) {
