@@ -14,11 +14,18 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Класс настроек
+ */
 public class SetScreen extends ScreenAdapter {
     final Process game;
     private final Stage stage;
     private final OrthographicCamera camera;
 
+    /**
+     * Создание стандартного экрана настроек
+     * @param game - Process
+     */
     public SetScreen(@NotNull final Process game) {
         this.game = game;
         game.setCurrentScreen(1);
@@ -88,11 +95,18 @@ public class SetScreen extends ScreenAdapter {
         stage.addActor(t_but_exit);
     }
 
+    /**
+     * ВЫзывается при появлении Screen
+     */
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
     }
 
+    /**
+     * Отрисовка Screen
+     * @param delta - время изменение картинки
+     */
     @Override
     public void render(float delta) {
         camera.update();
@@ -101,11 +115,16 @@ public class SetScreen extends ScreenAdapter {
         stage.draw();
     }
 
+    /**
+     * Вызывается при сокрытии данного Screen
+     */
     @Override
     public void hide() {
         dispose();
     }
-
+    /**
+     * Уничтожает все созданные объекты
+     */
     @Override
     public void dispose() {
         stage.dispose();

@@ -1,5 +1,8 @@
 package com.iuw.game;
 
+/**
+ * Класс глобальных переменных и методов
+ */
 public class GameSettings {
     public final static float DEFAULT_CAMERA_SPEED = 500f;
     public final static float MAX_LEVEL = 1f;
@@ -63,7 +66,13 @@ public class GameSettings {
         }
 
     }
-
+    /**
+     * Задаёт значения системным переменным
+     * @param
+     * index - индекс системной конфигурации
+     * @param
+     * value - значение соответсвующего
+     */
     public static void setSystemVariables(int index, int value) {
         SYSTEM_VARIABLES[index] = value;
     }

@@ -10,11 +10,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+/**
+ * Экран завершения игры
+ */
 public class ResultScreen extends ScreenAdapter {
     final Process game;
     private final Stage stage;
     private final OrthographicCamera camera;
 
+    /**
+     * Создание стандартного ResultScreen
+     * @param game - Process
+     */
     public ResultScreen(final Process game) {
         this.game = game;
         game.setCurrentScreen(2);

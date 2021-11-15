@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.Array;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Configuration planet system class
+ * Экран создания конфигурации системы
  * @author iuw-team
  */
 public class ConfigScreen extends ScreenAdapter {
@@ -31,8 +31,8 @@ public class ConfigScreen extends ScreenAdapter {
     };
 
     /**
-     * Create default Screen
-     * @param game - Process class
+     * Создание стандартного класса ConfigScreen
+     * @param game - Process
      */
     public ConfigScreen(@NotNull final Process game) {
         this.game = game;
@@ -45,15 +45,14 @@ public class ConfigScreen extends ScreenAdapter {
         InitLabels();
     }
     /**
-     * Called before it appears
+     * Вызывается при появлении экрана
      */
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
     }
     /**
-     * Called before it appears
-     * Rendering User Interface
+     *Отрисовка полбзовательского интерфейса
      */
     @Override
     public void render(float delta) {
@@ -65,21 +64,21 @@ public class ConfigScreen extends ScreenAdapter {
 
     }
     /**
-     * Called when Screen is hidden
+     * Вызывается при сокрытии выбранного экрана
      */
     @Override
     public void hide() {
         dispose();
     }
     /**
-     * Destroy all components that were during rendering
+     * Уничтожает все созданные объекты
      */
     @Override
     public void dispose() {
         stage.dispose();
     }
     /**
-     * Initialisation of Selectable boxes
+     * Инициализация  SelectBox
      */
     private void InitBoxes() {
         final float posX = (Process.SCREEN_WIDTH - Process.BOX_WIDTH) / 2f;
@@ -108,7 +107,9 @@ public class ConfigScreen extends ScreenAdapter {
             this.stage.addActor(box);
         }
     }
-
+    /**
+     * Инициализация  Buttons
+     */
     private void InitButtons() {
         final String[] butName = new String[]{"X", "Play"};
         final float[][] butPos = new float[][]{
@@ -129,7 +130,9 @@ public class ConfigScreen extends ScreenAdapter {
             stage.addActor(button);
         }
     }
-
+    /**
+     * Инициализация  Labels
+     */
     private void InitLabels() {
         final String[] labelText = new String[]{
                 "Number of planet",
