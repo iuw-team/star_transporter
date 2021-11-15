@@ -149,7 +149,7 @@ public class MainPlayScreen extends ScreenAdapter {
      */
     @Override
     public void render(float dt) {
-        if(MathUtils.randomBoolean(0.005f)) {
+        if(MathUtils.randomBoolean(0.1f)) {
             if (sim.asteroids.size() < asteroidAmount) {
                 sim.createAsteroid(game.getTextureByName("asteroid"));
             }
@@ -556,6 +556,11 @@ class PhysicalObject {
         return this.position.dst2(other.position) < distance * distance;
     }
 
+    /**
+     * Установить размер объекта
+     * @param sizeX  размер по X
+     * @param sizeY  размер по Y
+     */
     public void setSize(int sizeX, int sizeY) {
         this.radius = sizeX / 2f; //fixme dirty hack
         this.sprite.setSize(sizeX, sizeY);
@@ -563,6 +568,11 @@ class PhysicalObject {
         this.sprite.setCenter(0, 0);
     }
 
+    /**
+     * Приложить силу по направлению
+     * @param angle  угол вектора от Ox
+     * @param force  сила
+     */
     public void applyForceDirected(float angle, float force) {
         if (force == 0) {
             return;
@@ -571,14 +581,31 @@ class PhysicalObject {
         pathReqUpdate = true;
     }
 
+    /**
+     * Ускорить вращение объекта
+     * @param acceleration  ускорение
+     * @param dt  время ускорения
+     */
     public void applyAngularAcceleration(float acceleration, float dt) {
         angularSpeed += -acceleration * dt;
     }
 
+    /**
+     * Высчитать и применить силу гравифтации
+     * @param position  позиция объекта к которому притягиваемся
+     * @param mass  масса объекта к которому притягиваемся
+     */
     public void applyGravity(Vector2 position, float mass) {
         force.add(getGravitationForce(this.mass, mass, this.position, position));
     }
 
+    /**
+     * Отправить объект на орбиту вокруг солнца
+     * @param mass  масса солнца
+     * @param center  позиция солнца
+     * @param clockwise  направления, true - по часовой, false - против часовой
+     * @param squishification эксцентриситет орбиты
+     */
     public void makeOrbit(float mass, Vector2 center, boolean clockwise, float squishification) {
         Vector2 r = new Vector2(center).sub(position);
         if (clockwise) {
@@ -588,6 +615,10 @@ class PhysicalObject {
         }
     }
 
+    /**
+     * Сделать шаг симуляции
+     * @param deltaTime время кадра
+     */
     public void update(float deltaTime) {
         // Apply force
         velocity.mulAdd(force, deltaTime / mass);
@@ -598,6 +629,10 @@ class PhysicalObject {
         angle += angularSpeed * deltaTime;
     }
 
+    /**
+     * Отрисовка объекта
+     * @param batch  холст
+     */
     public void draw(SpriteBatch batch) {
         sprite.setOriginBasedPosition(position.x, position.y);
         sprite.setRotation(angle);
@@ -605,6 +640,9 @@ class PhysicalObject {
     }
 }
 
+/**
+ * Симуляция физики игры
+ */
 class PhysicalSimulation {
     final int STEPS = 10;
     final float fixDeltaTime;
@@ -639,6 +677,14 @@ class PhysicalSimulation {
         asteroids = new ArrayList<>();
     }
 
+    /**
+     * Добавить планету в симуляцию
+     * @param planetRadius  радиус планеты
+     * @param planetRotation  скорость вращения планеты
+     * @param pos  начальная позиция планеты
+     * @param texture  текстура планеты
+     * @param squishification  эксцентриситет орбиты
+     */
     public void createPlanet(int planetRadius, float planetRotation, Vector2 pos, Texture texture, float squishification) {
         PhysicalObject planet = new PhysicalObject(pos.x, pos.y, 0, 0, 1f);
         planet.makeOrbit(SUN_MASS, SUN_POS, true, squishification);
@@ -651,6 +697,10 @@ class PhysicalSimulation {
         planets.add(planet);
     }
 
+    /**
+     * Добавить случайно-сгенерированный астероид
+     * @param texture  текстура астероида
+     */
     public void createAsteroid(Texture texture) {
         var rAngle = MathUtils.random() * 2 * Math.PI;
         var rDistance = 1000f + 20f;// More than screenWidth,
@@ -678,16 +728,29 @@ class PhysicalSimulation {
         asteroids.add(asteroid);
     }
 
+    /**
+     * Установить текстуру корабля
+     * @param texture  текстура солнца
+     */
     public void setShipTexture(Texture texture) {
         ship.setTexture(texture);
         ship.setSize(30, 30);
     }
 
+
+    /**
+     * Установить текстуру солнца
+     * @param texture  текстура солнца
+     */
     public void setSunTexture(Texture texture) {
         sun.setTexture(texture);
         sun.setSize(64, 64);
     }
 
+    /**
+     * Сделать шаги симуляции на deltaTime вперёд времени
+     * @param deltaTime
+     */
     public void update(float deltaTime) {
         deltaTime = (deltaTime + timeLeftover) * simSpeedFactor;
         int steps = (int) (deltaTime / fixDeltaTime);
@@ -715,15 +778,28 @@ class PhysicalSimulation {
         asteroids.removeIf(a -> a.position.dst2(SUN_POS) > 1100 * 1100); // fixme
     }
 
+    /**
+     * Проверка столкновения корабля с планетой
+     * @param planetId  номер планеты по порядку от солнца
+     * @return  true - столкновение есть, false - нет
+     */
     public boolean isShipPlanetCollision(int planetId) {
         var planet = planets.get(planetId);
         return planet.collidesWith(ship);
     }
 
+    /**
+     * Столкновение корабля с солнцем
+     * @return  true - столкновение есть, false - нет
+     */
     public boolean isShipSunCollision() {
         return ship.collidesWith(sun);
     }
 
+    /**
+     * Отрисовка симуляции
+     * @param batch  холст
+     */
     public void draw(SpriteBatch batch) {
         ship.draw(batch);
         sun.draw(batch);
@@ -735,6 +811,11 @@ class PhysicalSimulation {
         }
     }
 
+    /**
+     * Приложить управление к кораблю
+     * @param steering  вращение корабля, >0 по часовой, <0 против часовой
+     * @param thrust  мощность двигателей корабля, >0 вперёд, <0 назад.
+     */
     public void setInput(float steering, float thrust) {
         this.steering = steering;
         this.thrust = thrust;

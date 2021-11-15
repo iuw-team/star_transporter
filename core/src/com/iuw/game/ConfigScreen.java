@@ -26,7 +26,7 @@ public class ConfigScreen extends ScreenAdapter {
     private final Integer[][] boxVariables = new Integer[][]{
             new Integer[]{4, 5, 6, 7}, //list for planet number
             new Integer[]{1, 2, 3, 4}, //number of loads for delivery
-            new Integer[]{1, 3, 5, 7}, //quantity of asteroids
+            new Integer[]{1, 3, 5, 7, 10, 15, 100}, //quantity of asteroids
             new Integer[]{1, 2, 3, 4, 5, 6}, //system speedFactor or may be exactly star mass
     };
 
@@ -88,7 +88,7 @@ public class ConfigScreen extends ScreenAdapter {
         boxItems.add(
                 new Array<>(new String[]{"4", "5", "6", "7"}),
                 new Array<>(new String[]{"1", "2", "3", "4"}),
-                new Array<>(new String[]{"1", "3", "5", "7"}),
+                new Array<>(new String[]{"1", "3", "5", "7", "10", "15", "100"}),
                 new Array<>(new String[]{"Ia", "Ib", "II", "III", "IV", "V"})
 
         );
