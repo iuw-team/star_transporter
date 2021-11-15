@@ -21,6 +21,11 @@ enum GameState {
     DONE,
 }
 
+/**
+ * Класс игрового процесса
+ *
+ * @author iuw-team
+ */
 public class MainPlayScreen extends ScreenAdapter {
     PhysicalSimulation sim;
     OrthographicCamera camera;
@@ -42,6 +47,11 @@ public class MainPlayScreen extends ScreenAdapter {
     private float cameraScale;
     private boolean keyPressed;
 
+    /**
+     * Создаёт стандартный MainPlayScreen
+     *
+     * @param game - Process класс
+     */
     public MainPlayScreen(final Process game) {
         fadeTimer = MAX_FADE_TIMER;
         asteroidAmount = GameSettings.getSystemVariableByName("asteroids");
@@ -82,12 +92,21 @@ public class MainPlayScreen extends ScreenAdapter {
         mapGeneration();
     }
 
+    /**
+     * Рисует Sprite по заданной Texture
+     *
+     * @param texture - текстура Sprite
+     * @return - new Sprite
+     */
     Sprite makeHereSign(Texture texture) { //fixme
         Sprite arrowSign = new Sprite(texture);
         arrowSign.setOrigin(arrowSign.getWidth() / 2, 0);
         return arrowSign;
     }
 
+    /**
+     * Первичная генерация космического пространства
+     */
     void mapGeneration() {
         var planetNum = GameSettings.getSystemVariableByName("planets");
         createPlanets(planetNum);
@@ -98,6 +117,11 @@ public class MainPlayScreen extends ScreenAdapter {
 
     }
 
+    /**
+     * Случаайным образом выбирает планету-отправителя и планету-получателя груза
+     *
+     * @param quantity - число всех планет
+     */
     private void setChosenPlanets(int quantity) {
         quantity -= 1;
         pickupTargetPlanet =
@@ -107,11 +131,22 @@ public class MainPlayScreen extends ScreenAdapter {
         } while (dropTargetPlanet == pickupTargetPlanet);
     }
 
+    /**
+     * Отрисовка Sprite в заданных координатах
+     *
+     * @param sprite   - Sprite image
+     * @param position - Vector2 position
+     */
     void drawSprite(Sprite sprite, Vector2 position) {
         sprite.setOriginBasedPosition(position.x, position.y);
         sprite.draw(game.batch);
     }
 
+    /**
+     * Основной метод отрисовки игрового процесса
+     *
+     * @param dt - вряме изменение кадров
+     */
     @Override
     public void render(float dt) {
         if(MathUtils.randomBoolean(0.005f)) {
@@ -223,11 +258,18 @@ public class MainPlayScreen extends ScreenAdapter {
         game.batch.end();
     }
 
+    /**
+     * Вызывается при переключение Screen
+     * ВЫзывает метод dispose()
+     */
     @Override
     public void hide() {
         dispose();
     }
 
+    /**
+     * Уничтожение всех ранее созданных объектов
+     */
     @Override
     public void dispose() {
         sound.dispose();
@@ -314,38 +356,45 @@ public class MainPlayScreen extends ScreenAdapter {
         }
     }
 
+    /**
+     * Обработчик нажатий для управления кораблём
+     */
     private void setShipController() {
-        float thrust = 0f;
-        float steering = 0f;
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+            float thrust = 0f;
+            float steering = 0f;
+            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+                thrust = 50;
+            } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+                thrust = -50;
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            thrust = 50;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            thrust = -50;
+            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+                steering = -1f;
+            } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+                steering = 1f;
+            }
+
+            if (thrust != 0f) {
+                sound.engineStart();
+            } else {
+                sound.engineStop();
+            }
+
+            if (steering != 0f) {
+                sound.turnStart();
+            } else {
+                sound.turnStop();
+            }
+
+            sim.setInput(steering, thrust);
         }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            steering = -1f;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            steering = 1f;
-        }
-
-        if (thrust != 0f) {
-            sound.engineStart();
-        } else {
-            sound.engineStop();
-        }
-
-        if (steering != 0f) {
-            sound.turnStart();
-        } else {
-            sound.turnStop();
-        }
-
-        sim.setInput(steering, thrust);
     }
 }
 
+/**
+ * Класс стандартного физическкого объекта, используемого в качестве родительсокго для всех космических объектов
+ */
 class PhysicalObject {
     static final float BIG_G = 1f; // IRL 6.67f * 1e-11f;
     public Vector2 position;
@@ -363,6 +412,10 @@ class PhysicalObject {
 
     Sprite sprite;
 
+    /**
+     * Создание PhysicalObject, используя характеристики уже созданного
+     * @param other - PhysicalObject
+     */
     public PhysicalObject(PhysicalObject other) {
         this.position = new Vector2(other.position);
         this.velocity = new Vector2(other.velocity);
@@ -374,6 +427,14 @@ class PhysicalObject {
         // this.sprite = other.sprite; // We are cloning object for headless simulation, so we don't need to copy sprite
     }
 
+    /**
+     * Создание PhysicalObject по
+     * @param x - координата по X
+     * @param y - координата по Y
+     * @param speedX - скорость по X
+     * @param speedY - скорость по Y
+     * @param mass - масса объекта
+     */
     public PhysicalObject(float x, float y, float speedX, float speedY, float mass) {
         this.position = new Vector2(x, y);
         this.velocity = new Vector2(speedX, speedY);
@@ -384,18 +445,37 @@ class PhysicalObject {
         pathReqUpdate = true;
     }
 
+    /**
+     * Применить силу тяжести к объекту
+     * @param m1 - масса первого тела
+     * @param m2 - масса второго тела
+     * @param r1 - Vector2 первого тела
+     * @param r2 - Vector2 второго тела
+     * @return новый Vector2
+     */
     static Vector2 getGravitationForce(float m1, float m2, Vector2 r1, Vector2 r2) {
         Vector2 vec = new Vector2(r2).sub(r1);
         float magnitude = BIG_G * m1 * m2 / vec.len2();
         return vec.setLength(magnitude);
     }
 
+    /**
+     * Настраивает текстура     public PhysicalObject(float x, float y, float speedX, float speedY, float mass) {
+     * @param texture - передаваемая Texture
+     */
     public void setTexture(Texture texture) {
         this.sprite = new Sprite(texture);
         this.sprite.setOriginCenter();
     }
 
-    // todo rewrite this probably
+    /**
+     * Возвращает массив координат для построения траектории
+     * @param spacing - рассояние между соседними пунктами траектории
+     * @param deltaTime - время изменение кадра
+     * @param sunPos - координаты центрального небесного светила
+     * @param sunMass - масса центрального небесного светила
+     * @return массив координ точек траектории
+     */
     public ArrayList<Vector2> getPath(float spacing, float deltaTime, Vector2 sunPos, float sunMass) {
         if (!pathReqUpdate) {
             return curPath;
@@ -466,6 +546,11 @@ class PhysicalObject {
         return trajectory;
     }
 
+    /**
+     * Обработчик столкновения с объектом
+     * @param other - PhysicalObject, с которым должно столкнуться тело
+     * @return - ответ
+     */
     public boolean collidesWith(PhysicalObject other) {
         float distance = this.radius + other.radius;
         return this.position.dst2(other.position) < distance * distance;
@@ -523,7 +608,7 @@ class PhysicalObject {
 class PhysicalSimulation {
     final int STEPS = 10;
     final float fixDeltaTime;
-    final float SUN_MASS = GameSettings.getSystemVariableByName("star")*1e7f;
+    final float SUN_MASS = GameSettings.getSystemVariableByName("star") * 1e7f;
     final Vector2 SUN_POS = new Vector2(0f, 0f);
     final float ENGINE_FORCE = 5f;
     final float TURN_FORCE = 7000f;
