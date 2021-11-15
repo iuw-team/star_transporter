@@ -3,6 +3,9 @@ package com.iuw.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 
+/**
+ * Воспроизведение звуков и аудио-эффектов в игре
+ */
 public class GameSound {
     Sound engineS;
     boolean engineRunning;
@@ -24,13 +27,23 @@ public class GameSound {
         explosionS = GameSettings.game.getSound("explosion.mp3");
     }
 
+    /**
+     * Запуск фоновых звуков/музыки
+     */
     public void ambienceStart() {
         spaceAmbienceS.loop(GameSettings.getVolumeLevelByName("music"));
     }
+
+    /**
+     * Остановка фоновых звуков/музыки
+     */
     public void ambienceStop() {
         spaceAmbienceS.stop();
     }
 
+    /**
+     * Запуск звука двигателя
+     */
     public void engineStart() {
         if (!engineRunning) {
             engineS.loop(GameSettings.getVolumeLevelByName("sound"));
@@ -38,6 +51,9 @@ public class GameSound {
         }
     }
 
+    /**
+     * Остановка звука двигателя
+     */
     public void engineStop() {
         if (engineRunning) {
             engineS.stop();
@@ -45,6 +61,9 @@ public class GameSound {
         }
     }
 
+    /**
+     * Запуск звука поворота корабля
+     */
     public void turnStart() {
         if (!turnRunning) {
             turnS.loop(GameSettings.getVolumeLevelByName("sound"));
@@ -52,6 +71,9 @@ public class GameSound {
         }
     }
 
+    /**
+     * Остановка звука поворота корабля
+     */
     public void turnStop() {
         if (turnRunning) {
             turnS.stop();
@@ -59,14 +81,25 @@ public class GameSound {
         }
     }
 
+
+    /**
+     *  Воспроизведение звука выполнения задания
+     */
     public void done() {
         doneS.play(GameSettings.getVolumeLevelByName("sound"));
     }
 
+    /**
+     *  Воспроизведение звука взрыва
+     */
     public void explosion() {
         explosionS.play();
     }
 
+
+    /**
+     *  Освобождение ресурсов
+     */
     public void dispose(){
         engineS.dispose();
         turnS.dispose();
