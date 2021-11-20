@@ -33,7 +33,7 @@ public class Process extends Game {
     public final static float
             TYPE = 1.5f;
     /**
-     * Поле скина, хранящего информацию о текстурах кнопок и иных компонентов графического интерфейса
+     * A skin field that stores texture information for buttons and other GUI components
      */
     public static Skin gameSkin;
     /**
