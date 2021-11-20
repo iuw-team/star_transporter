@@ -37,25 +37,25 @@ public class Process extends Game {
      */
     public static Skin gameSkin;
     /**
-     * Индекс выбранного скина
+     * Index of the selected skin
      */
     public static Integer ChosenSkin = 0;
     public SpriteBatch batch;
     private BitmapFont font;
     /**
-     * Условный номер выбранного скрина, используемый для перемещения между ними с помощью клавиши Esc
-     * 0 - Главное меню
-     * 1 - Меню настроек и Меню конфигурации системы
-     * 2 - Игровой процесс
+     * The conditional number of the selected screen used to move between them using the Esc key
+     * 0 - Main menu
+     * 1 - Settings menu and System Configuration menu
+     * 2 - Game process
      */
     private Integer CURRENT_SCREEN = 0;
     /**
-     * Поле, хранящее информацию, нажата ли клавиша Esc
+     * Field storing information on whether the Esc key is pressed
      */
     private boolean exitPressed = false;
 
     /**
-     * Инициализация отрисовщика и остальных компонентов
+     * Initialising the renderer and other components
      */
     @Override
     public void create() {
@@ -67,7 +67,7 @@ public class Process extends Game {
     }
 
     /**
-     * Отрисовка игрового процесса
+     * Drawing the gameplay
      */
     @Override
     public void render() {
@@ -88,7 +88,7 @@ public class Process extends Game {
     }
 
     /**
-     * Выход из игры
+     * Exiting the game
      */
     public void exit() {
         GameSettings.game.batch.dispose();
@@ -98,66 +98,66 @@ public class Process extends Game {
     }
 
     /**
-     * Возвращает new Stage
+     * Returns new Stage
      */
     public Stage getStage() {
         return new Stage(new ScreenViewport(), batch);
     }
 
     /**
-     * Возвращает new Batch
+     * Returns new Batch
      */
     public SpriteBatch getBatch() {
         return new SpriteBatch();
     }
 
     /**
-     * Возвращает new SelectBox <String>
+     * Returns new SelectBox <String>
      */
     public SelectBox<String> getSelectBox() {
         return new SelectBox<>(gameSkin);
     }
 
     /**
-     * Возвращает new TextButton с надписью text
+     * Returns a new TextButton with text on it
      */
     public TextButton getTextButton(String text) {
         return new TextButton(text, gameSkin);
     }
 
     /**
-     * Возвращает new Label с надписью text
+     * Returns new Label with text caption
      */
     public Label getLabel(String text) {
         return new Label(text, gameSkin);
     }
 
     /**
-     * Возвращает new CheckBox с надписью text
+     * Returns new CheckBox with text
      */
     public CheckBox getCheckBox(String text) {
         return new CheckBox(text, gameSkin);
     }
 
     /**
-     * Возвращает new Slider
+     * Returns new Slider
      */
     public Slider getSlider() {
         return new Slider(0f, GameSettings.MAX_LEVEL, 0.001f, false, gameSkin);
     }
 
     /**
-     * Возвращает new ShapeRenderer
+     * Returns new ShapeRenderer
      */
     public ShapeRenderer getShapeRenderer() {
         return new ShapeRenderer();
     }
 
     /**
-     * Возвращает Texture по имени:
-     * ship - текстура корабля
-     * star - текстура звезды
-     * planet - текстура планеты
+     * Returns Texture by name:
+     * ship - ship texture
+     * star - star texture
+     * planet - planet texture
      */
     public Texture getTextureByName(String name) {
         switch (name) {
@@ -200,9 +200,9 @@ public class Process extends Game {
     }
 
     /**
-     * Возвращает Sound по имени:
-     * ship - звуки движения корабля
-     * collision - звук столкновения
+     * Returns Sound by name:
+     * ship - sounds of ship traffic
+     * collision - the sound of a collision
      */
     Sound getSound(String filename) {
         return Gdx.audio.newSound(Gdx.files.internal("Sounds/".concat(filename)));
@@ -213,7 +213,7 @@ public class Process extends Game {
     }
 
     /**
-     * Метод, определяющий ныне выбранный скрин:
+     * The method that determines the currently selected screen:
      * 0 - MainMenuScreen
      * 1 - ConfigScreen и SetScreen
      * 2 - MainPlayScreen
@@ -223,7 +223,7 @@ public class Process extends Game {
     }
 
     /**
-     * Функция получения скрина по его ID:
+     * Function to retrieve a screenshot by its ID:
      * 0 - MainMenuScreen
      * 1 - ConfigScreen
      * 2 - SetScreen
