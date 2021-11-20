@@ -1,6 +1,5 @@
 package com.iuw.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 
 /**
@@ -13,9 +12,9 @@ public class GameSound {
     boolean turnRunning;
 
     Sound doneS;
-    Sound spaceAmbienceS;
+    Sound spaceMusic;
     Sound explosionS;
-    private String[] musicName = new String[]{"SpaceMusic.mp3", "SpaceVacuum.wav"};
+    private String[] musicName = new String[]{"space_music.wav", "SpaceMusic.mp3"};
 
     public GameSound() {
         engineS = GameSettings.game.getSound("space_engine.wav");
@@ -32,15 +31,15 @@ public class GameSound {
      * Running background sounds/music
      */
     public void ambienceStart() {
-        spaceAmbienceS = GameSettings.game.getSound(musicName[Process.ChosenSkin]);
-        spaceAmbienceS.loop(GameSettings.getVolumeLevelByName("music"));
+        spaceMusic = GameSettings.game.getSound(musicName[Process.ChosenSkin]);
+        spaceMusic.loop(GameSettings.getVolumeLevelByName("music"));
     }
 
     /**
      * Stop background sounds/music
      */
     public void ambienceStop() {
-        spaceAmbienceS.stop();
+        spaceMusic.stop();
     }
 
     /**
@@ -106,7 +105,7 @@ public class GameSound {
         engineS.dispose();
         turnS.dispose();
         doneS.dispose();
-        spaceAmbienceS.dispose();
+        spaceMusic.dispose();
         explosionS.dispose();
 
     }
