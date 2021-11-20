@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 /**
- * Экран завершения игры
+ * Game completion screen
  */
 public class ResultScreen extends ScreenAdapter {
     final Process game;
@@ -19,7 +19,7 @@ public class ResultScreen extends ScreenAdapter {
     private final OrthographicCamera camera;
 
     /**
-     * Создание стандартного ResultScreen
+     * Creating a Standard Result Screen
      * @param game - Process
      */
     public ResultScreen(final Process game) {
