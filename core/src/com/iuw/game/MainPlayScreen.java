@@ -812,9 +812,9 @@ class PhysicalSimulation {
     }
 
     /**
-     * Приложить управление к кораблю
-     * @param steering  вращение корабля, >0 по часовой, <0 против часовой
-     * @param thrust  мощность двигателей корабля, >0 вперёд, <0 назад.
+     * Attach the controls to the vehicle
+     * @param steering ship rotation, >0 clockwise, <0 counterclockwise
+     * @param thrust the power of the ship's engines, >0 forward, <0 backward.
      */
     public void setInput(float steering, float thrust) {
         this.steering = steering;
