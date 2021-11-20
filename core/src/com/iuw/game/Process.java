@@ -15,14 +15,14 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 /**
- * Главный игровой класс, хранящий основные глобальные переменные и осуществляющий всю отрисовку
+ * The main game class that stores the main global variables and does all the rendering
  *
  * @author IUW-team
  * @version 0.2
  */
 public class Process extends Game {
     /**
-     * Поля константных значений, таких как ширина и высота кнопок, слайдеров
+     * Constant value fields, such as width and height of buttons, sliders
      */
     public final static Integer
             SCREEN_WIDTH = 800, SCREEN_HEIGHT = 600,

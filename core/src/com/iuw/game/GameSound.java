@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 
 /**
- * Воспроизведение звуков и аудио-эффектов в игре
+ * Playing sounds and audio effects in the game
  */
 public class GameSound {
     Sound engineS;
@@ -29,7 +29,7 @@ public class GameSound {
     }
 
     /**
-     * Запуск фоновых звуков/музыки
+     * Running background sounds/music
      */
     public void ambienceStart() {
         spaceAmbienceS = GameSettings.game.getSound(musicName[Process.ChosenSkin]);
@@ -37,14 +37,14 @@ public class GameSound {
     }
 
     /**
-     * Остановка фоновых звуков/музыки
+     * Stop background sounds/music
      */
     public void ambienceStop() {
         spaceAmbienceS.stop();
     }
 
     /**
-     * Запуск звука двигателя
+     * Starting the engine sound
      */
     public void engineStart() {
         if (!engineRunning) {
@@ -54,7 +54,7 @@ public class GameSound {
     }
 
     /**
-     * Остановка звука двигателя
+     * Stopping the engine sound
      */
     public void engineStop() {
         if (engineRunning) {
@@ -64,7 +64,7 @@ public class GameSound {
     }
 
     /**
-     * Запуск звука поворота корабля
+     * Starting the ship's turn sound
      */
     public void turnStart() {
         if (!turnRunning) {
@@ -74,7 +74,7 @@ public class GameSound {
     }
 
     /**
-     * Остановка звука поворота корабля
+     * Stopping the sound of the ship turning
      */
     public void turnStop() {
         if (turnRunning) {
@@ -85,14 +85,14 @@ public class GameSound {
 
 
     /**
-     *  Воспроизведение звука выполнения задания
+     *  Playing back the sound of the task
      */
     public void done() {
         doneS.play(GameSettings.getVolumeLevelByName("sound"));
     }
 
     /**
-     *  Воспроизведение звука взрыва
+     *  Playing back the sound of the explosion
      */
     public void explosion() {
         explosionS.play();
@@ -100,7 +100,7 @@ public class GameSound {
 
 
     /**
-     *  Освобождение ресурсов
+     *  Release of resources
      */
     public void dispose(){
         engineS.dispose();

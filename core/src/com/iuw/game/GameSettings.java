@@ -1,13 +1,13 @@
 package com.iuw.game;
 
 /**
- * Класс глобальных переменных и методов
+ * Class of global variables and methods
  */
 public class GameSettings {
     public final static float DEFAULT_CAMERA_SPEED = 500f;
     public final static float MAX_LEVEL = 1f;
     /**
-     * Переменные конфигурации системы
+     * System configuration variables
      */
     private final static Integer[] SYSTEM_VARIABLES = new Integer[]{4, 0, 0, 0};
     public static Process game;
@@ -18,9 +18,9 @@ public class GameSettings {
     private static String result;
 
     /**
-     * Возвращает значение уровня звука по имени:
-     * "sound" - звуки игры
-     * "music" - фоновая музыка
+     * Returns the sound level value by name:
+     * "sound" - the sounds of the game
+     * "music" - background music
      */
     public static float getVolumeLevelByName(String name) {
         switch (name) {
@@ -33,23 +33,23 @@ public class GameSettings {
         }
     }
     /**
-     * Возвращает Заголовок ResultScreen
+     * Returns the ResultScreen Header
      */
     public static String getGameResult() {
         return result;
     }
     /**
-     * Настроить Заголовок ResultScreen
+     * Set ResultScreen Header
      */
     public static void setGameResult(String result) {
         GameSettings.result = result;
     }
     /**
-     * Возвращает переменную системы по имени
-     * "planets" - число планет
-     * "goods" - число грузов
-     * "asteroids" - число астероидов
-     * "star" - массу звезды
+     * Returns a system variable by name
+     * "planets" - the number of planets
+     * "goods" - number of goods
+     * "asteroids" - the number of asteroids
+     * "star" - the mass of the star
      */
     public static Integer getSystemVariableByName(String name) {
         switch (name) {
@@ -67,11 +67,11 @@ public class GameSettings {
 
     }
     /**
-     * Задаёт значения системным переменным
+     * Sets values for system variables
      * @param
-     * index - индекс системной конфигурации
+     * index - system configuration index
      * @param
-     * value - значение соответсвующего
+     * value - the value of the relevant
      */
     public static void setSystemVariables(int index, int value) {
         SYSTEM_VARIABLES[index] = value;

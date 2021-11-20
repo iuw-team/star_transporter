@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.Array;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Экран создания конфигурации системы
+ * System configuration screen
  * @author iuw-team
  */
 public class ConfigScreen extends ScreenAdapter {
@@ -31,7 +31,7 @@ public class ConfigScreen extends ScreenAdapter {
     };
 
     /**
-     * Создание стандартного класса ConfigScreen
+     * Creating a standard ConfigScreen class
      * @param game - Process
      */
     public ConfigScreen(@NotNull final Process game) {
@@ -45,14 +45,14 @@ public class ConfigScreen extends ScreenAdapter {
         InitLabels();
     }
     /**
-     * Вызывается при появлении экрана
+     * Called when the screen appears
      */
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
     }
     /**
-     * Отрисовка полбзовательского интерфейса
+     * Drawing the user interface
      */
     @Override
     public void render(float delta) {
@@ -64,21 +64,21 @@ public class ConfigScreen extends ScreenAdapter {
 
     }
     /**
-     * Вызывается при сокрытии выбранного экрана
+     * Called when the selected screen is hidden
      */
     @Override
     public void hide() {
         dispose();
     }
     /**
-     * Уничтожает все созданные объекты
+     * Destroys all created objects
      */
     @Override
     public void dispose() {
         stage.dispose();
     }
     /**
-     * Инициализация  SelectBox
+     * Initialising SelectBox
      */
     private void InitBoxes() {
         final float posX = (Process.SCREEN_WIDTH - Process.BOX_WIDTH) / 2f;
@@ -108,7 +108,7 @@ public class ConfigScreen extends ScreenAdapter {
         }
     }
     /**
-     * Инициализация  Buttons
+     * Initialising Buttons
      */
     private void InitButtons() {
         final String[] butName = new String[]{"X", "Play"};
@@ -131,7 +131,7 @@ public class ConfigScreen extends ScreenAdapter {
         }
     }
     /**
-     * Инициализация  Labels
+     * Initialising Labels
      */
     private void InitLabels() {
         final String[] labelText = new String[]{
