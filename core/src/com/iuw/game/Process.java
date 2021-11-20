@@ -162,37 +162,41 @@ public class Process extends Game {
     public Texture getTextureByName(String name) {
         switch (name) {
             case "ship":
-                return new Texture("pixel_ship.png");
+                return new Texture("ship_noflame.png");
+            case "ship_flame":
+                return new Texture("ship_flame.png");
             case "star":
-                return new Texture("star_0.png");
+                return new Texture("sun_n.png");
             case "planet":
                 return new Texture("pixel_planet.png");
             case "planet1":
-                return new Texture("planet1.png");
+                return new Texture("planet1_n.png");
             case "planet2":
-                return new Texture("planet2.png");
+                return new Texture("planet2_n.png");
             case "planet3":
-                return new Texture("planet3.png");
+                return new Texture("planet3_n.png");
             case "planet4":
-                return new Texture("planet4.png");
+                return new Texture("planet4_n.png");
             case "planet5":
-                return new Texture("planet5.png");
+                return new Texture("planet5_n.png");
             case "planet6":
-                return new Texture("planet6.png");
+                return new Texture("planet6_n.png");
             case "planet7":
-                return new Texture("planet7.png");
+                return new Texture("planet7_n.png");
             case "planet8":
-                return new Texture("planet8.png");
+                return new Texture("planet8_n.png");
             case "asteroid":
                 return new Texture("pix_asteroid.png");
             case "signFrom":
-                return new Texture("here.png");
+                return new Texture("here_2.png");
             case "signTo":
-                return new Texture("lasthere.png");
+                return new Texture("here2.png");
             case "marker":
                 return new Texture("marker.png");
             case "black_square":
                 return new Texture("black_square.png");
+            case "background":
+                return new Texture("background.png");
             default:
                 throw new IllegalArgumentException("Incorrect name of system's variable");
         }

@@ -29,11 +29,13 @@ enum GameState {
 public class MainPlayScreen extends ScreenAdapter {
     PhysicalSimulation sim;
     OrthographicCamera camera;
+    OrthographicCamera hudCamera;
     ShapeRenderer shapeRenderer;
     Process game;
     Sprite signFrom; //fixme
     Sprite signTo;
     Sprite pathMarker;
+    Sprite background;
     Sprite blackSquare; //fixme
     GameState gameState;
     GameSound sound;
@@ -63,6 +65,7 @@ public class MainPlayScreen extends ScreenAdapter {
         numDelivered = 0;
         keyPressed = false;
         camera = new OrthographicCamera(cameraScale * Process.SCREEN_WIDTH, cameraScale * Process.SCREEN_HEIGHT);
+        hudCamera = new OrthographicCamera(Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
         shapeRenderer = game.getShapeRenderer();
 
         sim = new PhysicalSimulation();
@@ -82,6 +85,10 @@ public class MainPlayScreen extends ScreenAdapter {
         blackSquare.setSize(3000, 3000);
         blackSquare.setOriginCenter();
 
+        background = new Sprite(game.getTextureByName("background"));
+        background.setSize(800, 600);
+        background.setOriginCenter();
+
         keyWaiting = new Timer();
         keyWaiting.scheduleTask(new Timer.Task() {
             @Override
@@ -100,7 +107,9 @@ public class MainPlayScreen extends ScreenAdapter {
      */
     Sprite makeHereSign(Texture texture) { //fixme
         Sprite arrowSign = new Sprite(texture);
-        arrowSign.setOrigin(arrowSign.getWidth() / 2, 0);
+        //arrowSign.setOrigin(arrowSign.getWidth() / 2, 0);
+        arrowSign.setSize(100, 100);
+        arrowSign.setOriginCenter();
         return arrowSign;
     }
 
@@ -164,8 +173,12 @@ public class MainPlayScreen extends ScreenAdapter {
         ArrayList<Vector2> shipTrajectory = sim.ship.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
         camera.update();
 
-        game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
+
+        game.batch.setProjectionMatrix(hudCamera.combined);
+        drawSprite(background, new Vector2());
+
+        game.batch.setProjectionMatrix(camera.combined);
 
         // Render path markers
         pathMarker.setColor(153f / 255f, 1f, 153f / 255f, 1f);
@@ -192,6 +205,7 @@ public class MainPlayScreen extends ScreenAdapter {
         // Render simulation
         sim.draw(game.batch);
 
+
         // Render target label and change game state todo: split game logic and render
         switch (gameState) {
             case TARGET_FIRST:
@@ -200,6 +214,7 @@ public class MainPlayScreen extends ScreenAdapter {
                     gameState = GameState.TARGET_SECOND;
                 }
                 drawSprite(signFrom, sim.planets.get(pickupTargetPlanet).position);
+                signFrom.rotate((float)(dt*100)); //fixme
                 break;
             case TARGET_SECOND:
                 if (sim.isShipPlanetCollision(dropTargetPlanet)) {
@@ -208,6 +223,7 @@ public class MainPlayScreen extends ScreenAdapter {
                     numDelivered++;
                 }
                 drawSprite(signTo, sim.planets.get(dropTargetPlanet).position);
+                signTo.rotate((float)(dt*100)); //fixme
                 break;
             case FADING:
                 var alpha = Math.max(0f, 1f - (fadeTimer / MAX_FADE_TIMER) * (fadeTimer / MAX_FADE_TIMER));
@@ -291,7 +307,7 @@ public class MainPlayScreen extends ScreenAdapter {
 
         var MAX_DELTA_ORBIT = 200f;
         var MIN_PLANET = 15f;
-        var MAX_PLANET = 30f;
+        var MAX_PLANET = 20f;
 
         var MAX_ORBIT = 400f + MathUtils.random() * 100f;
 
@@ -388,6 +404,12 @@ public class MainPlayScreen extends ScreenAdapter {
             }
 
             sim.setInput(steering, thrust);
+
+            if (thrust != 0f) { //fixme BIG PERFOMANCE HIT AND HARDCODED TEXTURE IN LOOP XD
+                sim.setShipTexture(game.getTextureByName("ship_flame"));
+            } else {
+                sim.setShipTexture(game.getTextureByName("ship"));
+            }
         }
     }
 }
@@ -671,7 +693,7 @@ class PhysicalSimulation {
         ship.makeOrbit(SUN_MASS, SUN_POS, true, 1f);
 
         sun = new PhysicalObject(0, 0, 0, 0, 100);
-        sun.applyAngularAcceleration(-10f, 1f);
+        sun.applyAngularAcceleration(90f, 1f);
 
         planets = new ArrayList<>();
         asteroids = new ArrayList<>();
@@ -734,7 +756,7 @@ class PhysicalSimulation {
      */
     public void setShipTexture(Texture texture) {
         ship.setTexture(texture);
-        ship.setSize(30, 30);
+        ship.setSize(45, 45);
     }
 
 
