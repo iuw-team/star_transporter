@@ -10,7 +10,7 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setTitle(title);
 		config.setMaximized(true);
-		config.setResizable(false);
+		config.setResizable(true);
 		new Lwjgl3Application(new Process(), config);
 	}
 }
