@@ -597,7 +597,6 @@ class PhysicalObject {
 
     /**
      * Приложить силу по направлению
-     *
      * @param angle угол вектора от Ox
      * @param force сила
      */
