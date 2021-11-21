@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>D:\iuw.star_transporter\out\artifacts\iuw_star_transporter_jar\Realize\iuw.star_transporter.jar</jar>
+  <outfile>D:\iuw.star_transporter\out\artifacts\iuw_star_transporter_jar\Realize\StarTransporter.exe</outfile>
+  <errTitle>Need java installing</errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>D:\iuw.star_transporter\out\artifacts\iuw_star_transporter_jar\Realize\icon256.ico</icon>
+  <jre>
+    <path>%JAVA_HOME%</path>
+    <bundledJre64Bit>false</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion></minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>64/32</runtimeBits>
+    <opt>%HKEY_LOCAL_MACHINE\...%</opt>
+  </jre>
+</launch4jConfig>
