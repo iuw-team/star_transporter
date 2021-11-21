@@ -3,7 +3,6 @@ package com.iuw.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -16,28 +15,27 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 public class ResultScreen extends ScreenAdapter {
     final Process game;
     private final Stage stage;
-    private final OrthographicCamera camera;
 
     /**
      * Creating a Standard Result Screen
+     *
      * @param game - Process
      */
     public ResultScreen(final Process game) {
         this.game = game;
         game.setCurrentScreen(2);
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
         stage = game.getStage();
         final Label mainFrame = game.getLabel(GameSettings.getGameResult());
         final Label scorePoints = game.getLabel("Goods were delivered: "
-                .concat(GameSettings.getSystemVariableByName("goods").toString()));
-        mainFrame.setPosition(Process.SCREEN_WIDTH / 2f - mainFrame.getWidth() / 2f, Process.SCREEN_HEIGHT / 2f);
-        scorePoints.setPosition(Process.SCREEN_WIDTH / 2f - scorePoints.getWidth() / 2f, Process.SCREEN_HEIGHT / 2.5f);
+                .concat(GameSettings.getDeliveredGoods().toString())
+        );
+        mainFrame.setPosition(GameSettings.SCREEN_WIDTH / 2f - mainFrame.getWidth() / 2f, GameSettings.SCREEN_HEIGHT / 2f);
+        scorePoints.setPosition(GameSettings.SCREEN_WIDTH / 2f - scorePoints.getWidth() / 2f, GameSettings.SCREEN_HEIGHT / 2.5f);
         stage.addActor(mainFrame);
         stage.addActor(scorePoints);
         final TextButton retryButton = game.getTextButton("Play again");
-        retryButton.setPosition(Process.SCREEN_WIDTH / 2f - Process.BUTTON_WIDTH / 2f, Process.SCREEN_HEIGHT / 5f);
-        retryButton.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
+        retryButton.setPosition(GameSettings.SCREEN_WIDTH / 2f - GameSettings.BUTTON_WIDTH / 2f, GameSettings.SCREEN_HEIGHT / 5f);
+        retryButton.setSize(GameSettings.BUTTON_WIDTH, GameSettings.BUTTON_HEIGHT);
         stage.addActor(retryButton);
         retryButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
@@ -54,11 +52,12 @@ public class ResultScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
-        camera.update();
-        game.batch.setProjectionMatrix(camera.combined);
         stage.act();
         stage.draw();
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) game.setScreen(game.GetScreenByIndex(1));
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE) || Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
+            game.nextKeyPressed = true;
+            game.setScreen(game.GetScreenByIndex(1));
+        }
     }
 
     @Override

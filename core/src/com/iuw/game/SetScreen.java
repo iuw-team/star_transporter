@@ -2,15 +2,13 @@ package com.iuw.game;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +23,7 @@ public class SetScreen extends ScreenAdapter {
 
     /**
      * Creating default SetScreen
+     *
      * @param game - Process
      */
     public SetScreen(@NotNull final Process game) {
@@ -32,22 +31,22 @@ public class SetScreen extends ScreenAdapter {
         game.setCurrentScreen(1);
         camera = new OrthographicCamera();
         stage = game.getStage();
-        float posY = Process.SCREEN_HEIGHT/2.35f;
+        float posY = GameSettings.SCREEN_HEIGHT / 2.35f;
         final String[] labelName = new String[]{"Music", "Sound", "Choose music theme"};
-        for (int i = 0; i < 3; i++, posY += Process.SCREEN_HEIGHT/5f) {
+        for (int i = 0; i < 3; i++, posY += GameSettings.SCREEN_HEIGHT / 5f) {
             final Label label = game.getLabel(labelName[i]);
             label.setFontScale(2f, 2f);
-            label.setPosition(Process.SCREEN_WIDTH / 2f - label.getWidth(), posY);
+            label.setPosition(GameSettings.SCREEN_WIDTH / 2f - label.getWidth(), posY);
             stage.addActor(label);
         }
         //Sliders
-        float posX = Process.SCREEN_WIDTH / 2f - Process.SLIDER_WIDTH / 2f;
-        posY = Process.SCREEN_HEIGHT/2f;
-        for (int i = 0; i < 2; i++, posY -= Process.SCREEN_HEIGHT/6f) {
+        float posX = GameSettings.SCREEN_WIDTH / 2f - GameSettings.SLIDER_WIDTH / 2f;
+        posY = GameSettings.SCREEN_HEIGHT / 2f;
+        for (int i = 0; i < 2; i++, posY -= GameSettings.SCREEN_HEIGHT / 6f) {
             final Slider volume = game.getSlider();
             volume.setValue(GameSettings.VOLUME_LEVELS[i]);
             volume.setPosition(posX, posY);
-            volume.setSize(Process.SLIDER_WIDTH, Process.SLIDER_HEIGHT);
+            volume.setSize(GameSettings.SLIDER_WIDTH, GameSettings.SLIDER_HEIGHT);
             final Integer index = i;
             volume.addListener(new ChangeListener() {
                 @Override
@@ -59,12 +58,12 @@ public class SetScreen extends ScreenAdapter {
         }
         //
         //CheckBoxes
-        final String[] words = new String[]{"Music", "Vacuum"};
+        final String[] words = new String[]{"Classic", "Improver"};
         final CheckBox[] checks = new CheckBox[2];
         boolean WhoChosen = Process.ChosenSkin != 1;
-        posY = Process.SCREEN_HEIGHT/1.5f;
-        posX = Process.SCREEN_WIDTH / 3f;
-        for (int i = 0; i < 2; i++, posX += Process.SCREEN_WIDTH / 5f) {
+        posY = GameSettings.SCREEN_HEIGHT / 1.5f;
+        posX = GameSettings.SCREEN_WIDTH / 3f;
+        for (int i = 0; i < 2; i++, posX += GameSettings.SCREEN_WIDTH / 5f) {
             checks[i] = game.getCheckBox(words[i]);
             checks[i].setPosition(posX, posY);
             checks[i].setSize(100f, 100f);
@@ -84,7 +83,7 @@ public class SetScreen extends ScreenAdapter {
             stage.addActor(checks[i]);
         }
         TextButton t_but_exit = game.getTextButton("Save and Exit");
-        t_but_exit.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
+        t_but_exit.setSize(GameSettings.BUTTON_WIDTH, GameSettings.BUTTON_HEIGHT);
         t_but_exit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -92,7 +91,24 @@ public class SetScreen extends ScreenAdapter {
 
             }
         });
-        t_but_exit.setPosition(Process.SCREEN_WIDTH/2f - Process.BUTTON_WIDTH/2f, Process.SCREEN_HEIGHT/6f);
+        t_but_exit.setPosition(GameSettings.SCREEN_WIDTH / 2f - GameSettings.BUTTON_WIDTH / 2f, GameSettings.SCREEN_HEIGHT / 6f);
+
+        SelectBox<String> scaleChanger = game.getSelectBox();
+        scaleChanger.setPosition(GameSettings.SCREEN_WIDTH * 0.8f, GameSettings.SCREEN_HEIGHT * 0.8f);
+        scaleChanger.setSize(1.5f * GameSettings.BOX_WIDTH, GameSettings.BOX_HEIGHT);
+        scaleChanger.setItems(
+                "800x600");//, "1280x1024", "1600x1200", "1920x1200");
+        scaleChanger.setSelectedIndex(GameSettings.getCurrentResolution());
+        scaleChanger.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                GameSettings.setResolution(scaleChanger.getSelectedIndex());
+                game.setCameraResolution(GameSettings.SCREEN_WIDTH, GameSettings.SCREEN_HEIGHT);
+                game.setScreen(game.GetScreenByIndex(2));
+                hide();
+            }
+        });
+        //stage.addActor(scaleChanger);
         stage.addActor(t_but_exit);
     }
 
@@ -106,6 +122,7 @@ public class SetScreen extends ScreenAdapter {
 
     /**
      * Rendering all UI components
+     *
      * @param delta - time between neighboring frames
      */
     @Override
@@ -114,6 +131,11 @@ public class SetScreen extends ScreenAdapter {
         game.batch.setProjectionMatrix(camera.combined);
         stage.act();
         stage.draw();
+        if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && !game.nextKeyPressed) {
+            game.setScreen(game.GetScreenByIndex(0));
+        } else if (!Gdx.input.isKeyPressed(Input.Keys.ENTER) && !Gdx.input.isKeyPressed(Input.Keys.SPACE) && game.nextKeyPressed) {
+            game.nextKeyPressed = false;
+        }
     }
 
     /**
@@ -123,6 +145,7 @@ public class SetScreen extends ScreenAdapter {
     public void hide() {
         dispose();
     }
+
     /**
      * Destroy all Objects (components) of UI
      */
