@@ -22,7 +22,7 @@ enum GameState {
 }
 
 /**
- * Класс игрового процесса
+ * Gameplay class
  *
  * @author iuw-team
  */
@@ -48,7 +48,7 @@ public class MainPlayScreen extends ScreenAdapter {
     private boolean keyPressed;
 
     /**
-     * Создаёт стандартный MainPlayScreen
+     * Creates a standard MainPlayScreen
      *
      * @param game - Process класс
      */
@@ -88,16 +88,16 @@ public class MainPlayScreen extends ScreenAdapter {
         keyWaiting.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                setCameraControl(0.01f);
+               setCameraControl(0.01f);
             }
         }, 0.01f, 0.01f);
         mapGeneration();
     }
 
     /**
-     * Рисует Sprite по заданной Texture
+     * Draws a Sprite based on a given Texture
      *
-     * @param texture - текстура Sprite
+     * @param texture - Sprite texture
      * @return - new Sprite
      */
     Sprite makeHereSign(Texture texture) { //fixme
@@ -109,7 +109,7 @@ public class MainPlayScreen extends ScreenAdapter {
     }
 
     /**
-     * Первичная генерация космического пространства
+     * Primary generation of outer space
      */
     void mapGeneration() {
         var planetNum = GameSettings.getSystemVariableByName("planets");
@@ -122,9 +122,9 @@ public class MainPlayScreen extends ScreenAdapter {
     }
 
     /**
-     * Случаайным образом выбирает планету-отправителя и планету-получателя груза
+     * Randomly selects the sending planet and the receiving planet of the cargo
      *
-     * @param quantity - число всех планет
+     * @param quantity - the number of all planets
      */
     private void setChosenPlanets(int quantity) {
         quantity -= 1;
@@ -136,7 +136,7 @@ public class MainPlayScreen extends ScreenAdapter {
     }
 
     /**
-     * Отрисовка Sprite в заданных координатах
+     * Drawing Sprite in the specified coordinates
      *
      * @param sprite   - Sprite image
      * @param position - Vector2 position
@@ -147,18 +147,18 @@ public class MainPlayScreen extends ScreenAdapter {
     }
 
     /**
-     * Основной метод отрисовки игрового процесса
+     * The main method of rendering the gameplay
      *
-     * @param dt - время изменение кадров
+     * @param dt - time frame change
      */
     @Override
     public void render(float dt) {
-        if (MathUtils.randomBoolean(0.1f)) {
+        if(MathUtils.randomBoolean(0.1f)) {
             if (sim.asteroids.size() < asteroidAmount) {
                 sim.createAsteroid(game.getTextureByName("asteroid"));
             }
         }
-        // setCameraControl(dt);
+
         setShipController();
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
@@ -273,8 +273,8 @@ public class MainPlayScreen extends ScreenAdapter {
     }
 
     /**
-     * Вызывается при переключение Screen
-     * ВЫзывает метод dispose()
+     * Called when switching Screen
+     * Calls the dispose() method
      */
     @Override
     public void hide() {
@@ -282,7 +282,7 @@ public class MainPlayScreen extends ScreenAdapter {
     }
 
     /**
-     * Уничтожение всех ранее созданных объектов
+     * Destruction of all previously created objects
      */
     @Override
     public void dispose() {
@@ -295,9 +295,9 @@ public class MainPlayScreen extends ScreenAdapter {
     }
 
     /**
-     * Инициализация планет
+     * Initializing planets
      *
-     * @param quantity - число планет
+     * @param quantity - number of planets
      */
     private void createPlanets(int quantity) {
         assert quantity >= 2;
@@ -322,9 +322,9 @@ public class MainPlayScreen extends ScreenAdapter {
     }
 
     /**
-     * Определяет охватываемую площадь и положение камеры
+     * Determines the area covered and the position of the camera
      *
-     * @param deltaTime - время изменение кадра
+     * @param deltaTime - time frame change
      */
     private void setCameraControl(float deltaTime) {
         if (!keyPressed) {
@@ -371,7 +371,7 @@ public class MainPlayScreen extends ScreenAdapter {
     }
 
     /**
-     * Обработчик нажатий для управления кораблём
+     * A click handler for controlling the ship
      */
     private void setShipController() {
         if (!Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
@@ -413,7 +413,7 @@ public class MainPlayScreen extends ScreenAdapter {
 }
 
 /**
- * Класс стандартного физическкого объекта, используемого в качестве родительсокго для всех космических объектов
+ * A class of a standard physical object used as a parent for all space objects
  */
 class PhysicalObject {
     static final float BIG_G = 1f; // IRL 6.67f * 1e-11f;
@@ -433,8 +433,7 @@ class PhysicalObject {
     Sprite sprite;
 
     /**
-     * Создание PhysicalObject, используя характеристики уже созданного
-     *
+     * Creating a Physical Object using the characteristics of an already created one
      * @param other - PhysicalObject
      */
     public PhysicalObject(PhysicalObject other) {
@@ -449,13 +448,12 @@ class PhysicalObject {
     }
 
     /**
-     * Создание PhysicalObject по
-     *
-     * @param x      - координата по X
-     * @param y      - координата по Y
-     * @param speedX - скорость по X
-     * @param speedY - скорость по Y
-     * @param mass   - масса объекта
+     * Creating a Physical Object by
+     * @param x - x coordinate
+     * @param y - y coordinate
+     * @param speedX - speed by X
+     * @param speedY - speed by Y
+     * @param mass - the mass of the object
      */
     public PhysicalObject(float x, float y, float speedX, float speedY, float mass) {
         this.position = new Vector2(x, y);
@@ -468,13 +466,12 @@ class PhysicalObject {
     }
 
     /**
-     * Применить силу тяжести к объекту
-     *
-     * @param m1 - масса первого тела
-     * @param m2 - масса второго тела
-     * @param r1 - Vector2 первого тела
-     * @param r2 - Vector2 второго тела
-     * @return новый Vector2
+     * Apply gravity to an object
+     * @param m1 - the mass of the first body
+     * @param m2 - the mass of the second body
+     * @param r1 - Vector2 of the first body
+     * @param r2 - Vector2 of the second body
+     * @return new Vector2
      */
     static Vector2 getGravitationForce(float m1, float m2, Vector2 r1, Vector2 r2) {
         Vector2 vec = new Vector2(r2).sub(r1);
@@ -483,9 +480,8 @@ class PhysicalObject {
     }
 
     /**
-     * Настраивает текстура     public PhysicalObject(float x, float y, float speedX, float speedY, float mass) {
-     *
-     * @param texture - передаваемая Texture
+     * Adjusts the texture of a publicly accessible physical object (float x, float y, float speed, float speed, float mass){
+     * @param texture - transmitted Texture
      */
     public void setTexture(Texture texture) {
         this.sprite = new Sprite(texture);
@@ -493,13 +489,12 @@ class PhysicalObject {
     }
 
     /**
-     * Возвращает массив координат для построения траектории
-     *
-     * @param spacing   - рассояние между соседними пунктами траектории
-     * @param deltaTime - время изменение кадра
-     * @param sunPos    - координаты центрального небесного светила
-     * @param sunMass   - масса центрального небесного светила
-     * @return массив координ точек траектории
+     * Returns an array of coordinates for plotting a trajectory
+     * @ * @param spacing - distance between adjacent points of the trajectory
+     * @param deltaTime - time frame change
+     * @param sunPos - coordinates of the central celestial body
+     * @param sunMass - the mass of the central celestial body
+     * @ * @return array of coordinates of trajectory points
      */
     public ArrayList<Vector2> getPath(float spacing, float deltaTime, Vector2 sunPos, float sunMass) {
         if (!pathReqUpdate) {
@@ -572,10 +567,9 @@ class PhysicalObject {
     }
 
     /**
-     * Обработчик столкновения с объектом
-     *
-     * @param other - PhysicalObject, с которым должно столкнуться тело
-     * @return - ответ
+     * Object collision handler
+     * @param other - PhysicalObject that the body should encounter
+     * @return - response
      */
     public boolean collidesWith(PhysicalObject other) {
         float distance = this.radius + other.radius;
@@ -583,10 +577,9 @@ class PhysicalObject {
     }
 
     /**
-     * Установить размер объекта
-     *
-     * @param sizeX размер по X
-     * @param sizeY размер по Y
+     * Set the size of the object
+     * @param sizeX  size by X
+     * @param sizeY  size by Y
      */
     public void setSize(int sizeX, int sizeY) {
         this.radius = sizeX / 2f; //fixme dirty hack
@@ -596,9 +589,9 @@ class PhysicalObject {
     }
 
     /**
-     * Приложить силу по направлению
-     * @param angle угол вектора от Ox
-     * @param force сила
+     * Apply force in the direction of
+     * @param angle  the angle of the vector from Ox
+     * @param force  force
      */
     public void applyForceDirected(float angle, float force) {
         if (force == 0) {
@@ -610,31 +603,28 @@ class PhysicalObject {
 
     /**
      * Accelerate the rotation of the object
-     *
-     * @param acceleration boost
-     * @param dt           acceleration time
+     * @param acceleration  boost
+     * @param dt  acceleration time
      */
     public void applyAngularAcceleration(float acceleration, float dt) {
         angularSpeed += -acceleration * dt;
     }
 
     /**
-     * Calculate and apply the force of gravity
-     *
-     * @param position the position of the object to which we are attracted
-     * @param mass     the mass of the object to which we are attracted
+     * Высчитать и применить силу гравифтации
+     * @param position  позиция объекта к которому притягиваемся
+     * @param mass  масса объекта к которому притягиваемся
      */
     public void applyGravity(Vector2 position, float mass) {
         force.add(getGravitationForce(this.mass, mass, this.position, position));
     }
 
     /**
-     * Send an object into orbit around the sun
-     *
-     * @param mass            the mass of the sun
-     * @param center          position of the sun
-     * @param clockwise       directions, true - clockwise, false - counterclockwise
-     * @param squishification эeccentricity of the orbit
+     * Отправить объект на орбиту вокруг солнца
+     * @param mass  масса солнца
+     * @param center  позиция солнца
+     * @param clockwise  направления, true - по часовой, false - против часовой
+     * @param squishification эксцентриситет орбиты
      */
     public void makeOrbit(float mass, Vector2 center, boolean clockwise, float squishification) {
         Vector2 r = new Vector2(center).sub(position);
@@ -646,9 +636,8 @@ class PhysicalObject {
     }
 
     /**
-     * Make a simulation step
-     *
-     * @param deltaTime frame time
+     * Сделать шаг симуляции
+     * @param deltaTime время кадра
      */
     public void update(float deltaTime) {
         // Apply force
@@ -661,9 +650,8 @@ class PhysicalObject {
     }
 
     /**
-     * Drawing an object
-     *
-     * @param batch canvas
+     * Отрисовка объекта
+     * @param batch  холст
      */
     public void draw(SpriteBatch batch) {
         sprite.setOriginBasedPosition(position.x, position.y);
@@ -673,7 +661,7 @@ class PhysicalObject {
 }
 
 /**
- * Simulation of the physics of the game
+ * Симуляция физики игры
  */
 class PhysicalSimulation {
     final int STEPS = 10;
@@ -710,13 +698,12 @@ class PhysicalSimulation {
     }
 
     /**
-     * Add a planet to the simulation
-     *
-     * @param planetRadius    radius of the planet
-     * @param planetRotation  the speed of rotation of the planet
-     * @param pos             the initial position of the planet
-     * @param texture         texture of the planet
-     * @param squishification eccentricity of the orbit
+     * Добавить планету в симуляцию
+     * @param planetRadius  радиус планеты
+     * @param planetRotation  скорость вращения планеты
+     * @param pos  начальная позиция планеты
+     * @param texture  текстура планеты
+     * @param squishification  эксцентриситет орбиты
      */
     public void createPlanet(int planetRadius, float planetRotation, Vector2 pos, Texture texture, float squishification) {
         PhysicalObject planet = new PhysicalObject(pos.x, pos.y, 0, 0, 1f);
@@ -816,10 +803,9 @@ class PhysicalSimulation {
     }
 
     /**
-     * Checking the collision of a ship with a planet
-     *
-     * @param planetId the number of the planet in order from the sun
-     * @return true - there is a collision, false - no
+     * Проверка столкновения корабля с планетой
+     * @param planetId  номер планеты по порядку от солнца
+     * @return  true - столкновение есть, false - нет
      */
     public boolean isShipPlanetCollision(int planetId) {
         var planet = planets.get(planetId);
@@ -827,18 +813,16 @@ class PhysicalSimulation {
     }
 
     /**
-     * The collision of the ship with the sun
-     *
-     * @return true - there is a collision, false - no
+     * Столкновение корабля с солнцем
+     * @return  true - столкновение есть, false - нет
      */
     public boolean isShipSunCollision() {
         return ship.collidesWith(sun);
     }
 
     /**
-     * Rendering the simulation
-     *
-     * @param batch canvas
+     * Отрисовка симуляции
+     * @param batch  холст
      */
     public void draw(SpriteBatch batch) {
         ship.draw(batch);
@@ -853,9 +837,8 @@ class PhysicalSimulation {
 
     /**
      * Attach the controls to the vehicle
-     *
      * @param steering ship rotation, >0 clockwise, <0 counterclockwise
-     * @param thrust   the power of the ship's engines, >0 forward, <0 backward.
+     * @param thrust the power of the ship's engines, >0 forward, <0 backward.
      */
     public void setInput(float steering, float thrust) {
         this.steering = steering;
