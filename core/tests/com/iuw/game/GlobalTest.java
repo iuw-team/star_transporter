@@ -20,10 +20,10 @@ public class GlobalTest extends LibgdxUnitTest {
 
     @Test
     public void ApplicationSetupTest() {
-        if (Process.SCREEN_HEIGHT != 0 && Process.SCREEN_WIDTH != 0 && Process.BUTTON_WIDTH != 0 &&
-                Process.BUTTON_HEIGHT != 0 && Process.BOX_WIDTH != 0 && Process.BOX_HEIGHT != 0 &&
-                Process.SMALL_BUTTON_WIDTH != 0 && Process.SMALL_BUTTON_HEIGHT != 0 &&
-                Process.SLIDER_WIDTH != 0 && Process.SLIDER_HEIGHT != 0 &&
+        if (GameSettings.SCREEN_HEIGHT != 0 && GameSettings.SCREEN_WIDTH != 0 && GameSettings.BUTTON_WIDTH != 0 &&
+                GameSettings.BUTTON_HEIGHT != 0 && GameSettings.BOX_WIDTH != 0 && GameSettings.BOX_HEIGHT != 0 &&
+                GameSettings.SMALL_BUTTON_WIDTH != 0 && GameSettings.SMALL_BUTTON_HEIGHT != 0 &&
+                GameSettings.SLIDER_WIDTH != 0 && GameSettings.SLIDER_HEIGHT != 0 &&
                 Process.ChosenSkin != null && GameSettings.VOLUME_LEVELS[0] != 0 && GameSettings.VOLUME_LEVELS[1] != 0)
             System.out.println("Data is good");
         else System.out.println("Some data are lost");
@@ -63,11 +63,8 @@ public class GlobalTest extends LibgdxUnitTest {
                 .thenReturn(slider);
         Mockito.when(game.getTextureByName(Mockito.anyString()))
                 .thenReturn(texture);
-        Mockito.when(game.getShapeRenderer())
-                .thenReturn(shape);
 
         assertEquals(sound, game.getSound(Mockito.anyString()));
-        assertEquals(shape, game.getShapeRenderer());
         assertEquals(stage, game.getStage());
         assertEquals(batch, game.getBatch());
         assertEquals(box, game.getSelectBox());
@@ -80,7 +77,7 @@ public class GlobalTest extends LibgdxUnitTest {
         ConfigScreen config = new ConfigScreen(game);
         MainMenuScreen menu = new MainMenuScreen(game);
         SetScreen set = new SetScreen(game);
-        GameSettings.setSystemVariables(0, 8);
+        GameSettings.setIndexSystemVariables(0, 3);
         MainPlayScreen play = new MainPlayScreen(game);
         //play.numDelivered = GameSettings.getSystemVariableByName("goods");
 
@@ -176,14 +173,14 @@ public class GlobalTest extends LibgdxUnitTest {
         }
         ///
         play.render(0.001f);
-        GameSettings.setSystemVariables(0, 8);
-        assertEquals(8, (int) GameSettings.getSystemVariableByName("planets"));
-        GameSettings.setSystemVariables(1, 4);
-        assertEquals(4, (int) GameSettings.getSystemVariableByName("goods"));
-        GameSettings.setSystemVariables(2, 3);
-        assertEquals(3, (int) GameSettings.getSystemVariableByName("asteroids"));
-        GameSettings.setSystemVariables(3, 10);
-        assertEquals(10, (int) GameSettings.getSystemVariableByName("star"));
+        GameSettings.setIndexSystemVariables(0, 3);
+        assertEquals(7, (int) GameSettings.getSystemVariableByName("planets"));
+        GameSettings.setIndexSystemVariables(1, 2);
+        assertEquals(3, (int) GameSettings.getSystemVariableByName("goods"));
+        GameSettings.setIndexSystemVariables(2, 3);
+        assertEquals(7, (int) GameSettings.getSystemVariableByName("asteroids"));
+        GameSettings.setIndexSystemVariables(3, 3);
+        assertEquals(4, (int) GameSettings.getSystemVariableByName("star"));
 
         play.gameState = GameState.TARGET_FIRST;
         play.render(0.001f);

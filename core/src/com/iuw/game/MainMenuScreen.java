@@ -3,7 +3,6 @@ package com.iuw.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -14,30 +13,27 @@ public class MainMenuScreen extends ScreenAdapter {
     final Process game;
     private final Stage stage;
     // private final Texture img;
-    private final OrthographicCamera camera;
 
     public MainMenuScreen(@NotNull final Process game) {
         this.game = game;
         game.setCurrentScreen(0);
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
-
         final String[] buttonName = new String[]{"Play", "Settings", "Exit"};
-//        img = new Texture("main-theme.png");
+//      img = new Texture("main-theme.png");
 
         stage = game.getStage();
-        final float posX = 50f;
-        float posY = 400f;
-        for (int i = 0; i < 3; i++, posY -= 100f) {
+        final float posX = GameSettings.SCREEN_WIDTH / 20f;
+        float posY = GameSettings.SCREEN_HEIGHT * 5f / 8f;
+        for (int i = 0; i < 3; i++, posY -= GameSettings.SCREEN_HEIGHT / 5f) {
             final TextButton button = game.getTextButton(buttonName[i]);
             button.setPosition(posX, posY);
-            button.setSize(Process.BUTTON_WIDTH, Process.BUTTON_HEIGHT);
+            button.setSize(GameSettings.BUTTON_WIDTH, GameSettings.BUTTON_HEIGHT);
 
             if (i < 2) {
                 final Integer index = i + 1; //first screen is MainMenu, so others start with 1
                 button.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
+                        //  GameSettings.game = game;
                         game.setScreen(game.GetScreenByIndex(index));
                     }
                 });
@@ -60,13 +56,12 @@ public class MainMenuScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
-        camera.update();
-        game.batch.setProjectionMatrix(camera.combined);
         stage.act();
         stage.draw();
         if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) game.setScreen(game.GetScreenByIndex(1));
         if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) game.setScreen(game.GetScreenByIndex(2));
         if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) game.exit();
+
     }
 
     @Override
@@ -77,5 +72,9 @@ public class MainMenuScreen extends ScreenAdapter {
     @Override
     public void dispose() {
         stage.dispose();
+    }
+    @Override
+    public void resize (int width, int height) {
+        stage.getViewport().update(width, height);
     }
 }

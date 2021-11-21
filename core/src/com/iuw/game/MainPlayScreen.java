@@ -29,8 +29,6 @@ enum GameState {
 public class MainPlayScreen extends ScreenAdapter {
     PhysicalSimulation sim;
     OrthographicCamera camera;
-    OrthographicCamera hudCamera;
-    ShapeRenderer shapeRenderer;
     Process game;
     Sprite signFrom; //fixme
     Sprite signTo;
@@ -64,10 +62,7 @@ public class MainPlayScreen extends ScreenAdapter {
         cameraScale = 1f;
         numDelivered = 0;
         keyPressed = false;
-        camera = new OrthographicCamera(cameraScale * Process.SCREEN_WIDTH, cameraScale * Process.SCREEN_HEIGHT);
-        hudCamera = new OrthographicCamera(Process.SCREEN_WIDTH, Process.SCREEN_HEIGHT);
-        shapeRenderer = game.getShapeRenderer();
-
+        camera = new OrthographicCamera(cameraScale * GameSettings.SCREEN_WIDTH, cameraScale * GameSettings.SCREEN_HEIGHT);
         sim = new PhysicalSimulation();
         sound = new GameSound();
 
@@ -86,14 +81,14 @@ public class MainPlayScreen extends ScreenAdapter {
         blackSquare.setOriginCenter();
 
         background = new Sprite(game.getTextureByName("background"));
-        background.setSize(800, 600);
+        background.setSize(GameSettings.SCREEN_WIDTH, GameSettings.SCREEN_HEIGHT);
         background.setOriginCenter();
 
         keyWaiting = new Timer();
         keyWaiting.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                setCameraControl(0.01f);
+               setCameraControl(0.01f);
             }
         }, 0.01f, 0.01f);
         mapGeneration();
@@ -163,23 +158,17 @@ public class MainPlayScreen extends ScreenAdapter {
                 sim.createAsteroid(game.getTextureByName("asteroid"));
             }
         }
-
+       // setCameraControl(dt);
         setShipController();
-
+        camera.update();
+        game.batch.setProjectionMatrix(camera.combined);
         if (gameState != GameState.FADING) {
             sim.update(dt);
         }
 
         ArrayList<Vector2> shipTrajectory = sim.ship.getPath(6, sim.fixDeltaTime, sim.SUN_POS, sim.SUN_MASS);
-        camera.update();
-
         game.batch.begin();
-
-        game.batch.setProjectionMatrix(hudCamera.combined);
         drawSprite(background, new Vector2());
-
-        game.batch.setProjectionMatrix(camera.combined);
-
         // Render path markers
         pathMarker.setColor(153f / 255f, 1f, 153f / 255f, 1f);
         for (Vector2 point : shipTrajectory) {
@@ -235,7 +224,7 @@ public class MainPlayScreen extends ScreenAdapter {
                         GameSettings.setGameResult("You are win!");
                     } else {
                         GameSettings.setGameResult("Your ship was broken!");
-                        GameSettings.setSystemVariables(1, numDelivered);
+                        GameSettings.setDeliveredGoods(numDelivered);
                     }
                     game.setScreen(game.GetScreenByIndex(4));
                     sound.dispose();
@@ -343,17 +332,17 @@ public class MainPlayScreen extends ScreenAdapter {
 
             if (cameraScale < 1.8f) {
                 if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-                    if (Gdx.input.isKeyPressed(Input.Keys.W) && camera.position.y < Process.SCREEN_HEIGHT / 2f) {
+                    if (Gdx.input.isKeyPressed(Input.Keys.W) && camera.position.y < GameSettings.SCREEN_HEIGHT / 2f) {
                         camera.position.set(camera.position.x, camera.position.y + 10f, 0f);
                     }
-                    if (Gdx.input.isKeyPressed(Input.Keys.S) && camera.position.y > -Process.SCREEN_HEIGHT / 2f) {
+                    if (Gdx.input.isKeyPressed(Input.Keys.S) && camera.position.y > -GameSettings.SCREEN_HEIGHT / 2f) {
                         camera.position.set(camera.position.x, camera.position.y - 10f, 0f);
                     }
-                    if (Gdx.input.isKeyPressed(Input.Keys.A) && camera.position.x > -Process.SCREEN_WIDTH / 2f) {
+                    if (Gdx.input.isKeyPressed(Input.Keys.A) && camera.position.x > -GameSettings.SCREEN_WIDTH / 2f) {
                         camera.position.set(camera.position.x - 10f, camera.position.y, 0f);
 
                     }
-                    if (Gdx.input.isKeyPressed(Input.Keys.D) && camera.position.x < Process.SCREEN_WIDTH / 2f) {
+                    if (Gdx.input.isKeyPressed(Input.Keys.D) && camera.position.x < GameSettings.SCREEN_WIDTH / 2f) {
                         camera.position.set(camera.position.x + 10f, camera.position.y, 0f);
                     }
                 }
