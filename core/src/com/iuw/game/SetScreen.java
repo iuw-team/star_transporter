@@ -1,6 +1,7 @@
 package com.iuw.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -129,6 +130,11 @@ public class SetScreen extends ScreenAdapter {
         game.batch.setProjectionMatrix(camera.combined);
         stage.act();
         stage.draw();
+        if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && !game.nextKeyPressed) {
+            game.setScreen(game.GetScreenByIndex(0));
+        } else if (!Gdx.input.isKeyPressed(Input.Keys.ENTER) && !Gdx.input.isKeyPressed(Input.Keys.SPACE) && game.nextKeyPressed) {
+            game.nextKeyPressed = false;
+        }
     }
 
     /**

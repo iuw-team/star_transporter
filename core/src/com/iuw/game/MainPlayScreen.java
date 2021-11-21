@@ -81,7 +81,7 @@ public class MainPlayScreen extends ScreenAdapter {
         blackSquare.setOriginCenter();
 
         background = new Sprite(game.getTextureByName("background"));
-        background.setSize(GameSettings.SCREEN_WIDTH, GameSettings.SCREEN_HEIGHT);
+        background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         background.setOriginCenter();
 
         keyWaiting = new Timer();
@@ -244,21 +244,28 @@ public class MainPlayScreen extends ScreenAdapter {
         }
 
         if (gameState != GameState.FADING) { //fixme
-            var gameOver = sim.isShipSunCollision();
-            if (sim.ship.position.dst2(sim.SUN_POS) > 950 * 950) {
-                gameOver = true;
-                GameSettings.setGameResult("Your ship is lost!");
-            }
-            for (PhysicalObject asteroid : sim.asteroids) {
-                if (asteroid.collidesWith(sim.ship)) {
-                    gameOver = true;
-                    GameSettings.setGameResult("Your ship is broken!");
-                }
-            }
-
+            boolean gameOver = sim.isShipSunCollision();
             if (gameOver) {
+                GameSettings.setGameResult("You ship is burned out!");
                 sound.explosion();
                 gameState = GameState.FINISH;
+            } else {
+                if (sim.ship.position.dst2(sim.SUN_POS) > 950 * 950) {
+                    gameOver = true;
+                    GameSettings.setGameResult("Your ship is lost!");
+                } else {
+                    for (PhysicalObject asteroid : sim.asteroids) {
+                        if (asteroid.collidesWith(sim.ship)) {
+                            gameOver = true;
+                            GameSettings.setGameResult("Your ship is broken!");
+                        }
+                    }
+                }
+                if (gameOver) {
+                    sound.explosion();
+                    gameState = GameState.FINISH;
+                }
+
             }
         }
 
