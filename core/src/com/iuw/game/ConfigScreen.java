@@ -3,7 +3,6 @@ package com.iuw.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -17,13 +16,16 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * System configuration screen
+ *
  * @author iuw-team
  */
 public class ConfigScreen extends ScreenAdapter {
     private final Process game;
     private final Stage stage;
+
     /**
      * Creating a standard ConfigScreen class
+     *
      * @param game - Process
      */
     public ConfigScreen(@NotNull final Process game) {
@@ -34,6 +36,7 @@ public class ConfigScreen extends ScreenAdapter {
         InitButtons();
         InitLabels();
     }
+
     /**
      * Called when the screen appears
      */
@@ -41,6 +44,7 @@ public class ConfigScreen extends ScreenAdapter {
     public void show() {
         Gdx.input.setInputProcessor(stage);
     }
+
     /**
      * Drawing the user interface
      */
@@ -48,9 +52,15 @@ public class ConfigScreen extends ScreenAdapter {
     public void render(float delta) {
         stage.act();
         stage.draw();
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) game.setScreen(game.GetScreenByIndex(3));
+        if (!game.nextKeyPressed && (Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE))) {
+            game.setScreen(game.GetScreenByIndex(3));
+            game.nextKeyPressed = true;
+        } else if (!Gdx.input.isKeyPressed(Input.Keys.ENTER) && !Gdx.input.isKeyPressed(Input.Keys.SPACE) && game.nextKeyPressed) {
+            game.nextKeyPressed = false;
+        }
 
     }
+
     /**
      * Called when the selected screen is hidden
      */
@@ -58,6 +68,7 @@ public class ConfigScreen extends ScreenAdapter {
     public void hide() {
         dispose();
     }
+
     /**
      * Destroys all created objects
      */
@@ -65,6 +76,7 @@ public class ConfigScreen extends ScreenAdapter {
     public void dispose() {
         stage.dispose();
     }
+
     /**
      * Initialising SelectBox
      */
@@ -95,6 +107,7 @@ public class ConfigScreen extends ScreenAdapter {
             this.stage.addActor(box);
         }
     }
+
     /**
      * Initialising Buttons
      */
@@ -118,6 +131,7 @@ public class ConfigScreen extends ScreenAdapter {
             stage.addActor(button);
         }
     }
+
     /**
      * Initialising Labels
      */
@@ -133,7 +147,7 @@ public class ConfigScreen extends ScreenAdapter {
         for (int i = 0; i < 4; i++, posY -= 100f) {
             final Label label = game.getLabel(labelText[i]);
             label.setFontScale(GameSettings.TYPE);
-            label.setPosition(posX - label.getWidth()/1.3f, posY);
+            label.setPosition(posX - label.getWidth() / 1.3f, posY);
             label.setSize(GameSettings.BOX_WIDTH, GameSettings.BOX_HEIGHT);
             stage.addActor(label);
         }
