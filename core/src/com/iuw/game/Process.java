@@ -5,14 +5,23 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.ScaleByAction;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import org.lwjgl.system.CallbackI;
+
+import static com.badlogic.gdx.Gdx.graphics;
 
 /**
  * The main game class that stores the main global variables and does all the rendering
@@ -21,17 +30,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
  * @version 0.2
  */
 public class Process extends Game {
-    /**
-     * Constant value fields, such as width and height of buttons, sliders
-     */
-    public final static Integer
-            SCREEN_WIDTH = 800, SCREEN_HEIGHT = 600,
-            BUTTON_WIDTH = 300, BUTTON_HEIGHT = 70,
-            SMALL_BUTTON_WIDTH = 70, SMALL_BUTTON_HEIGHT = 50,
-            BOX_WIDTH = 100, BOX_HEIGHT = 50,
-            SLIDER_WIDTH = 250, SLIDER_HEIGHT = 50;
-    public final static float
-            TYPE = 1.5f;
+
     /**
      * A skin field that stores texture information for buttons and other GUI components
      */
@@ -57,13 +56,17 @@ public class Process extends Game {
     /**
      * Initialising the renderer and other components
      */
+    private OrthographicCamera camera;
     @Override
     public void create() {
-        if (GameSettings.game == null) GameSettings.game = this;
+        camera = new OrthographicCamera((float)GameSettings.SCREEN_WIDTH, (float)GameSettings.SCREEN_HEIGHT);
         gameSkin = new Skin(Gdx.files.internal("temp_textures/buttons_pack.json"));
+        if (GameSettings.game == null) GameSettings.game = this;
         batch = GameSettings.game.getBatch();
-        this.setScreen(GetScreenByIndex(0));
+        batch.setProjectionMatrix(camera.combined);
         font = new BitmapFont();
+        this.setScreen(GetScreenByIndex(0));
+
     }
 
     /**
@@ -72,6 +75,9 @@ public class Process extends Game {
     @Override
     public void render() {
         ScreenUtils.clear(0f, 0f, 0f, 1f);
+        setCameraResolution(GameSettings.SCREEN_WIDTH, GameSettings.SCREEN_HEIGHT);
+        camera.update();
+        batch.setProjectionMatrix(camera.combined);
         super.render();
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) && !exitPressed) {
             exitPressed = true;
@@ -86,7 +92,6 @@ public class Process extends Game {
             exitPressed = false;
         }
     }
-
     /**
      * Exiting the game
      */
@@ -96,12 +101,15 @@ public class Process extends Game {
         this.dispose();
         Gdx.app.exit();
     }
-
+    public void setCameraResolution(float width, float height){
+        camera.setToOrtho(false, width, height);
+    }
     /**
      * Returns new Stage
      */
     public Stage getStage() {
-        return new Stage(new ScreenViewport(), batch);
+        ScreenViewport view = new ScreenViewport(camera);
+        return new Stage(view, batch);
     }
 
     /**
@@ -144,13 +152,6 @@ public class Process extends Game {
      */
     public Slider getSlider() {
         return new Slider(0f, GameSettings.MAX_LEVEL, 0.001f, false, gameSkin);
-    }
-
-    /**
-     * Returns new ShapeRenderer
-     */
-    public ShapeRenderer getShapeRenderer() {
-        return new ShapeRenderer();
     }
 
     /**
@@ -234,14 +235,12 @@ public class Process extends Game {
      * 3 - MainPlayScreen
      */
     public Screen GetScreenByIndex(int index) {
-
         switch (index) {
             case 0:
                 return new MainMenuScreen(GameSettings.game);
             case 1:
                 return new ConfigScreen(GameSettings.game);
             case 2:
-
                 return new SetScreen(GameSettings.game);
             case 3:
                 return new MainPlayScreen(GameSettings.game);
