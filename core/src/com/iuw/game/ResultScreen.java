@@ -3,7 +3,6 @@ package com.iuw.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -19,6 +18,7 @@ public class ResultScreen extends ScreenAdapter {
 
     /**
      * Creating a Standard Result Screen
+     *
      * @param game - Process
      */
     public ResultScreen(final Process game) {
@@ -54,7 +54,10 @@ public class ResultScreen extends ScreenAdapter {
     public void render(float delta) {
         stage.act();
         stage.draw();
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) game.setScreen(game.GetScreenByIndex(1));
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE) || Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
+            game.nextKeyPressed = true;
+            game.setScreen(game.GetScreenByIndex(1));
+        }
     }
 
     @Override

@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Array;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -22,6 +21,7 @@ public class SetScreen extends ScreenAdapter {
 
     /**
      * Creating default SetScreen
+     *
      * @param game - Process
      */
     public SetScreen(@NotNull final Process game) {
@@ -29,9 +29,9 @@ public class SetScreen extends ScreenAdapter {
         game.setCurrentScreen(1);
         camera = new OrthographicCamera();
         stage = game.getStage();
-        float posY = GameSettings.SCREEN_HEIGHT/2.35f;
+        float posY = GameSettings.SCREEN_HEIGHT / 2.35f;
         final String[] labelName = new String[]{"Music", "Sound", "Choose music theme"};
-        for (int i = 0; i < 3; i++, posY += GameSettings.SCREEN_HEIGHT/5f) {
+        for (int i = 0; i < 3; i++, posY += GameSettings.SCREEN_HEIGHT / 5f) {
             final Label label = game.getLabel(labelName[i]);
             label.setFontScale(2f, 2f);
             label.setPosition(GameSettings.SCREEN_WIDTH / 2f - label.getWidth(), posY);
@@ -39,8 +39,8 @@ public class SetScreen extends ScreenAdapter {
         }
         //Sliders
         float posX = GameSettings.SCREEN_WIDTH / 2f - GameSettings.SLIDER_WIDTH / 2f;
-        posY = GameSettings.SCREEN_HEIGHT/2f;
-        for (int i = 0; i < 2; i++, posY -= GameSettings.SCREEN_HEIGHT/6f) {
+        posY = GameSettings.SCREEN_HEIGHT / 2f;
+        for (int i = 0; i < 2; i++, posY -= GameSettings.SCREEN_HEIGHT / 6f) {
             final Slider volume = game.getSlider();
             volume.setValue(GameSettings.VOLUME_LEVELS[i]);
             volume.setPosition(posX, posY);
@@ -56,10 +56,10 @@ public class SetScreen extends ScreenAdapter {
         }
         //
         //CheckBoxes
-        final String[] words = new String[]{"Music", "Vacuum"};
+        final String[] words = new String[]{"Classic", "Improver"};
         final CheckBox[] checks = new CheckBox[2];
         boolean WhoChosen = Process.ChosenSkin != 1;
-        posY = GameSettings.SCREEN_HEIGHT/1.5f;
+        posY = GameSettings.SCREEN_HEIGHT / 1.5f;
         posX = GameSettings.SCREEN_WIDTH / 3f;
         for (int i = 0; i < 2; i++, posX += GameSettings.SCREEN_WIDTH / 5f) {
             checks[i] = game.getCheckBox(words[i]);
@@ -89,11 +89,11 @@ public class SetScreen extends ScreenAdapter {
 
             }
         });
-        t_but_exit.setPosition(GameSettings.SCREEN_WIDTH/2f - GameSettings.BUTTON_WIDTH/2f, GameSettings.SCREEN_HEIGHT/6f);
+        t_but_exit.setPosition(GameSettings.SCREEN_WIDTH / 2f - GameSettings.BUTTON_WIDTH / 2f, GameSettings.SCREEN_HEIGHT / 6f);
 
         SelectBox<String> scaleChanger = game.getSelectBox();
-        scaleChanger.setPosition(GameSettings.SCREEN_WIDTH * 4f / 5f, GameSettings.SCREEN_HEIGHT * 2f / 3f);
-        scaleChanger.setSize(1.5f*GameSettings.BOX_WIDTH, GameSettings.BOX_HEIGHT);
+        scaleChanger.setPosition(GameSettings.SCREEN_WIDTH * 0.8f, GameSettings.SCREEN_HEIGHT * 0.8f);
+        scaleChanger.setSize(1.5f * GameSettings.BOX_WIDTH, GameSettings.BOX_HEIGHT);
         scaleChanger.setItems(
                 "800x600");//, "1280x1024", "1600x1200", "1920x1200");
         scaleChanger.setSelectedIndex(GameSettings.getCurrentResolution());
@@ -106,7 +106,7 @@ public class SetScreen extends ScreenAdapter {
                 hide();
             }
         });
-        stage.addActor(scaleChanger);
+        //stage.addActor(scaleChanger);
         stage.addActor(t_but_exit);
     }
 
@@ -120,6 +120,7 @@ public class SetScreen extends ScreenAdapter {
 
     /**
      * Rendering all UI components
+     *
      * @param delta - time between neighboring frames
      */
     @Override
@@ -137,6 +138,7 @@ public class SetScreen extends ScreenAdapter {
     public void hide() {
         dispose();
     }
+
     /**
      * Destroy all Objects (components) of UI
      */

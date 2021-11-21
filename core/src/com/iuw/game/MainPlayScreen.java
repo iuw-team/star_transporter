@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
@@ -19,6 +18,7 @@ enum GameState {
     TARGET_SECOND,
     FADING,
     DONE,
+    FINISH
 }
 
 /**
@@ -88,7 +88,7 @@ public class MainPlayScreen extends ScreenAdapter {
         keyWaiting.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-               setCameraControl(0.01f);
+                setCameraControl(0.01f);
             }
         }, 0.01f, 0.01f);
         mapGeneration();
@@ -149,16 +149,16 @@ public class MainPlayScreen extends ScreenAdapter {
     /**
      * Основной метод отрисовки игрового процесса
      *
-     * @param dt - вряме изменение кадров
+     * @param dt - время изменение кадров
      */
     @Override
     public void render(float dt) {
-        if(MathUtils.randomBoolean(0.1f)) {
+        if (MathUtils.randomBoolean(0.1f)) {
             if (sim.asteroids.size() < asteroidAmount) {
                 sim.createAsteroid(game.getTextureByName("asteroid"));
             }
         }
-       // setCameraControl(dt);
+        // setCameraControl(dt);
         setShipController();
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
@@ -203,7 +203,7 @@ public class MainPlayScreen extends ScreenAdapter {
                     gameState = GameState.TARGET_SECOND;
                 }
                 drawSprite(signFrom, sim.planets.get(pickupTargetPlanet).position);
-                signFrom.rotate((float)(dt*100)); //fixme
+                signFrom.rotate(dt * 100); //fixme
                 break;
             case TARGET_SECOND:
                 if (sim.isShipPlanetCollision(dropTargetPlanet)) {
@@ -212,51 +212,53 @@ public class MainPlayScreen extends ScreenAdapter {
                     numDelivered++;
                 }
                 drawSprite(signTo, sim.planets.get(dropTargetPlanet).position);
-                signTo.rotate((float)(dt*100)); //fixme
+                signTo.rotate(dt * 100); //fixme
                 break;
             case FADING:
                 var alpha = Math.max(0f, 1f - (fadeTimer / MAX_FADE_TIMER) * (fadeTimer / MAX_FADE_TIMER));
                 blackSquare.setColor(1f, 1f, 1f, alpha);
                 drawSprite(blackSquare, new Vector2());
                 fadeTimer -= dt;
-                if (fadeTimer < 0) {
-                    if (numDelivered == GameSettings.getSystemVariableByName("goods")) {
-                        GameSettings.setGameResult("You are win!");
-                    } else {
-                        GameSettings.setGameResult("Your ship was broken!");
-                        GameSettings.setDeliveredGoods(numDelivered);
-                    }
-                    game.setScreen(game.GetScreenByIndex(4));
-                    sound.dispose();
-                    break;
-                } else {
-                    break; // fixme, no break, dirty hack, idk what to do
-                }
+                break;
             case DONE:
                 if (numDelivered == GameSettings.getSystemVariableByName("goods")) {
-
-                    gameState = GameState.FADING;
+                    GameSettings.setGameResult("You are win!");
+                    gameState = GameState.FINISH;
                 } else {
                     gameState = GameState.TARGET_FIRST;
                     setChosenPlanets(GameSettings.getSystemVariableByName("planets"));
                 }
                 break;
+            case FINISH:
+                pause();
+                gameState = GameState.FADING;
+                sound.ambienceStop();
+                keyWaiting.scheduleTask(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        GameSettings.setDeliveredGoods(numDelivered);
+                        game.setScreen(game.GetScreenByIndex(4));
+                    }
+                }, 2f);
+                break;
         }
 
         if (gameState != GameState.FADING) { //fixme
             var gameOver = sim.isShipSunCollision();
-            if (sim.ship.position.dst2(sim.SUN_POS) > 1000*1000){
-                gameOver= true;
+            if (sim.ship.position.dst2(sim.SUN_POS) > 950 * 950) {
+                gameOver = true;
+                GameSettings.setGameResult("Your ship is lost!");
             }
             for (PhysicalObject asteroid : sim.asteroids) {
                 if (asteroid.collidesWith(sim.ship)) {
                     gameOver = true;
+                    GameSettings.setGameResult("Your ship is broken!");
                 }
             }
 
             if (gameOver) {
                 sound.explosion();
-                gameState = GameState.FADING;
+                gameState = GameState.FINISH;
             }
         }
 
@@ -425,6 +427,7 @@ class PhysicalObject {
 
     /**
      * Создание PhysicalObject, используя характеристики уже созданного
+     *
      * @param other - PhysicalObject
      */
     public PhysicalObject(PhysicalObject other) {
@@ -440,11 +443,12 @@ class PhysicalObject {
 
     /**
      * Создание PhysicalObject по
-     * @param x - координата по X
-     * @param y - координата по Y
+     *
+     * @param x      - координата по X
+     * @param y      - координата по Y
      * @param speedX - скорость по X
      * @param speedY - скорость по Y
-     * @param mass - масса объекта
+     * @param mass   - масса объекта
      */
     public PhysicalObject(float x, float y, float speedX, float speedY, float mass) {
         this.position = new Vector2(x, y);
@@ -458,6 +462,7 @@ class PhysicalObject {
 
     /**
      * Применить силу тяжести к объекту
+     *
      * @param m1 - масса первого тела
      * @param m2 - масса второго тела
      * @param r1 - Vector2 первого тела
@@ -472,6 +477,7 @@ class PhysicalObject {
 
     /**
      * Настраивает текстура     public PhysicalObject(float x, float y, float speedX, float speedY, float mass) {
+     *
      * @param texture - передаваемая Texture
      */
     public void setTexture(Texture texture) {
@@ -481,10 +487,11 @@ class PhysicalObject {
 
     /**
      * Возвращает массив координат для построения траектории
-     * @param spacing - рассояние между соседними пунктами траектории
+     *
+     * @param spacing   - рассояние между соседними пунктами траектории
      * @param deltaTime - время изменение кадра
-     * @param sunPos - координаты центрального небесного светила
-     * @param sunMass - масса центрального небесного светила
+     * @param sunPos    - координаты центрального небесного светила
+     * @param sunMass   - масса центрального небесного светила
      * @return массив координ точек траектории
      */
     public ArrayList<Vector2> getPath(float spacing, float deltaTime, Vector2 sunPos, float sunMass) {
@@ -559,6 +566,7 @@ class PhysicalObject {
 
     /**
      * Обработчик столкновения с объектом
+     *
      * @param other - PhysicalObject, с которым должно столкнуться тело
      * @return - ответ
      */
@@ -569,8 +577,9 @@ class PhysicalObject {
 
     /**
      * Установить размер объекта
-     * @param sizeX  размер по X
-     * @param sizeY  размер по Y
+     *
+     * @param sizeX размер по X
+     * @param sizeY размер по Y
      */
     public void setSize(int sizeX, int sizeY) {
         this.radius = sizeX / 2f; //fixme dirty hack
@@ -581,8 +590,9 @@ class PhysicalObject {
 
     /**
      * Приложить силу по направлению
-     * @param angle  угол вектора от Ox
-     * @param force  сила
+     *
+     * @param angle угол вектора от Ox
+     * @param force сила
      */
     public void applyForceDirected(float angle, float force) {
         if (force == 0) {
@@ -594,8 +604,9 @@ class PhysicalObject {
 
     /**
      * Ускорить вращение объекта
-     * @param acceleration  ускорение
-     * @param dt  время ускорения
+     *
+     * @param acceleration ускорение
+     * @param dt           время ускорения
      */
     public void applyAngularAcceleration(float acceleration, float dt) {
         angularSpeed += -acceleration * dt;
@@ -603,8 +614,9 @@ class PhysicalObject {
 
     /**
      * Высчитать и применить силу гравифтации
-     * @param position  позиция объекта к которому притягиваемся
-     * @param mass  масса объекта к которому притягиваемся
+     *
+     * @param position позиция объекта к которому притягиваемся
+     * @param mass     масса объекта к которому притягиваемся
      */
     public void applyGravity(Vector2 position, float mass) {
         force.add(getGravitationForce(this.mass, mass, this.position, position));
@@ -612,9 +624,10 @@ class PhysicalObject {
 
     /**
      * Отправить объект на орбиту вокруг солнца
-     * @param mass  масса солнца
-     * @param center  позиция солнца
-     * @param clockwise  направления, true - по часовой, false - против часовой
+     *
+     * @param mass            масса солнца
+     * @param center          позиция солнца
+     * @param clockwise       направления, true - по часовой, false - против часовой
      * @param squishification эксцентриситет орбиты
      */
     public void makeOrbit(float mass, Vector2 center, boolean clockwise, float squishification) {
@@ -628,6 +641,7 @@ class PhysicalObject {
 
     /**
      * Сделать шаг симуляции
+     *
      * @param deltaTime время кадра
      */
     public void update(float deltaTime) {
@@ -642,7 +656,8 @@ class PhysicalObject {
 
     /**
      * Отрисовка объекта
-     * @param batch  холст
+     *
+     * @param batch холст
      */
     public void draw(SpriteBatch batch) {
         sprite.setOriginBasedPosition(position.x, position.y);
@@ -690,11 +705,12 @@ class PhysicalSimulation {
 
     /**
      * Добавить планету в симуляцию
-     * @param planetRadius  радиус планеты
+     *
+     * @param planetRadius    радиус планеты
      * @param planetRotation  скорость вращения планеты
-     * @param pos  начальная позиция планеты
-     * @param texture  текстура планеты
-     * @param squishification  эксцентриситет орбиты
+     * @param pos             начальная позиция планеты
+     * @param texture         текстура планеты
+     * @param squishification эксцентриситет орбиты
      */
     public void createPlanet(int planetRadius, float planetRotation, Vector2 pos, Texture texture, float squishification) {
         PhysicalObject planet = new PhysicalObject(pos.x, pos.y, 0, 0, 1f);
@@ -710,7 +726,8 @@ class PhysicalSimulation {
 
     /**
      * Добавить случайно-сгенерированный астероид
-     * @param texture  текстура астероида
+     *
+     * @param texture текстура астероида
      */
     public void createAsteroid(Texture texture) {
         var rAngle = MathUtils.random() * 2 * Math.PI;
@@ -741,7 +758,8 @@ class PhysicalSimulation {
 
     /**
      * Установить текстуру корабля
-     * @param texture  текстура солнца
+     *
+     * @param texture текстура солнца
      */
     public void setShipTexture(Texture texture) {
         ship.setTexture(texture);
@@ -751,7 +769,8 @@ class PhysicalSimulation {
 
     /**
      * Установить текстуру солнца
-     * @param texture  текстура солнца
+     *
+     * @param texture текстура солнца
      */
     public void setSunTexture(Texture texture) {
         sun.setTexture(texture);
@@ -760,7 +779,8 @@ class PhysicalSimulation {
 
     /**
      * Сделать шаги симуляции на deltaTime вперёд времени
-     * @param deltaTime
+     *
+     * @param deltaTime - period of time between frames
      */
     public void update(float deltaTime) {
         deltaTime = (deltaTime + timeLeftover) * simSpeedFactor;
@@ -791,8 +811,9 @@ class PhysicalSimulation {
 
     /**
      * Проверка столкновения корабля с планетой
-     * @param planetId  номер планеты по порядку от солнца
-     * @return  true - столкновение есть, false - нет
+     *
+     * @param planetId номер планеты по порядку от солнца
+     * @return true - столкновение есть, false - нет
      */
     public boolean isShipPlanetCollision(int planetId) {
         var planet = planets.get(planetId);
@@ -801,7 +822,8 @@ class PhysicalSimulation {
 
     /**
      * Столкновение корабля с солнцем
-     * @return  true - столкновение есть, false - нет
+     *
+     * @return true - столкновение есть, false - нет
      */
     public boolean isShipSunCollision() {
         return ship.collidesWith(sun);
@@ -809,7 +831,8 @@ class PhysicalSimulation {
 
     /**
      * Отрисовка симуляции
-     * @param batch  холст
+     *
+     * @param batch холст
      */
     public void draw(SpriteBatch batch) {
         ship.draw(batch);
@@ -824,8 +847,9 @@ class PhysicalSimulation {
 
     /**
      * Attach the controls to the vehicle
+     *
      * @param steering ship rotation, >0 clockwise, <0 counterclockwise
-     * @param thrust the power of the ship's engines, >0 forward, <0 backward.
+     * @param thrust   the power of the ship's engines, >0 forward, <0 backward.
      */
     public void setInput(float steering, float thrust) {
         this.steering = steering;

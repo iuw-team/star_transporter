@@ -12,14 +12,11 @@ import org.jetbrains.annotations.NotNull;
 public class MainMenuScreen extends ScreenAdapter {
     final Process game;
     private final Stage stage;
-    // private final Texture img;
 
     public MainMenuScreen(@NotNull final Process game) {
         this.game = game;
         game.setCurrentScreen(0);
         final String[] buttonName = new String[]{"Play", "Settings", "Exit"};
-//      img = new Texture("main-theme.png");
-
         stage = game.getStage();
         final float posX = GameSettings.SCREEN_WIDTH / 20f;
         float posY = GameSettings.SCREEN_HEIGHT * 5f / 8f;
@@ -73,8 +70,9 @@ public class MainMenuScreen extends ScreenAdapter {
     public void dispose() {
         stage.dispose();
     }
+
     @Override
-    public void resize (int width, int height) {
+    public void resize(int width, int height) {
         stage.getViewport().update(width, height);
     }
 }
