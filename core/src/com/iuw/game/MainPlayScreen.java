@@ -243,30 +243,28 @@ public class MainPlayScreen extends ScreenAdapter {
                 break;
         }
 
-        if (gameState != GameState.FADING) { //fixme
+        if (gameState != GameState.FADING) {
             boolean gameOver = sim.isShipSunCollision();
             if (gameOver) {
                 GameSettings.setGameResult("You ship is burned out!");
                 sound.explosion();
                 gameState = GameState.FINISH;
-            } else {
+            }
                 if (sim.ship.position.dst2(sim.SUN_POS) > 950 * 950) {
                     gameOver = true;
                     GameSettings.setGameResult("Your ship is lost!");
-                } else {
-                    for (PhysicalObject asteroid : sim.asteroids) {
+                }
+                for (PhysicalObject asteroid : sim.asteroids) {
                         if (asteroid.collidesWith(sim.ship)) {
                             gameOver = true;
                             GameSettings.setGameResult("Your ship is broken!");
                         }
-                    }
                 }
                 if (gameOver) {
                     sound.explosion();
                     gameState = GameState.FINISH;
                 }
 
-            }
         }
 
         game.batch.end();
@@ -300,9 +298,6 @@ public class MainPlayScreen extends ScreenAdapter {
      * @param quantity - number of planets
      */
     private void createPlanets(int quantity) {
-        assert quantity >= 2;
-        assert quantity <= 8;
-
         var MAX_DELTA_ORBIT = 200f;
         var MIN_PLANET = 15f;
         var MAX_PLANET = 20f;
@@ -661,7 +656,7 @@ class PhysicalObject {
 }
 
 /**
- * Симуляция физики игры
+ * Simulation of game physics
  */
 class PhysicalSimulation {
     final int STEPS = 10;

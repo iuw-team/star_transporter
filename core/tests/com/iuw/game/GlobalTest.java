@@ -99,6 +99,7 @@ public class GlobalTest extends LibgdxUnitTest {
             Mockito.when(Gdx.input.isKeyPressed(i))
                     .thenReturn(true);
         }
+        play.camera.position.set(100f,100f, 100f);
         play.render(0.001f);
         config.render(1f);
         menu.render(10f);
@@ -115,6 +116,7 @@ public class GlobalTest extends LibgdxUnitTest {
         menu.show();
         set.render(10f);
         set.show();
+
 
 
         //Input keyboard test
@@ -202,27 +204,33 @@ public class GlobalTest extends LibgdxUnitTest {
             for (int i = 0; i < GameSettings.getSystemVariableByName("planets"); i++) {
                 play.sim.ship.position.set(play.sim.planets.get(i).position);
                 play.render(0.001f);
+                play.render(0.001f);
             }
             for (int i = 0; i < GameSettings.getSystemVariableByName("planets"); i++) {
                 play.sim.ship.position.set(play.sim.planets.get(i).position);
+                play.render(0.001f);
                 play.render(0.001f);
             }
         }
         assertSame(GameState.FADING, play.gameState);
         for (int i = 1; i < 5; i++) {
-            play.render(2f);
+            play.render(0.001f);
+            play.render(0.001f);
         }
         //Nul position
-        play.sim.ship.position.set(0f, 0f);
+        play.sim.ship.position.set(play.sim.sun.position.x, play.sim.sun.position.y);
         for (int i = 1; i < 5; i++) {
-            play.render(2f);
+            play.render(0.001f);
+            play.render(0.001f);
+            play.render(0.001f);
         }
         assertSame(GameState.FADING, play.gameState);
         play.sim.ship.position.set(play.sim.asteroids.get(0).position);
         play.render(0.01f);
         play.render(0.01f);
         play.numDelivered = 0;
-        play.render(5f);
+        play.render(0.01f);
+        play.render(0.01f);
 
 
         play.hide();

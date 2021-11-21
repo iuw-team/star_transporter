@@ -56,7 +56,7 @@ public class Process extends Game {
         if (GameSettings.game == null) GameSettings.game = this;
         batch = GameSettings.game.getBatch();
         batch.setProjectionMatrix(camera.combined);
-        font = new BitmapFont();
+        font = GameSettings.game.getFont();
         this.setScreen(GetScreenByIndex(0));
 
     }
@@ -145,6 +145,7 @@ public class Process extends Game {
     /**
      * Returns new Slider
      */
+    public BitmapFont getFont(){ return new BitmapFont();}
     public Slider getSlider() {
         return new Slider(0f, GameSettings.MAX_LEVEL, 0.001f, false, gameSkin);
     }
