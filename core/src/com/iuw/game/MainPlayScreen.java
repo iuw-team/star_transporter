@@ -606,20 +606,20 @@ class PhysicalObject {
     }
 
     /**
-     * Высчитать и применить силу гравифтации
-     * @param position  позиция объекта к которому притягиваемся
-     * @param mass  масса объекта к которому притягиваемся
+     * Calculate and apply the force of gravity
+     * @param position  the position of the object to which we are attracted
+     * @param mass  the mass of the object to which we are attracted
      */
     public void applyGravity(Vector2 position, float mass) {
         force.add(getGravitationForce(this.mass, mass, this.position, position));
     }
 
     /**
-     * Отправить объект на орбиту вокруг солнца
-     * @param mass  масса солнца
-     * @param center  позиция солнца
-     * @param clockwise  направления, true - по часовой, false - против часовой
-     * @param squishification эксцентриситет орбиты
+     * Send an object into orbit around the sun
+     * @param mass  the mass of the sun
+     * @param center  position of the sun
+     * @param clockwise  directions, true - clockwise, false - counterclockwise
+     * @param squishification eccentricity of the orbit
      */
     public void makeOrbit(float mass, Vector2 center, boolean clockwise, float squishification) {
         Vector2 r = new Vector2(center).sub(position);
@@ -631,8 +631,8 @@ class PhysicalObject {
     }
 
     /**
-     * Сделать шаг симуляции
-     * @param deltaTime время кадра
+     * Make a simulation step
+     * @param deltaTime frame time
      */
     public void update(float deltaTime) {
         // Apply force
@@ -645,8 +645,8 @@ class PhysicalObject {
     }
 
     /**
-     * Отрисовка объекта
-     * @param batch  холст
+     * Drawing an object
+     * @param batch  canvas
      */
     public void draw(SpriteBatch batch) {
         sprite.setOriginBasedPosition(position.x, position.y);
@@ -693,12 +693,12 @@ class PhysicalSimulation {
     }
 
     /**
-     * Добавить планету в симуляцию
-     * @param planetRadius  радиус планеты
-     * @param planetRotation  скорость вращения планеты
-     * @param pos  начальная позиция планеты
-     * @param texture  текстура планеты
-     * @param squishification  эксцентриситет орбиты
+     * Add a planet to the simulation
+     * @param planetRadius  radius of the planet
+     * @param planetRotation  the speed of rotation of the planet
+     * @param pos  the initial position of the planet
+     * @param texture  texture of the planet
+     * @param squishification  eccentricity of the orbit
      */
     public void createPlanet(int planetRadius, float planetRotation, Vector2 pos, Texture texture, float squishification) {
         PhysicalObject planet = new PhysicalObject(pos.x, pos.y, 0, 0, 1f);
@@ -798,9 +798,9 @@ class PhysicalSimulation {
     }
 
     /**
-     * Проверка столкновения корабля с планетой
-     * @param planetId  номер планеты по порядку от солнца
-     * @return  true - столкновение есть, false - нет
+     * Checking the collision of a ship with a planet
+     * @param planetId  the number of the planet in order from the sun
+     * @return  true - there is a collision, false - no
      */
     public boolean isShipPlanetCollision(int planetId) {
         var planet = planets.get(planetId);
@@ -808,16 +808,16 @@ class PhysicalSimulation {
     }
 
     /**
-     * Столкновение корабля с солнцем
-     * @return  true - столкновение есть, false - нет
+     * The collision of the ship with the sun
+     * @return  true - there is a collision, false - no
      */
     public boolean isShipSunCollision() {
         return ship.collidesWith(sun);
     }
 
     /**
-     * Отрисовка симуляции
-     * @param batch  холст
+     * Rendering the simulation
+     * @param batch  canvas
      */
     public void draw(SpriteBatch batch) {
         ship.draw(batch);
